@@ -1,0 +1,14 @@
+fastapi>=0.115.0,<1.0.0
+uvicorn[standard]>=0.32.0,<1.0.0
+python-multipart>=0.0.9,<1.0.0
+pydantic>=2.9.0,<3.0.0
+pydantic-settings>=2.6.0,<3.0.0
+sqlalchemy>=2.0.0,<3.0.0
+passlib>=1.7.4,<2.0.0
+bcrypt==4.0.1
+python-jose[cryptography]>=3.3.0,<4.0.0
+python-dotenv>=1.0.0,<2.0.0
+Pillow>=10.4.0,<11.0.0
+
+# Optional: uncomment if you switch DATABASE_URL to MySQL (same driver your chatbot uses)
+# mysql-connector-python>=9.0.0,<10.0.0
