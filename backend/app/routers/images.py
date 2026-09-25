@@ -8,11 +8,13 @@ from app.auth import get_current_admin
 from app.database import get_db
 from app.models import ImageSlot
 from app.schemas import ImageSlotOut
+from app.seed_data import IMAGE_SLOTS
 
 router = APIRouter(prefix="/api/images", tags=["images"])
 
 UPLOAD_DIR = Path(__file__).resolve().parent.parent.parent / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)
+IMAGE_SLOT_KEYS = {item[0] for item in IMAGE_SLOTS}
 
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 MAX_FILE_SIZE = 8 * 1024 * 1024  # 8 MB
@@ -33,12 +35,14 @@ def slot_to_out(slot: ImageSlot) -> ImageSlotOut:
 def list_images(db: Session = Depends(get_db)):
     """Public endpoint. The frontend loads this once and renders every
     dynamic image from it, keyed by slot_key."""
-    slots = db.query(ImageSlot).order_by(ImageSlot.page, ImageSlot.slot_key).all()
+    slots = db.query(ImageSlot).filter(ImageSlot.slot_key.in_(IMAGE_SLOT_KEYS)).order_by(ImageSlot.page, ImageSlot.slot_key).all()
     return [slot_to_out(s) for s in slots]
 
 
 @router.get("/{slot_key}", response_model=ImageSlotOut)
 def get_image(slot_key: str, db: Session = Depends(get_db)):
+    if slot_key not in IMAGE_SLOT_KEYS:
+        raise HTTPException(status_code=404, detail="Unknown image slot")
     slot = db.query(ImageSlot).filter(ImageSlot.slot_key == slot_key).first()
     if not slot:
         raise HTTPException(status_code=404, detail="Unknown image slot")
@@ -54,6 +58,8 @@ async def replace_image(
 ):
     """Admin-only. Uploads a new file for an existing slot key and updates
     the DB row so every page picks up the new image immediately."""
+    if slot_key not in IMAGE_SLOT_KEYS:
+        raise HTTPException(status_code=404, detail="Unknown image slot")
     slot = db.query(ImageSlot).filter(ImageSlot.slot_key == slot_key).first()
     if not slot:
         raise HTTPException(status_code=404, detail="Unknown image slot")

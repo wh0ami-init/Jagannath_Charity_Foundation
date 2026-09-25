@@ -1,4 +1,5 @@
 import Layout from "../components/Layout";
+import Reveal from "../components/Reveal";
 
 const stats = [
   { value: "22.85%", label: "of Odisha's population is Scheduled Tribe" },
@@ -10,7 +11,7 @@ const stats = [
 export default function Impact() {
   return (
     <Layout>
-      <section className="bg-navy-950 text-white py-16">
+      <Reveal as="section" className="page-banner">
         <div className="wrap">
           <p className="text-orange-300 font-semibold mb-2">Impact</p>
           <h1 className="text-3xl sm:text-4xl font-serif-heading font-bold max-w-2xl">
@@ -21,9 +22,9 @@ export default function Impact() {
             problem in the country plainly, and the philosophy we work by.
           </p>
         </div>
-      </section>
+      </Reveal>
 
-      <section className="wrap py-16">
+      <Reveal as="section" className="wrap py-16">
         <h2 className="text-2xl font-serif-heading font-bold text-navy-950 max-w-2xl">
           India's PVTG challenge is large and geographically complex.
         </h2>
@@ -35,13 +36,13 @@ export default function Impact() {
 
         <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((s) => (
-            <div key={s.label} className="rounded-xl border border-navy-900/10 p-6 text-center">
+            <Reveal as="article" key={s.label} delay={stats.indexOf(s) * 0.06} className="rounded-xl border border-navy-900/10 p-6 text-center">
               <p className="text-3xl font-serif-heading font-bold text-orange-500">{s.value}</p>
               <p className="mt-2 text-sm text-navy-900/70">{s.label}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
-      </section>
+      </Reveal>
     </Layout>
   );
 }

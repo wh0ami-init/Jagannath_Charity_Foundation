@@ -1,4 +1,5 @@
 import Layout from "../components/Layout";
+import Reveal from "../components/Reveal";
 import { DynamicImage } from "../lib/ImagesContext";
 
 const programmes = [
@@ -19,7 +20,7 @@ const programmes = [
 export default function Work() {
   return (
     <Layout>
-      <section className="bg-navy-950 text-white py-16">
+      <Reveal as="section" className="page-banner">
         <div className="wrap">
           <p className="text-orange-300 font-semibold mb-2">Focus areas</p>
           <h1 className="text-3xl sm:text-4xl font-serif-heading font-bold max-w-2xl">
@@ -30,18 +31,18 @@ export default function Work() {
             later: a skill, a saving, a school habit, a cleaner bill.
           </p>
         </div>
-      </section>
+      </Reveal>
 
       <section className="wrap py-16 grid sm:grid-cols-2 gap-8">
         {programmes.map((p) => (
-          <article key={p.num} className="rounded-xl overflow-hidden border border-navy-900/10">
+          <Reveal as="article" key={p.num} delay={Number(p.num) % 2 ? 0 : 0.07} className="rounded-xl overflow-hidden border border-navy-900/10">
             <DynamicImage slotKey={p.slot} className="w-full h-48 object-cover" />
             <div className="p-6">
               <p className="text-orange-500 text-sm font-semibold mb-1">{p.num}</p>
               <h3 className="text-lg font-serif-heading font-bold text-navy-950 mb-2">{p.title}</h3>
               <p className="text-sm text-navy-900/70 leading-relaxed">{p.body}</p>
             </div>
-          </article>
+          </Reveal>
         ))}
       </section>
     </Layout>

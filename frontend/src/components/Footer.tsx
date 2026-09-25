@@ -1,55 +1,58 @@
 import { Link } from "wouter";
+import Reveal from "./Reveal";
+import { DynamicImage } from "../lib/ImagesContext";
+
+const foundationLinks = [
+  ["Our story", "/about"],
+  ["Our work", "/work"],
+  ["Our impact", "/impact"],
+  ["Our people", "/team"],
+  ["Photo gallery", "/gallery"],
+] as const;
+
+const takePartLinks = [
+  ["Make a donation", "/donate"],
+  ["Volunteer with us", "/volunteer"],
+  ["Contact the Foundation", "/contact"],
+  ["Privacy policy", "/privacy-policy"],
+] as const;
 
 export default function Footer() {
   return (
-    <footer className="bg-navy-950 text-white/70 mt-20">
-      <div className="wrap py-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-        <div>
-          <strong className="text-white block mb-2">Jagannath Foundation</strong>
-          <p className="text-sm leading-relaxed">
-            A public charitable trust working across India. Education, health, youth skills,
-            women's livelihoods and household energy reform nationwide.
-          </p>
-          <p className="text-sm leading-relaxed mt-3">
-            Foundation House, Raj Bhavan<br />
-            Tapaswini Colony, Near Z1, Nandan Kanan Road<br />
-            Bhubaneswar, Khordha 751024
-          </p>
-        </div>
-        <div>
-          <strong className="text-white block mb-2">The Foundation</strong>
-          <ul className="space-y-1 text-sm">
-            <li><Link href="/about" className="hover:text-white">Who we are</Link></li>
-            <li><Link href="/work" className="hover:text-white">What we do</Link></li>
-            <li><Link href="/impact" className="hover:text-white">Impact</Link></li>
-            <li><Link href="/team" className="hover:text-white">Team</Link></li>
-            <li><Link href="/gallery" className="hover:text-white">Gallery</Link></li>
-          </ul>
-        </div>
-        <div>
-          <strong className="text-white block mb-2">Take part</strong>
-          <ul className="space-y-1 text-sm">
-            <li><Link href="/donate" className="hover:text-white">Donate</Link></li>
-            <li><Link href="/volunteer" className="hover:text-white">Volunteer</Link></li>
-            <li><Link href="/contact" className="hover:text-white">Contact</Link></li>
-            <li><Link href="/privacy-policy" className="hover:text-white">Privacy Policy</Link></li>
-          </ul>
-        </div>
-        <div>
-          <strong className="text-white block mb-2">Write plainly</strong>
-          <p className="text-sm leading-relaxed">
-            <a href="tel:+919700643333" className="hover:text-white">+91 97006 43333</a><br />
-            <a href="mailto:chairman@jagannathfoundation.charity" className="hover:text-white">
-              chairman@jagannathfoundation.charity
-            </a><br />
-            PAN AAFTJ8006Q<br />
-            DARPAN OR/2026/1196699
-          </p>
-        </div>
+    <footer className="site-footer">
+      <div className="wrap footer-main">
+        <Reveal className="footer-brand" delay={0}>
+          <Link href="/" className="footer-identity">
+            <span className="footer-mark"><DynamicImage slotKey="site-logo" alt="" className="footer-logo" /></span>
+            <span><strong>Jagannath Foundation</strong><small>Serving with dignity</small></span>
+          </Link>
+          <p>Working alongside communities to widen opportunity through education, health, livelihoods and clean energy.</p>
+          <span className="footer-charity-note"><i aria-hidden="true" /> A public charitable trust in India</span>
+        </Reveal>
+
+        <Reveal as="nav" className="footer-links" delay={0.12} aria-label="Foundation links">
+          <h2>The Foundation</h2>
+          <ul>{foundationLinks.map(([label, href]) => <li key={href}><Link href={href}>{label}<span aria-hidden="true">↗</span></Link></li>)}</ul>
+        </Reveal>
+
+        <Reveal as="nav" className="footer-links" delay={0.24} aria-label="Ways to participate">
+          <h2>Get involved</h2>
+          <ul>{takePartLinks.map(([label, href]) => <li key={href}><Link href={href}>{label}<span aria-hidden="true">↗</span></Link></li>)}</ul>
+        </Reveal>
+
+        <Reveal as="address" className="footer-contact" delay={0.36}>
+          <h2>Start a conversation</h2>
+          <a className="footer-email" href="mailto:chairman@jagannathfoundation.charity">chairman@jagannathfoundation.charity</a>
+          <a href="tel:+919700643333">+91 97006 43333</a>
+          <p>Foundation House, Raj Bhavan<br />Tapaswini Colony, Near Z1<br />Nandan Kanan Road, Bhubaneswar<br />Khordha, Odisha 751024</p>
+          <Link href="/contact" className="footer-contact-link">Contact us <span aria-hidden="true">→</span></Link>
+        </Reveal>
       </div>
-      <div className="border-t border-white/10">
-        <div className="wrap py-4 flex flex-col sm:flex-row justify-between gap-2 text-xs text-white/50">
-          <span>Public charitable trust · Established 17 August 2026 · Recorded with DARPAN</span>
+
+      <div className="footer-legal">
+        <div className="wrap footer-legal-inner">
+          <span>© {new Date().getFullYear()} Jagannath Foundation</span>
+          <span>PAN AAFTJ8006Q <i /> DARPAN OR/2026/1196699</span>
           <span>The Trust does not carry on any activity with the object of earning profit.</span>
         </div>
       </div>

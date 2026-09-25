@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, Text, Numeric, Boolean
 
 from app.database import Base
 
@@ -33,3 +33,31 @@ class AdminUser(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(80), unique=True, index=True, nullable=False)
     password_hash = Column(String(200), nullable=False)
+
+
+class SiteContent(Base):
+    __tablename__ = "site_content"
+
+    id = Column(Integer, primary_key=True, index=True)
+    content_key = Column(String(120), unique=True, index=True, nullable=False)
+    label = Column(String(200), nullable=False)
+    page = Column(String(60), nullable=False)
+    value = Column(Text, nullable=False)
+
+
+class FormSubmission(Base):
+    __tablename__ = "form_submissions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    kind = Column(String(24), nullable=False, index=True)
+    name = Column(String(150), nullable=False, default="")
+    email = Column(String(254), nullable=False, index=True)
+    phone = Column(String(40), nullable=False, default="")
+    subject = Column(String(200), nullable=False, default="")
+    message = Column(Text, nullable=False, default="")
+    district = Column(String(120), nullable=False, default="")
+    skill = Column(String(200), nullable=False, default="")
+    amount = Column(Numeric(12, 2), nullable=True)
+    cause = Column(String(160), nullable=False, default="")
+    consent_given = Column(Boolean, nullable=False, default=True)
+    created_at = Column(DateTime, default=utcnow, nullable=False, index=True)

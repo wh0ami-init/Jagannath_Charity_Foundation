@@ -1,5 +1,6 @@
 import { Route, Switch } from "wouter";
 import { ImagesProvider } from "./lib/ImagesContext";
+import { SiteContentProvider } from "./lib/SiteContentContext";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Work from "./pages/Work";
@@ -16,6 +17,7 @@ import AdminDashboard from "./pages/admin/Dashboard";
 export default function App() {
   return (
     <ImagesProvider>
+      <SiteContentProvider>
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/about" component={About} />
@@ -35,6 +37,7 @@ export default function App() {
           </div>
         </Route>
       </Switch>
+      </SiteContentProvider>
     </ImagesProvider>
   );
 }

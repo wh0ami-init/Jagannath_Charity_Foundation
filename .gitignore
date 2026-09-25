@@ -6,6 +6,7 @@ backend/app/routers/__pycache__/
 *.pyc
 backend/app.db
 backend/.env
+backend/ca.pem
 
 # Uploaded images are user content, not source code -- don't version them.
 backend/uploads/*
@@ -15,6 +16,7 @@ backend/uploads/*
 frontend/node_modules/
 frontend/dist/
 frontend/.env
+Jagannath-Foundation-Website.zip
 
 # --- OS junk ---
 .DS_Store

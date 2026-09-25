@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import Layout from "../components/Layout";
+import Reveal from "../components/Reveal";
 import { DynamicImage } from "../lib/ImagesContext";
+import { useSiteContent } from "../lib/SiteContentContext";
 
 const tabs = [
   {
@@ -26,30 +29,35 @@ const tabs = [
 ];
 
 export default function About() {
+  const siteContent = useSiteContent();
   const [active, setActive] = useState("vision");
   const current = tabs.find((t) => t.id === active)!;
+  const reducedMotion = useReducedMotion();
 
   return (
     <Layout>
-      <section className="bg-navy-950 text-white py-16">
+      <Reveal as="section" className="page-banner">
         <div className="wrap">
           <p className="text-orange-300 font-semibold mb-2">About the Foundation</p>
           <h1 className="text-3xl sm:text-4xl font-serif-heading font-bold max-w-2xl">
-            Helping hands. Positive living. A trust held for the people.
+            {siteContent.about_heading?.value || "Helping hands. Positive living. A trust held for the people."}
           </h1>
           <p className="mt-4 max-w-2xl text-white/70">
-            Jagannath Foundation was created on 17 August 2026. It is irrevocable. Its income and
-            property can be applied only to the objects of the trust. There is no private profit.
+            {siteContent.about_intro?.value || "Jagannath Foundation was created on 17 August 2026. It is irrevocable. Its income and property can be applied only to the objects of the trust. There is no private profit."}
           </p>
         </div>
-      </section>
+      </Reveal>
 
-      <section className="wrap py-16 grid lg:grid-cols-[2fr_1fr] gap-10">
+      <Reveal as="section" className="wrap py-16 grid lg:grid-cols-[2fr_1fr] gap-10">
         <div>
-          <div className="flex flex-wrap gap-2 mb-6">
+          <div className="about-tabs flex flex-wrap gap-2 mb-6" role="tablist" aria-label="About the Foundation">
             {tabs.map((t) => (
               <button
                 key={t.id}
+                type="button"
+                role="tab"
+                aria-selected={active === t.id}
+                aria-controls="about-tab-panel"
                 onClick={() => setActive(t.id)}
                 className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
                   active === t.id
@@ -61,8 +69,10 @@ export default function About() {
               </button>
             ))}
           </div>
-          <h3 className="text-xl font-serif-heading font-bold text-navy-950 mb-2">{current.title}</h3>
-          <p className="text-navy-900/70 leading-relaxed">{current.body}</p>
+          <motion.div className="about-tab-panel" key={current.id} id="about-tab-panel" role="tabpanel" aria-live="polite" initial={{ opacity: 0, y: reducedMotion ? 0 : 7 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reducedMotion ? 0 : 0.38, ease: "easeOut" }}>
+            <h3 className="text-xl font-serif-heading font-bold text-navy-950 mb-2">{current.title}</h3>
+            <p className="text-navy-900/70 leading-relaxed">{current.body}</p>
+          </motion.div>
         </div>
         <aside className="space-y-4">
           <DynamicImage
@@ -76,7 +86,7 @@ export default function About() {
             Download Organisation Profile (PDF)
           </a>
         </aside>
-      </section>
+      </Reveal>
     </Layout>
   );
 }

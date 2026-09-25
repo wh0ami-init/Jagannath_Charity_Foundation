@@ -1,19 +1,30 @@
 import { useState, FormEvent } from "react";
+import { submissionPayload, submitForm } from "../lib/api";
+import Reveal from "./Reveal";
 
 export default function Newsletter() {
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // Hook this up to a real email/CRM endpoint when you have one.
-    // For now it just confirms locally so the form isn't a dead end.
-    setSubmitted(true);
+    setError("");
+    setSending(true);
+    try {
+      await submitForm(submissionPayload(e.currentTarget, "newsletter"));
+      setSubmitted(true);
+    } catch (problem) {
+      setError(problem instanceof Error ? problem.message : "Your request could not be saved.");
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
-    <section className="bg-navy-900 text-white">
+    <Reveal as="section" className="newsletter-section bg-navy-900 text-white">
       <div className="wrap py-14 grid gap-8 lg:grid-cols-2 items-center">
         <div>
           <p className="text-orange-300 text-sm font-semibold mb-2">Stay informed</p>
@@ -27,15 +38,17 @@ export default function Newsletter() {
         </div>
         <form onSubmit={handleSubmit} className="bg-white text-navy-950 rounded-xl p-6 space-y-4">
           {submitted ? (
-            <p className="text-sm">Thank you — you're on the list.</p>
+            <p className="form-success text-sm" role="status">Your update request is saved. Programme emails are not sent automatically yet.</p>
           ) : (
             <>
+              {error && <p className="form-error" role="alert">{error}</p>}
               <div>
                 <label htmlFor="news-email" className="text-sm font-medium block mb-1">
                   Email address
                 </label>
                 <input
                   id="news-email"
+                  name="email"
                   type="email"
                   required
                   value={email}
@@ -44,8 +57,10 @@ export default function Newsletter() {
                   className="w-full border border-navy-900/20 rounded-lg px-3 py-2 text-sm"
                 />
               </div>
+              <div className="form-honeypot" aria-hidden="true"><label htmlFor="news-website">Leave this field blank</label><input id="news-website" name="website" tabIndex={-1} autoComplete="off" /></div>
               <label className="flex gap-2 text-xs text-navy-900/70">
                 <input
+                  name="consent"
                   type="checkbox"
                   required
                   checked={consent}
@@ -60,14 +75,15 @@ export default function Newsletter() {
               </label>
               <button
                 type="submit"
-                className="bg-orange-500 hover:bg-orange-400 text-white px-5 py-2 rounded-full text-sm font-semibold"
+                disabled={sending}
+                className="bg-orange-500 hover:bg-orange-400 disabled:opacity-60 text-white px-5 py-2 rounded-full text-sm font-semibold"
               >
-                Subscribe
+                {sending ? "Saving…" : "Request updates"}
               </button>
             </>
           )}
         </form>
       </div>
-    </section>
+    </Reveal>
   );
 }
