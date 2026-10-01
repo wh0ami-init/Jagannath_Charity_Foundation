@@ -87,7 +87,7 @@ h1, h2, h3, .font-serif-heading { font-family: var(--font-serif); }
 .nav-donate:hover { background: var(--clay); }
 .nav-donate span { color: #efc06f; }
 .menu-toggle { display: none; }
-.site-header.is-home { margin-bottom: -82px; border-bottom-color: transparent; background: linear-gradient(180deg,rgba(10,30,26,.72),rgba(10,30,26,.3)); box-shadow: none; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: background .32s ease,border-color .32s ease,box-shadow .32s ease; }
+.site-header.is-home { margin-bottom: -82px; border-bottom-color: transparent; background: linear-gradient(180deg,rgba(10,30,26,.46),rgba(10,30,26,.2)); box-shadow: none; backdrop-filter: blur(22px) saturate(135%); -webkit-backdrop-filter: blur(22px) saturate(135%); transition: background .32s ease,border-color .32s ease,box-shadow .32s ease; }
 .site-header.is-home:not(.is-scrolled) .brand-mark { border-color: rgba(255,255,255,.75); }
 .site-header.is-home:not(.is-scrolled) .brand-name strong, .site-header.is-home:not(.is-scrolled) .brand-name small, .site-header.is-home:not(.is-scrolled) .main-nav, .site-header.is-home:not(.is-scrolled) .main-nav > a:not(.nav-donate), .site-header.is-home:not(.is-scrolled) .menu-toggle { color: white; }
 .site-header.is-home:not(.is-scrolled) .main-nav > a:not(.nav-donate):hover, .site-header.is-home:not(.is-scrolled) .main-nav > a.active { color: #f3c67d; }
