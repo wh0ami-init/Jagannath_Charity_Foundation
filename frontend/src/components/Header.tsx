@@ -55,7 +55,7 @@ export default function Header() {
   return (
     <>
       <header
-        className={`site-header${homeActive ? " is-home" : ""}${homeActive && scrolled ? " is-scrolled" : ""}`}
+        className={`site-header backdrop-blur-xl${homeActive ? " is-home" : ""}${homeActive && scrolled ? " is-scrolled" : ""}`}
         ref={headerRef}
       >
         <div className="wrap header-main">
