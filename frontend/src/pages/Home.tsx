@@ -279,7 +279,7 @@ export default function Home() {
               viewport={{ once: true, amount: 0.2 }}
               transition={{
                 duration: reducedMotion ? 0 : 1.25,
-                delay: reducedMotion ? 0 : 0.28,
+                delay: reducedMotion ? 0 : 0.48,
                 ease: [0.22, 0.7, 0.2, 1],
               }}
             >
@@ -289,7 +289,7 @@ export default function Home() {
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{
                   duration: reducedMotion ? 0 : 1.8,
-                  delay: reducedMotion ? 0 : 0.18,
+                  delay: reducedMotion ? 0 : 0.42,
                   ease: [0.22, 0.7, 0.2, 1],
                 }}
               >
@@ -316,7 +316,7 @@ export default function Home() {
                   initial={reducedMotion ? false : { pathLength: 0 }}
                   whileInView={{ pathLength: 1 }}
                   viewport={{ once: true, amount: 0.2 }}
-                  transition={{ duration: reducedMotion ? 0 : 1.5, delay: reducedMotion ? 0 : 2.05, ease: [0.22, 0.7, 0.2, 1] }}
+                  transition={{ duration: reducedMotion ? 0 : 0.95, delay: reducedMotion ? 0 : 0.16, ease: [0.22, 0.7, 0.2, 1] }}
                 />
               </motion.svg>
             </motion.div>
