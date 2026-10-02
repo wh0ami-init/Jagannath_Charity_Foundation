@@ -443,6 +443,17 @@ h1, h2, h3, .font-serif-heading { font-family: var(--font-serif); }
 .about-focus-card p { max-width: 38ch; margin: 0; color: #5c6d63; font-size: 13px; line-height: 1.6; }
 .about-focus-card > b { position: absolute; top: 20px; right: 20px; color: #a87332; font-size: 16px; font-weight: 500; transition: transform .3s ease; }
 .about-focus-card:hover > b { transform: translate(3px,-3px); }
+.about-organisation { display: grid; grid-template-columns: minmax(0,1.1fr) minmax(300px,.9fr); align-items: start; gap: clamp(42px,8vw,120px); padding-block: clamp(56px,7vw,94px); }
+.about-organisation-copy { max-width: 690px; }
+.about-organisation-copy .eyebrow { margin: 0 0 12px; color: #a45a3b; font-size: 11px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; }
+.about-organisation-copy h2 { max-width: 19ch; margin: 0 0 20px; color: var(--forest); font: 600 clamp(34px,4vw,50px)/1.02 var(--font-serif); }
+.about-organisation-copy > p:not(.eyebrow) { max-width: 67ch; margin: 0 0 16px; color: #53675d; font-size: 17px; line-height: 1.8; }
+.about-organisation-facts { padding: clamp(23px,3vw,34px); border: 1px solid rgba(24,55,47,.13); border-top: 3px solid rgba(184,116,57,.7); border-radius: 7px; background: linear-gradient(145deg,rgba(255,255,255,.66),rgba(232,238,227,.48)); box-shadow: 0 14px 36px rgba(24,55,47,.065),inset 0 1px rgba(255,255,255,.88); }
+.about-organisation-facts h3 { margin: 0 0 13px; color: var(--forest); font: 600 32px/1.1 var(--font-serif); }
+.about-organisation-facts dl { margin: 0; border-top: 1px solid rgba(24,55,47,.19); }
+.about-organisation-fact { padding: 13px 8px 12px; border-bottom: 1px solid rgba(24,55,47,.16); }
+.about-organisation-fact dt { margin: 0 0 5px; color: var(--forest); font: 700 19px/1.25 var(--font-serif); }
+.about-organisation-fact dd { margin: 0; color: #5c6d63; font-size: 16px; line-height: 1.55; }
 .work-programme-card { scroll-margin-top: 112px; transition: box-shadow .45s ease,border-color .45s ease,background-color .45s ease; }
 .work-programme-card.is-highlighted { position: relative; z-index: 1; border-color: #c8893c !important; background-color: rgba(250,241,218,.72) !important; box-shadow: 0 0 0 3px rgba(217,154,70,.42),0 18px 48px rgba(120,78,28,.2),inset 0 1px rgba(255,255,255,.9) !important; }
 .work-programme-card.is-highlighted::after { position: absolute; z-index: 2; inset: 0; border: 1px solid rgba(255,255,255,.85); content: ""; pointer-events: none; animation: programme-highlight 2.8s ease-out both; }
@@ -497,6 +508,12 @@ h1, h2, h3, .font-serif-heading { font-family: var(--font-serif); }
 }
 
 @media (max-width: 760px) {
+  .about-organisation { grid-template-columns: 1fr; gap: 30px; padding-block: 46px; }
+  .about-organisation-copy h2 { max-width: 22ch; }
+  .about-organisation-facts h3 { font-size: 27px; }
+  .about-organisation-copy > p:not(.eyebrow) { font-size: 16px; }
+  .about-organisation-fact dt { font-size: 18px; }
+  .about-organisation-fact dd { font-size: 15px; }
   .about-focus-heading { align-items: flex-start; flex-direction: column; gap: 12px; }
   .about-focus-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
 }
