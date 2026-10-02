@@ -21,32 +21,20 @@ const AdminLogin = lazy(() => import("./pages/admin/Login"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 
 const welcomeScreenEnabled = import.meta.env.VITE_ENABLE_WELCOME_SCREEN === "true";
-const hasSeenWelcome = () => {
-  try {
-    return sessionStorage.getItem("jf-welcome-seen") === "true";
-  } catch {
-    return false;
-  }
-};
 
 export default function App() {
   const [location] = useLocation();
   const [welcomeVisible, setWelcomeVisible] = useState(() =>
-    welcomeScreenEnabled && location === "/" && (import.meta.env.DEV || !hasSeenWelcome()),
+    welcomeScreenEnabled && location === "/",
   );
-  const finishWelcome = useCallback(() => {
-    try {
-      sessionStorage.setItem("jf-welcome-seen", "true");
-    } catch {
-      // The intro still dismisses when session storage is unavailable.
-    }
-    setWelcomeVisible(false);
-  }, []);
+  const [portalRevealStarted, setPortalRevealStarted] = useState(false);
+  const finishWelcome = useCallback(() => setWelcomeVisible(false), []);
+  const startPortalReveal = useCallback(() => setPortalRevealStarted(true), []);
 
   return (
     <ImagesProvider>
       <SiteContentProvider>
-        {welcomeVisible ? <WelcomeScreen onComplete={finishWelcome} /> : (
+        <div className={`welcome-portal${welcomeVisible && !portalRevealStarted ? " is-covered" : ""}${portalRevealStarted ? " is-revealing" : ""}`}>
           <Suspense fallback={<div className="min-h-screen grid place-items-center text-navy-900/60">Loading page…</div>}>
             <Switch>
               <Route path="/" component={Home} />
@@ -71,7 +59,8 @@ export default function App() {
               </Route>
             </Switch>
           </Suspense>
-        )}
+        </div>
+        {welcomeVisible && <WelcomeScreen onExitStart={startPortalReveal} onComplete={finishWelcome} />}
       </SiteContentProvider>
     </ImagesProvider>
   );

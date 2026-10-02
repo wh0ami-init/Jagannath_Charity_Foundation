@@ -8,7 +8,7 @@ import "./WelcomeScreen.css";
 gsap.registerPlugin(useGSAP);
 const welcomeDuration = import.meta.env.DEV ? 10 : 6.2;
 
-export default function WelcomeScreen({ onComplete }: { onComplete: () => void }) {
+export default function WelcomeScreen({ onExitStart, onComplete }: { onExitStart: () => void; onComplete: () => void }) {
   const scope = useRef<HTMLElement | null>(null);
   const isClosing = useRef(false);
   const reducedMotion = useReducedMotion();
@@ -45,13 +45,22 @@ export default function WelcomeScreen({ onComplete }: { onComplete: () => void }
   const dismiss = useCallback(() => {
     if (isClosing.current) return;
     isClosing.current = true;
+    onExitStart();
     const screen = scope.current;
     if (reducedMotion || !screen) {
       onComplete();
       return;
     }
-    gsap.to(screen, { autoAlpha: 0, y: -18, duration: 0.8, ease: "power2.inOut", onComplete });
-  }, [onComplete, reducedMotion]);
+    const content = screen.querySelector(".welcome-content");
+    const artwork = screen.querySelectorAll(".welcome-giving-art");
+    const exit = gsap.timeline({ onComplete });
+    if (content) {
+      exit.to(content, { autoAlpha: 0, y: -22, duration: 0.68, ease: "power2.in" });
+    }
+    exit
+      .to(artwork, { autoAlpha: 0, y: 32, scale: 0.93, duration: 0.88, ease: "power2.in" }, "<0.18")
+      .to(screen, { autoAlpha: 0, scale: 1.035, duration: 1.35, ease: "power2.inOut" }, "<0.14");
+  }, [onComplete, onExitStart, reducedMotion]);
 
   useEffect(() => {
     const timer = window.setTimeout(dismiss, reducedMotion ? 4200 : welcomeDuration * 1000);

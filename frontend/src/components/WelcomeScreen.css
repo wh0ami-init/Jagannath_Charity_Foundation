@@ -14,6 +14,19 @@
     color: #fff;
 }
 
+.welcome-portal {
+    opacity: 1;
+}
+
+.welcome-portal.is-covered {
+    opacity: 0;
+}
+
+.welcome-portal.is-revealing {
+    opacity: 1;
+    transition: opacity 2.2s cubic-bezier(.22, .7, .2, 1);
+}
+
 .welcome-atmosphere {
     position: absolute;
     z-index: -1;
@@ -321,6 +334,12 @@
 
     .welcome-progress-fill {
         transform: scaleX(1);
+    }
+
+    .welcome-portal.is-revealing {
+        animation: none !important;
+        transition: none !important;
+        opacity: 1;
     }
 
     .giving-heart,
