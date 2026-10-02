@@ -120,14 +120,28 @@ export default function Header() {
                 onNavigate={() => { setOpen(false); setExploreOpen(false); }}
               />
             ))}
-            <div className={`nav-explore${exploreOpen ? " is-open" : ""}`}>
+            <div
+              className={`nav-explore${exploreOpen ? " is-open" : ""}`}
+              onPointerEnter={(event) => {
+                if (event.pointerType === "mouse") setExploreOpen(true);
+              }}
+              onPointerLeave={(event) => {
+                if (event.pointerType === "mouse") setExploreOpen(false);
+              }}
+            >
               <button
                 ref={exploreToggleRef}
                 type="button"
                 className={`nav-explore-toggle${exploreLinks.some((link) => location === link.href || location.startsWith(`${link.href}/`)) ? " active" : ""}`}
                 aria-expanded={exploreOpen}
                 aria-controls="nav-explore-panel"
-                onClick={() => setExploreOpen((value) => !value)}
+                onClick={(event) => {
+                  if (event.nativeEvent.detail > 0 && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+                    setExploreOpen(true);
+                  } else {
+                    setExploreOpen((value) => !value);
+                  }
+                }}
               >
                 Explore <span aria-hidden="true">⌄</span>
               </button>

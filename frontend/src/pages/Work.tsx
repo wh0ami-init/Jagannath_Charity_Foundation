@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Layout from "../components/Layout";
 import PageHero from "../components/PageHero";
 import Reveal from "../components/Reveal";
@@ -6,36 +7,42 @@ import { DynamicImage } from "../lib/ImagesContext";
 const programmes = [
   {
     num: "01",
+    slug: "education-literacy",
     title: "Education & literacy",
     slot: "work-education",
     body: "Literacy is treated as a public good, not a privilege reserved for those who can already pay for it. Reading rooms, first-generation learner support, and practical help to schools already doing the hard work across the country.",
   },
   {
     num: "02",
+    slug: "health-family-welfare",
     title: "Health & family welfare",
     slot: "work-health",
     body: "Most families we meet do not lack courage. They lack a clear, nearby path to preventive care. Health camps, nutrition awareness and family wellbeing — modern public health, explained in the language of the household.",
   },
   {
     num: "03",
+    slug: "youth-skills-sport",
     title: "Youth skills & sport",
     slot: "work-education",
     body: "A district full of young people is not automatically a district full of livelihoods. Livelihood workshops, mentoring, and the Leva Sports Club Federation as a corridor for talent that has nowhere else to go.",
   },
   {
     num: "04",
+    slug: "women-livelihoods",
     title: "Women's livelihoods",
     slot: "work-livelihoods",
     body: "A household energy saving that a woman cannot control is not a livelihood. Self-help groups, livelihood training and leadership for women and girls.",
   },
   {
     num: "05",
+    slug: "environment-land",
     title: "Environment & land",
     slot: "work-health",
     body: "Climate work that cannot be walked to from a village is not climate work we will sign. Local greening, water and soil awareness, and community care for land.",
   },
   {
     num: "06",
+    slug: "solar-clean-energy",
     title: "Solar housing & clean energy",
     slot: "work-solar",
     body: "Traditional welfare hands over assistance. This model helps a family permanently reduce a recurring bill. Rooftop solar, cleaner cooking, women at the centre of the training.",
@@ -43,6 +50,30 @@ const programmes = [
 ];
 
 export default function Work() {
+  useEffect(() => {
+    const targetId = decodeURIComponent(window.location.hash.slice(1));
+    if (!targetId.startsWith("programme-")) return;
+
+    let frame = 0;
+    let clearTimer = 0;
+    frame = window.requestAnimationFrame(() => {
+      frame = window.requestAnimationFrame(() => {
+        const target = document.getElementById(targetId);
+        if (!target) return;
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        target.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "center" });
+        target.classList.add("is-highlighted");
+        clearTimer = window.setTimeout(() => target.classList.remove("is-highlighted"), 3000);
+      });
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(clearTimer);
+      document.getElementById(targetId)?.classList.remove("is-highlighted");
+    };
+  }, []);
+
   return (
     <Layout>
       <PageHero
@@ -58,9 +89,10 @@ export default function Work() {
           <Reveal
             as="article"
             key={p.num}
+            id={`programme-${p.slug}`}
             delay={Number(p.num) % 2 ? 0 : 0.12}
             direction={Number(p.num) % 2 ? "left" : "right"}
-            className="rounded-xl overflow-hidden border border-navy-900/10"
+            className="work-programme-card rounded-xl overflow-hidden border border-navy-900/10"
           >
             <DynamicImage
               slotKey={p.slot}

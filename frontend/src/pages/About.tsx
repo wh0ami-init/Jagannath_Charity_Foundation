@@ -36,6 +36,15 @@ const disciplines = [
   { title: "Women at the centre", body: "Information, income and a seat at the table help strengthen energy, savings, nutrition and children's schooling." },
 ];
 
+const focusAreas = [
+  { number: "01", slug: "education-literacy", title: "Education & literacy", detail: "Support for learning, literacy and schools." },
+  { number: "02", slug: "health-family-welfare", title: "Health & family welfare", detail: "Preventive care, nutrition awareness and family wellbeing." },
+  { number: "03", slug: "youth-skills-sport", title: "Youth skills & sport", detail: "Skills, mentoring and routes into opportunity." },
+  { number: "04", slug: "women-livelihoods", title: "Women’s livelihoods", detail: "Livelihood training and leadership for women and girls." },
+  { number: "05", slug: "environment-land", title: "Environment & land", detail: "Community care for local greening, water and soil." },
+  { number: "06", slug: "solar-clean-energy", title: "Solar housing & clean energy", detail: "Household solar and cleaner cooking initiatives." },
+];
+
 function TypewriterText({ text, reducedMotion }: { text: string; reducedMotion: boolean }) {
   const [visibleText, setVisibleText] = useState(reducedMotion ? text : "");
 
@@ -88,6 +97,35 @@ export default function About() {
             <dt className="text-navy-900/60">Provisional approval u/s 80G</dt><dd className="font-medium text-navy-950">URN AAFTJ8006QF20261 · Form 10G dated 07-09-2026 · valid TY 2026-27 to TY 2028-29</dd>
             <dt className="text-navy-900/60">MCA CSR registration</dt><dd className="font-medium text-navy-950">CSR00118119 · Form CSR-1 dated 21-09-2026 · SRN AC6085516 · ROC Delhi</dd>
           </dl>
+        </div>
+      </Reveal>
+
+      <Reveal as="section" className="about-focus wrap" aria-labelledby="about-focus-heading">
+        <div className="about-focus-heading">
+          <div>
+            <p className="eyebrow">Where we work</p>
+            <h2 id="about-focus-heading">Six connected areas of service</h2>
+          </div>
+          <p>Our charitable objects take shape through practical programmes that support people, households and the communities around them.</p>
+        </div>
+        <div className="about-focus-grid">
+          {focusAreas.map((area, index) => (
+            <motion.a
+              href={`/work#programme-${area.slug}`}
+              aria-label={`Explore ${area.title} programme`}
+              key={area.number}
+              className="about-focus-card"
+              initial={reducedMotion ? false : { opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.18 }}
+              transition={{ duration: reducedMotion ? 0 : 0.85, delay: reducedMotion ? 0 : index * 0.1, ease: [0.22, 0.7, 0.2, 1] }}
+            >
+              <span>{area.number}</span>
+              <h3>{area.title}</h3>
+              <p>{area.detail}</p>
+              <b aria-hidden="true">↗</b>
+            </motion.a>
+          ))}
         </div>
       </Reveal>
 
