@@ -1,10 +1,63 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import Layout from "../components/Layout";
 import PageHero from "../components/PageHero";
 import Reveal from "../components/Reveal";
 import { DynamicImage } from "../lib/ImagesContext";
 import { useSiteContent } from "../lib/SiteContentContext";
+
+gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollToPlugin);
+
+/* Distance from the top of the viewport (below the sticky header) where the
+   photo "docks" while it travels. Used for both start and end of the scrub. */
+const DOCK = 120;
+
+const credentialTabs = [
+  {
+    id: "educationist",
+    label: "An educationist who turned teaching into a public trust.",
+  },
+  { id: "appointments", label: "Selected appointments" },
+  { id: "books", label: "Books" },
+  { id: "recognitions", label: "Selected recognitions" },
+];
+
+const appointments = [
+  "Vice Chancellor, ICFAI University (current)",
+  "Vice Chancellor, Kalinga University, Raipur",
+  "Pro Chancellor, Singhania University",
+  "Secretary General, Confederation of Indian Universities",
+  "Director and Vice President, Manipal Academy of Higher Education and the Manipal Education and Medical Group",
+  "Registrar and Director of Distance Education, Sikkim Manipal University",
+  "Academic Registrar, International Medical and Technological University, Dar es Salaam",
+  "Global Chairman, UNAccc",
+];
+
+// TODO: add the real book titles here
+const books: string[] = [];
+
+const recognitions = [
+  "Recorded in the World Book of Records",
+  "Utkal Jyoti Award of the Government, for social service",
+];
+
+function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(
+    () => typeof window !== "undefined" && window.matchMedia(query).matches,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const onChange = () => setMatches(mq.matches);
+    onChange();
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, [query]);
+  return matches;
+}
 
 const tabs = [
   {
@@ -106,7 +159,13 @@ const organisationFacts = [
   ["Record", "DARPAN, NITI Aayog"],
 ];
 
-function TypewriterText({ text, reducedMotion }: { text: string; reducedMotion: boolean }) {
+function TypewriterText({
+  text,
+  reducedMotion,
+}: {
+  text: string;
+  reducedMotion: boolean;
+}) {
   const [visibleText, setVisibleText] = useState(reducedMotion ? text : "");
 
   useEffect(() => {
@@ -144,6 +203,111 @@ export default function About() {
   const [active, setActive] = useState("vision");
   const current = tabs.find((t) => t.id === active)!;
   const reducedMotion = useReducedMotion();
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const flyEnabled = isDesktop && !reducedMotion;
+  const [landed, setLanded] = useState(false);
+  const [credTab, setCredTab] = useState("educationist");
+
+  const flyerRef = useRef<HTMLDivElement>(null);
+  const leftSlotRef = useRef<HTMLDivElement>(null);
+  const rightSlotRef = useRef<HTMLDivElement>(null);
+  const tabsRef = useRef<HTMLElement>(null);
+
+  /* ---- The photo flight: intro (left) -> founder's dream section (right).
+     Scrubbed, so scrolling back up plays it in reverse automatically. ---- */
+  useGSAP(
+    () => {
+      const flyer = flyerRef.current;
+      const left = leftSlotRef.current;
+      const right = rightSlotRef.current;
+      if (!flyEnabled || !flyer || !left || !right) {
+        setLanded(false);
+        return;
+      }
+
+      const pageRect = (el: HTMLElement) => {
+        const r = el.getBoundingClientRect();
+        return {
+          x: r.left + window.scrollX,
+          y: r.top + window.scrollY,
+          w: r.width,
+        };
+      };
+
+      gsap.set(flyer, { transformOrigin: "0 0" });
+
+      const tl = gsap.timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: {
+          trigger: left,
+          start: `top ${DOCK}px`,
+          endTrigger: right,
+          end: `top ${DOCK}px`,
+          scrub: 1,
+          invalidateOnRefresh: true,
+        },
+        onUpdate: () => setLanded(tl.progress() > 0.985),
+      });
+
+      // vertical + scale: linear, so the photo stays docked while you scroll
+      tl.to(
+        flyer,
+        {
+          y: () => pageRect(right).y - pageRect(left).y,
+          scale: () => pageRect(right).w / pageRect(left).w,
+          duration: 1,
+        },
+        0,
+      );
+      // horizontal: slides across late, so it doesn't sweep over the text early
+      tl.to(
+        flyer,
+        {
+          x: () => pageRect(right).x - pageRect(left).x,
+          ease: "power3.in",
+          duration: 1,
+        },
+        0,
+      );
+
+      return () => setLanded(false);
+    },
+    { dependencies: [flyEnabled], revertOnUpdate: true },
+  );
+
+  // heights change when tabs switch -> re-measure the trigger positions
+  useEffect(() => {
+    if (!flyEnabled) return;
+    const id = window.setTimeout(() => ScrollTrigger.refresh(), 60);
+    return () => window.clearTimeout(id);
+  }, [credTab, active, flyEnabled]);
+
+  const goToDream = () => {
+    setActive("dream");
+    const right = rightSlotRef.current;
+    const section = tabsRef.current;
+    let y = 0;
+    if (flyEnabled && right) {
+      // exactly where the scrub ends, so the photo lands in its place
+      y = right.getBoundingClientRect().top + window.scrollY - DOCK + 2;
+    } else if (section) {
+      y = section.getBoundingClientRect().top + window.scrollY - 96;
+    }
+    const html = document.documentElement;
+    html.style.scrollBehavior = "auto"; // stop CSS smooth-scroll fighting GSAP
+    const restore = () => {
+      html.style.scrollBehavior = "";
+    };
+    gsap.to(window, {
+      scrollTo: { y, autoKill: true },
+      duration: reducedMotion ? 0 : 1.7,
+      ease: "power2.inOut",
+      onComplete: restore,
+      onInterrupt: restore,
+    });
+  };
+
+  const dreamTab = tabs.find((tab) => tab.id === "dream")!;
 
   return (
     <Layout>
@@ -309,8 +473,191 @@ export default function About() {
         </div>
       </Reveal>
 
-      <Reveal
-        as="section"
+      {/* ===== Founder introduction: photo sits LEFT, content on the right ===== */}
+      <section
+        className="founder-intro wrap"
+        aria-labelledby="founder-intro-title"
+      >
+        <div className="founder-intro-photo">
+          <div ref={leftSlotRef} className="founder-slot founder-slot--left">
+            {/* GSAP moves this wrapper. Motion's entrance lives on the child. */}
+            <div ref={flyerRef} className="founder-flyer">
+              <motion.div
+                className="about-founder-visual"
+                initial={reducedMotion ? false : { opacity: 0, scale: 0.975 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{
+                  duration: reducedMotion ? 0 : 1.2,
+                  ease: [0.22, 0.7, 0.2, 1],
+                }}
+              >
+                <DynamicImage
+                  slotKey="about-founder-photo"
+                  alt="Dr Jagannath Patnaik, founder of Jagannath Foundation"
+                  className="about-founder-image"
+                />
+                <svg
+                  className="about-founder-frame"
+                  aria-hidden="true"
+                  viewBox="0 0 100 100"
+                  preserveAspectRatio="none"
+                >
+                  <path
+                    d="M50 1 H99 V99 H1 V1 H50"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    vectorEffect="non-scaling-stroke"
+                  />
+                </svg>
+                <AnimatePresence>
+                  {flyEnabled && landed && active === "dream" && (
+                    <motion.div
+                      className="founder-dream-overlay"
+                      key="founder-dream-overlay"
+                      initial={{ opacity: 0, y: 22, scale: 0.985 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 14, scale: 0.99 }}
+                      transition={{ duration: 0.78, ease: [0.22, 0.7, 0.2, 1] }}
+                    >
+                      <p className="founder-dream-kicker">
+                        The founder's dream
+                      </p>
+                      <h3>{dreamTab.title}</h3>
+                      <TypewriterText
+                        text={dreamTab.body}
+                        reducedMotion={Boolean(reducedMotion)}
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+
+        <Reveal as="div" className="founder-intro-copy" direction="right">
+          <p className="eyebrow">Founder &amp; Managing Trustee</p>
+          <h2 id="founder-intro-title">Dr Jagannath Patnaik</h2>
+          <blockquote className="founder-quote">
+            “Service is not a performance. It is the daily work of making
+            education reachable, health understandable, and young people
+            employable.”
+          </blockquote>
+          <p>
+            Dr Patnaik is a teacher of positive living and purposeful leadership
+            — a practical discipline of calm, work and service. He founded the
+            trust to turn that teaching into classrooms, health awareness, youth
+            skills, women’s agency and care for the living environment across
+            the country, without private profit. The picture he could not put
+            down — a child in school, a bill that no longer ate the month — is
+            the duty the Foundation now holds.
+          </p>
+
+          <button
+            type="button"
+            className="founder-dream-button"
+            onClick={goToDream}
+          >
+            Know Founder's Dream <span aria-hidden="true">↓</span>
+          </button>
+
+          <div className="founder-credentials">
+            <div
+              className="founder-cred-tabs"
+              role="tablist"
+              aria-label="Founder background"
+            >
+              {credentialTabs.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={credTab === t.id}
+                  aria-controls="founder-cred-panel"
+                  onClick={() => setCredTab(t.id)}
+                  className="founder-cred-tab"
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            <div
+              className="founder-cred-panel"
+              id="founder-cred-panel"
+              role="tabpanel"
+            >
+              {credTab === "educationist" && (
+                <>
+                  <p>
+                    Dr Patnaik is a teacher of positive living and purposeful
+                    leadership, a distinguished academician, author and
+                    education administrator. His career has been spent building
+                    and running universities, institutes and skill programmes in
+                    India and overseas — medical, dentistry, engineering,
+                    management and public schooling — from concept to
+                    commissioning.
+                  </p>
+                  <p>
+                    He is currently Vice Chancellor of ICFAI University. Earlier
+                    appointments include Vice Chancellor of Kalinga University,
+                    Raipur; Pro Chancellor of Singhania University; Secretary
+                    General of the Confederation of Indian Universities;
+                    Director and Vice President of the Manipal Academy of Higher
+                    Education and the Manipal Education and Medical Group;
+                    Registrar and Director of Distance Education at Sikkim
+                    Manipal University; and Academic Registrar of the
+                    International Medical and Technological University, Dar es
+                    Salaam. He also serves as Global Chairman of UNAccc — a
+                    strategic partnership that will enhance the Foundation’s
+                    climate and household-energy objectives.
+                  </p>
+                  <p>
+                    He has advised institutions including the British Medical
+                    Journal, the Pharmaceutical Advisory Forum of the Government
+                    of India, Aptech Computer Education, the Society of Business
+                    Practitioners (England), ICFAI University projects, and the
+                    International Management Centre, Australia. His public work
+                    has long sat at the junction of education, youth
+                    livelihoods, women’s agency and human rights.
+                  </p>
+                </>
+              )}
+              {credTab === "appointments" && (
+                <ul>
+                  {appointments.map((a) => (
+                    <li key={a}>{a}</li>
+                  ))}
+                </ul>
+              )}
+              {credTab === "books" &&
+                (books.length ? (
+                  <ul>
+                    {books.map((b) => (
+                      <li key={b}>{b}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>Publication details will be added soon.</p>
+                ))}
+              {credTab === "recognitions" && (
+                <ul>
+                  {recognitions.map((r) => (
+                    <li key={r}>{r}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        </Reveal>
+      </section>
+
+      <section
+        ref={tabsRef}
+        id="founder-dream"
         className="about-content wrap py-16 grid lg:grid-cols-[2fr_1fr] gap-10"
       >
         <div className="about-information">
@@ -374,84 +721,22 @@ export default function About() {
             ) : (
               <p>
                 {current.id === "dream"
-                  ? "The founder's early experience of standing alongside people shaped a belief that service to people is service to God—and the purpose behind this Foundation."
+                  ? flyEnabled
+                    ? "The founder's early experience of standing alongside people shaped a belief that service to people is service to God—and the purpose behind this Foundation."
+                    : dreamTab.body
                   : current.body}
               </p>
             )}
           </motion.div>
         </div>
         <aside className="about-founder-column">
-          <motion.div
-            className="about-founder-visual"
-            initial={
-              reducedMotion ? false : { opacity: 0, x: -24, scale: 0.975 }
-            }
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{
-              duration: reducedMotion ? 0 : 1.45,
-              delay: reducedMotion ? 0 : 0.22,
-              ease: [0.22, 0.7, 0.2, 1],
-            }}
-          >
-            <DynamicImage
-              slotKey="about-founder-photo"
-              alt="Dr Jagannath Patnaik, founder of Jagannath Foundation"
-              className="about-founder-image"
-            />
-            <motion.svg
-              className="about-founder-frame"
+          {flyEnabled && (
+            <div
+              ref={rightSlotRef}
+              className="founder-slot founder-slot--right"
               aria-hidden="true"
-              viewBox="0 0 100 100"
-              preserveAspectRatio="none"
-            >
-              <motion.path
-                d="M50 1 H99 V99 H1 V1 H50"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                vectorEffect="non-scaling-stroke"
-                initial={reducedMotion ? false : { pathLength: 0 }}
-                whileInView={{ pathLength: 1 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{
-                  duration: reducedMotion ? 0 : 1.7,
-                  delay: reducedMotion ? 0 : 1.55,
-                  ease: [0.22, 0.7, 0.2, 1],
-                }}
-              />
-            </motion.svg>
-            <AnimatePresence>
-              {active === "dream" && (
-                <motion.div
-                  className="founder-dream-overlay"
-                  key="founder-dream-overlay"
-                  initial={
-                    reducedMotion ? false : { opacity: 0, y: 22, scale: 0.985 }
-                  }
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={
-                    reducedMotion
-                      ? undefined
-                      : { opacity: 0, y: 14, scale: 0.99 }
-                  }
-                  transition={{
-                    duration: reducedMotion ? 0 : 0.78,
-                    ease: [0.22, 0.7, 0.2, 1],
-                  }}
-                >
-                  <p className="founder-dream-kicker">The founder's dream</p>
-                  <h3>{tabs.find((tab) => tab.id === "dream")!.title}</h3>
-                  <TypewriterText
-                    text={tabs.find((tab) => tab.id === "dream")!.body}
-                    reducedMotion={Boolean(reducedMotion)}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
+            />
+          )}
           <a
             href="/assets/organization-profile.pdf"
             className="about-profile-download"
@@ -459,7 +744,7 @@ export default function About() {
             Download Organisation Profile (PDF)
           </a>
         </aside>
-      </Reveal>
+      </section>
     </Layout>
   );
 }
