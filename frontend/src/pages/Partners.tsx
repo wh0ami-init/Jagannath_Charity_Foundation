@@ -93,6 +93,7 @@ export default function Partners() {
       <div className="partners-page">
         <PageHero
           theme="work"
+          motif="partners"
           eyebrow="Work & partners"
           title="Partner / Sponsor Index"
           description="A public list of organisations that walk with the Foundation — as programme partners or as sponsors of a project. Names are added when an agreement is signed, not when a conversation begins."
@@ -135,7 +136,7 @@ export default function Partners() {
         <section className="partner-index-section py-8 md:py-12" aria-label="Partner and sponsor categories">
           <div className="wrap">
             {partnerGroups.map((group, groupIndex) => (
-              <Reveal as="article" duration={1.7} delayOffset={0.25} start="top 82%" delay={groupIndex * 0.14} className="partner-index-block" key={group.number}>
+              <Reveal as="article" duration={1.9} delayOffset={0.32} start="top 82%" delay={groupIndex * 0.18} direction={groupIndex % 2 ? "right" : "left"} className="partner-index-block" key={group.number}>
                 <header className="partner-index-heading grid gap-3 lg:grid-cols-[.72fr_1.28fr] lg:gap-16">
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-[.18em] text-orange-600">{group.number} · Partnership category</p>

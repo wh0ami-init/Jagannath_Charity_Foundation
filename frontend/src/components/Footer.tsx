@@ -8,6 +8,7 @@ const foundationLinks = [
   ["Our impact", "/impact"],
   ["Our people", "/team"],
   ["Photo gallery", "/gallery"],
+  ["Community portal", "/services"],
 ] as const;
 
 const takePartLinks = [

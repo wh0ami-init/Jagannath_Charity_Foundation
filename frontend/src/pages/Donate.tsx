@@ -31,7 +31,7 @@ export default function Donate() {
 
   return (
     <Layout hideNewsletter>
-      <PageHero theme="donate" eyebrow="Donate" title="Give to a named cause, not a vague fund." description="Transfer to the Foundation's Yes Bank savings account, or record a pledge. Income can be applied only to the objects of the trust." />
+      <PageHero theme="donate" motif="giving" eyebrow="Donate" title="Give to a named cause, not a vague fund." description="Transfer to the Foundation's Yes Bank savings account, or record a pledge. Income can be applied only to the objects of the trust." />
 
       <Reveal as="section" className="wrap py-16 grid lg:grid-cols-2 gap-12">
         <div>

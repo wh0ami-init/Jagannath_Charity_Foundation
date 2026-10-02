@@ -45,7 +45,7 @@ export type SiteContent = Record<string, { label: string; page: string; value: s
 
 export interface FormSubmission {
   id: number;
-  kind: "contact" | "volunteer" | "pledge" | "newsletter";
+  kind: "contact" | "volunteer" | "pledge" | "newsletter" | "service";
   name: string;
   email: string;
   phone: string;

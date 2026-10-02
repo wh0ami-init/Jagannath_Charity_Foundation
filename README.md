@@ -5,11 +5,12 @@ Public website and private administration console for Jagannath Charity Foundati
 ## Features
 
 - Public pages for the Foundation's programmes, team, gallery, contact, volunteering and pledge notes.
+- A community service desk for membership, beneficiary, opportunity, complaint, donor, project, event and record enquiries. Requests are stored in the same private admin inbox as other public forms.
 - Database-backed admin login with bcrypt password hashes; credentials are never configured in source code or hosting environment variables.
 - Admin tools for editing selected site copy, replacing managed images and handling form submissions.
 - Vercel frontend and Railway API deployment support.
 
-Pledge forms record notes only. The site does not process payments or automatically send newsletter messages. Form submissions contain personal information; restrict database and hosting access and delete data according to the Foundation's retention policy.
+Pledge forms record notes only. The site does not process payments, issue or verify certificates, create member accounts, check application status, or automatically send newsletter messages. Community service requests are enquiries for staff follow-up. Form submissions contain personal information; restrict database and hosting access and delete data according to the Foundation's retention policy.
 
 ## Architecture
 
@@ -151,6 +152,8 @@ Vite embeds `VITE_API_URL` at build time. Redeploy the frontend after changing i
 | `POST` | `/api/submissions` | Public |
 | `GET` | `/api/submissions` | Admin |
 | `DELETE` | `/api/submissions/{submission_id}` | Admin |
+
+Public submission kinds include `contact`, `volunteer`, `pledge`, `newsletter`, and `service`. The `service` kind uses the `subject` field for the selected community service and is visible in the admin inbox filter and CSV export.
 
 ## Repository layout
 

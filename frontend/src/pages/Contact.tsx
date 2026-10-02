@@ -26,7 +26,7 @@ export default function Contact() {
 
   return (
     <Layout hideNewsletter>
-      <PageHero theme="contact" eyebrow="Contact" title="Trust headquarters, Bhubaneswar." description="Programme questions, volunteering, membership and press all come to the same desk. If it is urgent, call. If it can wait, use the form." />
+      <PageHero theme="contact" motif="place" eyebrow="Contact" title="Trust headquarters, Bhubaneswar." description="Programme questions, volunteering, membership and press all come to the same desk. If it is urgent, call. If it can wait, use the form." />
 
       <Reveal as="section" className="wrap py-16 grid lg:grid-cols-2 gap-12">
         <div className="contact-details-column">

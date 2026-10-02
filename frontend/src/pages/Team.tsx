@@ -217,7 +217,8 @@ function PersonCard({
   return (
     <Reveal
       as="article"
-      delay={(index % 4) * 0.09}
+      direction={index % 2 ? "right" : "left"}
+      delay={(index % 4) * 0.12}
       className="team-card team-profile-card rounded-xl border border-navy-900/10 overflow-hidden"
     >
       {showImage ? (
@@ -297,6 +298,7 @@ export default function Team() {
     <Layout>
       <PageHero
         theme="team"
+        motif="leadership"
         eyebrow="Key leadership"
         title="Who holds the trust, and who tests the work."
         description="The settlor and managing trustee, the founder trustees, the Board of Management and the Board of Advisors govern the Foundation with clear policy and strategic planning."

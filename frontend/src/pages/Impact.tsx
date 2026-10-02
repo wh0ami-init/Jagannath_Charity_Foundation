@@ -12,7 +12,7 @@ const stats = [
 export default function Impact() {
   return (
     <Layout>
-      <PageHero theme="impact" eyebrow="Impact" title="We measure what a household still has next year." description="The Foundation is young. We will not invent a wall of beneficiaries. We will name the problem in the country plainly, and the philosophy we work by." />
+      <PageHero theme="impact" motif="measure" eyebrow="Impact" title="We measure what a household still has next year." description="The Foundation is young. We will not invent a wall of beneficiaries. We will name the problem in the country plainly, and the philosophy we work by." />
 
       <Reveal as="section" className="wrap py-16">
         <h2 className="text-2xl font-serif-heading font-bold text-navy-950 max-w-2xl">
@@ -26,7 +26,7 @@ export default function Impact() {
 
         <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((s) => (
-            <Reveal as="article" key={s.label} delay={stats.indexOf(s) * 0.06} className="rounded-xl border border-navy-900/10 p-6 text-center">
+            <Reveal as="article" key={s.label} delay={stats.indexOf(s) * 0.1} direction={stats.indexOf(s) % 2 ? "right" : "left"} className="rounded-xl border border-navy-900/10 p-6 text-center">
               <p className="text-3xl font-serif-heading font-bold text-orange-500">{s.value}</p>
               <p className="mt-2 text-sm text-navy-900/70">{s.label}</p>
             </Reveal>

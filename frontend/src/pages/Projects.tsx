@@ -117,6 +117,7 @@ export default function Projects() {
       <div className="projects-page">
       <PageHero
         theme="work"
+        motif="projects"
         eyebrow="Projects · Ideas for lasting care"
         title="Places and possibilities, built around people."
         description="Explore the initiatives we are developing to make dignity, connection and everyday support part of community life."
@@ -175,7 +176,7 @@ export default function Projects() {
           </Reveal>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {projects.map((project, index) => (
-              <Reveal as="article" key={project.title} duration={2.1} delayOffset={0.3} start="top 80%" delay={(index % 3) * 0.14} className="flex h-full flex-col rounded-xl border border-navy-900/10 bg-white/75 p-6 shadow-[0_12px_34px_rgba(24,55,47,.05)] transition-transform duration-300 hover:-translate-y-1">
+              <Reveal as="article" key={project.title} duration={2.1} delayOffset={0.3} start="top 80%" delay={(index % 3) * 0.14} direction={index % 2 ? "right" : "left"} className="flex h-full flex-col rounded-xl border border-navy-900/10 bg-white/75 p-6 shadow-[0_12px_34px_rgba(24,55,47,.05)] transition-transform duration-300 hover:-translate-y-1">
                 <span className="text-sm font-semibold text-orange-600">{String(index + 1).padStart(2, "0")}</span>
                 <h3 className="mt-3 font-serif-heading text-xl font-bold leading-snug text-navy-950">{project.title}</h3>
                 <p className="project-summary-copy mt-3 flex-1 text-navy-900/70">{project.description}</p>
@@ -227,7 +228,7 @@ export default function Projects() {
           </Reveal>
           <div className="grid gap-3 sm:grid-cols-2">
             {projectSteps.map((step, index) => (
-              <Reveal as="article" key={step.number} duration={2.1} delayOffset={0.3} start="top 80%" delay={index * 0.14} className="rounded-xl border border-navy-900/10 bg-white/70 p-6">
+              <Reveal as="article" key={step.number} duration={2.1} delayOffset={0.3} start="top 80%" delay={index * 0.14} direction={index % 2 ? "right" : "left"} className="rounded-xl border border-navy-900/10 bg-white/70 p-6">
                 <span className="font-serif-heading text-2xl font-bold text-orange-600">{step.number}</span>
                 <h3 className="mt-3 font-serif-heading text-xl font-bold text-navy-950">{step.title}</h3>
                 <p className="project-step-copy mt-2 leading-6 text-navy-900/70">{step.description}</p>

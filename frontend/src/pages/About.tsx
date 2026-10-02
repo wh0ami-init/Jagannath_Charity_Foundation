@@ -69,6 +69,7 @@ export default function About() {
     <Layout>
       <PageHero
         theme="about"
+        motif="origin"
         eyebrow="About the Foundation"
         title={siteContent.about_heading?.value || "Helping hands. Positive living. A trust held for the people."}
         description={siteContent.about_intro?.value || "Jagannath Foundation was created on 17 August 2026. It is irrevocable. Its income and property can be applied only to the objects of the trust. There is no private profit."}
@@ -111,12 +112,12 @@ export default function About() {
               </button>
             ))}
           </div>
-          <motion.div className="about-tab-panel" key={current.id} id="about-tab-panel" role="tabpanel" aria-live={current.id === "dream" ? "off" : "polite"} initial={{ opacity: 0, y: reducedMotion ? 0 : 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reducedMotion ? 0 : 0.82, ease: [0.22, 0.7, 0.2, 1] }}>
+          <motion.div className="about-tab-panel" key={current.id} id="about-tab-panel" role="tabpanel" aria-live={current.id === "dream" ? "off" : "polite"} initial={{ opacity: 0, y: reducedMotion ? 0 : 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reducedMotion ? 0 : 1.05, ease: [0.22, 0.7, 0.2, 1] }}>
             <h3>{current.id === "dream" ? "A lifelong conviction" : current.title}</h3>
             {current.id === "approach" ? (
               <div className="discipline-grid">
                 {disciplines.map((discipline, index) => (
-                  <motion.article key={discipline.title} initial={reducedMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reducedMotion ? 0 : 0.7, delay: reducedMotion ? 0 : 0.12 + index * 0.12 }}>
+                  <motion.article key={discipline.title} initial={reducedMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reducedMotion ? 0 : 0.9, delay: reducedMotion ? 0 : 0.18 + index * 0.16 }}>
                     <span>{String(index + 1).padStart(2, "0")}</span>
                     <h4>{discipline.title}</h4>
                     <p>{discipline.body}</p>
@@ -131,10 +132,10 @@ export default function About() {
         <aside className="about-founder-column">
           <motion.div
             className="about-founder-visual"
-            initial={reducedMotion ? false : { opacity: 0, scale: 0.975 }}
+            initial={reducedMotion ? false : { opacity: 0, x: -24, scale: 0.975 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: reducedMotion ? 0 : 1.15, delay: reducedMotion ? 0 : 0.15, ease: [0.22, 0.7, 0.2, 1] }}
+            transition={{ duration: reducedMotion ? 0 : 1.45, delay: reducedMotion ? 0 : 0.22, ease: [0.22, 0.7, 0.2, 1] }}
           >
           <DynamicImage
             slotKey="about-founder-photo"
@@ -153,7 +154,7 @@ export default function About() {
                 initial={reducedMotion ? false : { pathLength: 0 }}
                 whileInView={{ pathLength: 1 }}
                 viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: reducedMotion ? 0 : 1.5, delay: reducedMotion ? 0 : 1.45, ease: [0.22, 0.7, 0.2, 1] }}
+                transition={{ duration: reducedMotion ? 0 : 1.7, delay: reducedMotion ? 0 : 1.55, ease: [0.22, 0.7, 0.2, 1] }}
               />
             </motion.svg>
             <AnimatePresence>

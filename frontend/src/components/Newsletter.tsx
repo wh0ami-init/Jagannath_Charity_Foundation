@@ -46,7 +46,7 @@ export default function Newsletter() {
           initial={reducedMotion ? false : { opacity: 0, x: 52 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: reducedMotion ? 0 : 1.1, delay: reducedMotion ? 0 : 0.18, ease: [0.22, 0.7, 0.2, 1] }}
+          transition={{ duration: reducedMotion ? 0 : 1.35, delay: reducedMotion ? 0 : 0.24, ease: [0.22, 0.7, 0.2, 1] }}
         >
           {submitted ? (
             <p className="form-success text-sm" role="status">Your update request is saved. Programme emails are not sent automatically yet.</p>

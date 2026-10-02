@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Link } from "wouter";
 import Layout from "../components/Layout";
 import Reveal from "../components/Reveal";
@@ -12,28 +12,28 @@ const workAreas = [
     theme: "learning",
     slot: "work-education",
     label: "Education & literacy",
-    body: "Learning builds possibility. We work to support access to education and the conditions that help children stay and thrive.",
+    body: "Learning support that helps children stay in school and thrive.",
   },
   {
     title: "Care within reach",
     theme: "care",
     slot: "work-health",
     label: "Health & family welfare",
-    body: "Stronger families begin with wellbeing. Community health and family support can help people meet each day with greater security.",
+    body: "Community health and family support, close to where people live.",
   },
   {
     title: "Skills into livelihoods",
     theme: "livelihood",
     slot: "work-livelihoods",
     label: "Women's livelihoods",
-    body: "When women can build skills, income and confidence, the benefits reach across their families and communities.",
+    body: "Skills, income and leadership opportunities for women and girls.",
   },
   {
     title: "Energy for everyday life",
     theme: "energy",
     slot: "work-solar",
     label: "Clean energy",
-    body: "Reliable household energy can ease daily burdens and give families more time, comfort and choice.",
+    body: "Cleaner, more reliable energy for everyday household life.",
   },
 ];
 
@@ -84,35 +84,30 @@ export default function Home() {
   const reducedMotion = useReducedMotion();
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const timer = window.setInterval(
-      () => setSlide((current) => (current + 1) % heroImages.length),
-      7000,
-    );
-    return () => window.clearInterval(timer);
-  }, []);
-  useEffect(() => {
-    if (reducedMotion) {
-      setHeroTextVisible(true);
-      return;
-    }
-    let hideTimer: number;
-    let showTimer: number;
-    const showText = () => {
-      setHeroTextVisible(true);
-      showTimer = window.setTimeout(() => {
+    let cycleTimer = 0;
+    let imageTimer = 0;
+    let returnTimer = 0;
+
+    const runCycle = () => {
+      cycleTimer = window.setTimeout(() => {
         setHeroTextVisible(false);
-        hideTimer = window.setTimeout(showText, 3600);
-      }, 3900);
+        imageTimer = window.setTimeout(() => {
+          setSlide((current) => (current + 1) % heroImages.length);
+        }, 850);
+        returnTimer = window.setTimeout(() => {
+          setHeroTextVisible(true);
+          runCycle();
+        }, 3850);
+      }, 7000);
     };
-    hideTimer = window.setTimeout(() => {
-      setHeroTextVisible(false);
-      showTimer = window.setTimeout(showText, 3600);
-    }, 4000);
+
+    runCycle();
     return () => {
-      window.clearTimeout(hideTimer);
-      window.clearTimeout(showTimer);
+      window.clearTimeout(cycleTimer);
+      window.clearTimeout(imageTimer);
+      window.clearTimeout(returnTimer);
     };
-  }, [reducedMotion]);
+  }, []);
   const text = (key: string, fallback: string) =>
     content[key]?.value || fallback;
   const heroTitle = text(
@@ -140,19 +135,15 @@ export default function Home() {
           <div className="hero-shade" />
         </div>
         <div className="hero-copy wrap">
+          <AnimatePresence mode="wait" initial={false}>
+          {heroTextVisible && (
           <motion.div
+            key={slide}
             className="hero-copy-message"
-            initial={{ opacity: 1, x: 0, scale: 1, height: "auto" }}
-            animate={
-              reducedMotion || heroTextVisible
-                ? { opacity: 1, x: 0, scale: 1, height: "auto" }
-                : { opacity: 0, x: -48, scale: 0.94, height: 0 }
-            }
-            transition={{
-              duration: reducedMotion ? 0 : heroTextVisible ? 1.05 : 0.85,
-              ease: [0.22, 0.7, 0.2, 1],
-            }}
-            style={{ transformOrigin: "left center", overflow: "hidden" }}
+            initial={reducedMotion ? false : { opacity: 0, x: -30, filter: "blur(5px)" }}
+            animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+            exit={reducedMotion ? undefined : { opacity: 0, x: 30, filter: "blur(4px)" }}
+            transition={{ duration: reducedMotion ? 0 : 0.85, ease: [0.22, 0.7, 0.2, 1] }}
           >
             <p className="eyebrow eyebrow-light">
               <span />
@@ -182,10 +173,12 @@ export default function Home() {
             <p className="hero-lede">
               {text(
                 "home_intro",
-                "Jagannath Foundation works alongside communities through education, healthcare, livelihoods and clean energy, creating opportunities that last.",
+                "We work alongside communities through education, healthcare, livelihoods and clean energy, supporting opportunities people can carry forward.",
               )}
             </p>
           </motion.div>
+          )}
+          </AnimatePresence>
         </div>
         <div className="hero-actions">
           <Link
@@ -243,22 +236,19 @@ export default function Home() {
         </div>
       </section>
 
-      <Reveal
-        as="section"
-        className="home-facts"
-        aria-label="About the Foundation"
-      >
+      <section className="home-facts" aria-label="About the Foundation">
         <div className="wrap facts-inner">
-          <div className="facts-heading">
+          <Reveal className="facts-heading" direction="left">
             <p className="eyebrow"><span />A clear beginning</p>
-            <p className="facts-note">A young foundation. A public purpose. Results reported as programmes take shape.</p>
-          </div>
+            <p className="facts-note">A public trust working across six connected areas, with progress shared as programmes take shape.</p>
+          </Reveal>
           <div className="facts-list">
             {foundationFacts.map((fact, index) => (
               <Reveal
                 as="article"
                 className="fact-item"
-                delay={index * 0.18}
+                delay={index * 0.08}
+                direction={index === 1 ? "down" : "up"}
                 key={fact.value}
               >
                 <strong>{fact.value}</strong>
@@ -267,11 +257,11 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </Reveal>
+      </section>
 
-      <Reveal as="section" className="home-story">
+      <section className="home-story">
         <div className="wrap story-layout">
-          <div className="story-portrait">
+          <Reveal className="story-portrait" direction="left" duration={1.2}>
             <motion.div
               className="story-photo"
               initial={reducedMotion ? false : { opacity: 0 }}
@@ -324,75 +314,33 @@ export default function Home() {
               Dr Jagannath Patnaik
               <i>Founder, Settlor &amp; Managing Trustee</i>
             </div>
-          </div>
-          <div className="story-copy">
-            <motion.p className="eyebrow"
-              initial={reducedMotion ? false : { opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.55 }}
-              transition={{ duration: reducedMotion ? 0 : 0.9, delay: reducedMotion ? 0 : 0.18 }}
-            >
+          </Reveal>
+          <Reveal className="story-copy" direction="right" duration={1.1}>
+            <p className="eyebrow">
               <span />
               The Foundation
-            </motion.p>
-            <h2 aria-label={storyTitle}>
-              {storyTitle.split(/(\s+)/).map((part, index) => {
-                if (!part.trim()) return part;
-                return (
-                  <motion.span
-                    className="story-title-word"
-                    key={`${index}-${part}`}
-                    initial={reducedMotion ? false : { opacity: 0, y: 9 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, amount: 0.8 }}
-                    transition={{
-                      duration: reducedMotion ? 0 : 0.85,
-                      delay: reducedMotion ? 0 : index * 0.1,
-                      ease: [0.22, 0.7, 0.2, 1],
-                    }}
-                  >
-                    {part}
-                  </motion.span>
-                );
-              })}
-            </h2>
-            <motion.p className="body-large"
-              initial={reducedMotion ? false : { opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.55 }}
-              transition={{ duration: reducedMotion ? 0 : 1, delay: reducedMotion ? 0 : 0.3 }}
-            >
+            </p>
+            <h2>{storyTitle}</h2>
+            <p className="body-large">
               {text(
                 "home_about_body",
-                "Rooted in a belief that service to people is service to God, the Foundation works to widen access to education, strengthen family wellbeing and support communities to shape their own futures.",
+                "We support education, family wellbeing and livelihoods so communities can shape stronger futures for themselves.",
               )}
-            </motion.p>
-            <motion.blockquote className="story-mantra"
-              initial={reducedMotion ? false : { opacity: 0, y: 14 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.55 }}
-              transition={{ duration: reducedMotion ? 0 : 1.15, delay: reducedMotion ? 0 : 0.42 }}
-            >
+            </p>
+            <blockquote className="story-mantra">
               <span>“Manav seva is Ishwar seva”</span>
-              <small>Service to the human being is service to God.</small>
-            </motion.blockquote>
-            <motion.div
-              initial={reducedMotion ? false : { opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.55 }}
-              transition={{ duration: reducedMotion ? 0 : 0.9, delay: reducedMotion ? 0 : 0.56 }}
-            >
-              <Link href="/about" className="text-link">
-                Read our story <span>↗</span>
-              </Link>
-            </motion.div>
-          </div>
+              <small>Service to people is at the heart of our work.</small>
+            </blockquote>
+            <Link href="/about" className="text-link">
+              Read our story <span>↗</span>
+            </Link>
+          </Reveal>
         </div>
-      </Reveal>
+      </section>
 
-      <Reveal as="section" className="home-work">
+      <section className="home-work">
         <div className="wrap">
-          <div className="section-topline">
+          <Reveal className="section-topline" direction="down">
             <div>
               <p className="eyebrow">
                 <span />
@@ -404,18 +352,15 @@ export default function Home() {
                 Lasting possibility.
               </h2>
             </div>
-            <p>
-              Education, health, skills, livelihoods and clean energy are
-              connected in the life of a family. Our programmes begin with that
-              whole picture.
-            </p>
-          </div>
+            <p>Six connected areas of work, shaped around the everyday needs of people and families.</p>
+          </Reveal>
           <div className="work-grid">
             {workAreas.map((area, index) => (
               <Reveal
                 key={area.title}
                 className={`work-feature-reveal work-feature-reveal-${index + 1}`}
-                delay={index * 0.13}
+                delay={index * 0.08}
+                direction={index % 2 === 0 ? "left" : "right"}
               >
                 <Link
                   href="/work"
@@ -439,34 +384,31 @@ export default function Home() {
               </Reveal>
             ))}
           </div>
-          <div className="work-footer">
+          <Reveal className="work-footer" direction="up">
             <span className="work-count"><strong>4 / 6</strong> programme areas featured</span>
             <Link href="/work" className="text-link">
               Explore all our work <span>↗</span>
             </Link>
-          </div>
+          </Reveal>
         </div>
-      </Reveal>
+      </section>
 
-      <Reveal as="section" className="home-principles">
+      <section className="home-principles">
         <div className="wrap principles-layout">
-          <div className="principles-intro">
+          <Reveal className="principles-intro" direction="left">
             <p className="eyebrow eyebrow-light">
               <span />
               How we work
             </p>
             <h2>Good intentions need good practice.</h2>
-            <p>
-              We want each effort to respect people, meet a real need and hold
-              value beyond the day it begins.
-            </p>
+            <p>We listen first, work with local partners and focus on what can last.</p>
             <Link href="/impact" className="text-link">
               Our approach to impact <span>↗</span>
             </Link>
-          </div>
+          </Reveal>
           <div className="principles-list">
             {principles.map((item, index) => (
-              <Reveal as="article" key={item.number} delay={index * 0.14}>
+              <Reveal as="article" key={item.number} delay={index * 0.08} direction={index % 2 === 0 ? "right" : "left"}>
                 <span>{item.number}</span>
                 <div>
                   <h3>{item.title}</h3>
@@ -477,10 +419,10 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </Reveal>
+      </section>
 
-      <Reveal as="section" className="home-gallery wrap">
-        <Reveal className="gallery-heading" delay={0.12}>
+      <section className="home-gallery wrap">
+        <Reveal className="gallery-heading" delay={0.04} direction="down">
           <div>
             <p className="eyebrow">
               <span />
@@ -492,7 +434,7 @@ export default function Home() {
             <p>
               {text(
                 "home_gallery_body",
-                "A selection of courtesy meetings and moments of shared purpose with leaders and friends of the Foundation.",
+                "A few moments with leaders and partners who share a commitment to public service.",
               )}
             </p>
           </div>
@@ -505,7 +447,8 @@ export default function Home() {
             <Reveal
               key={photo.slot}
               className={`gallery-reveal gallery-reveal-${i + 1}`}
-              delay={i * 0.14}
+              delay={i * 0.08}
+              direction={i % 2 === 0 ? "left" : "right"}
             >
               <Link
                 href="/gallery"
@@ -520,7 +463,7 @@ export default function Home() {
             </Reveal>
           ))}
         </div>
-      </Reveal>
+      </section>
 
       <Reveal as="section" className="home-join">
         <div className="join-ornament" aria-hidden="true">

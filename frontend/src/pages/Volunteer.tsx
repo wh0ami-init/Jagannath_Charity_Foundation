@@ -26,7 +26,7 @@ export default function Volunteer() {
 
   return (
     <Layout hideNewsletter>
-      <PageHero theme="volunteer" eyebrow="Get involved" title="If you will return, there is a place for you." description="We need people who can sit in a classroom, keep a register, plant a line of trees, or brief a household on a solar roof — and come back the following month." />
+      <PageHero theme="volunteer" motif="volunteers" eyebrow="Get involved" title="If you will return, there is a place for you." description="We need people who can sit in a classroom, keep a register, plant a line of trees, or brief a household on a solar roof — and come back the following month." />
 
       <Reveal as="section" className="wrap py-16 grid lg:grid-cols-2 gap-12">
         <div className="space-y-8">
