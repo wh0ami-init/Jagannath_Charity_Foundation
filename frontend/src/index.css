@@ -6503,3 +6503,40 @@ h3,
     font-size: 14px;
   }
 }
+
+
+/* ===== Work page: programme photo + GSAP animation ===== */
+.work-programme-card .wp-photo {
+  position: relative;
+  height: clamp(190px, 28vw, 320px);
+  margin-bottom: clamp(20px, 2.4vw, 32px);
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--forest);
+}
+
+.work-programme-card .wp-photo::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(8, 27, 23, .04) 40%, rgba(8, 27, 23, .38) 100%);
+}
+
+.work-programme-card .wp-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  will-change: transform;
+}
+
+.work-programme-card .wp-badge {
+  z-index: 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .work-programme-card .wp-img {
+    transform: none !important;
+  }
+}

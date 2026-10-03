@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
 import { fetchImages, ImageSlot, API_URL } from "./api";
 
 interface ImagesContextValue {
@@ -65,6 +71,12 @@ export function DynamicImage({
     "home-hero-livelihoods": "/images/hero-livelihoods.jpg",
     "home-hero-solar": "/images/hero-solar.jpg",
     "gallery-cover": "/images/gallery-cover.jpg",
+    "work-education": "/images/hero-education.jpg",
+    "work-health": "/images/hero-health.jpg",
+    "work-youth": "/images/hero-education.jpg",
+    "work-livelihoods": "/images/hero-livelihoods.jpg",
+    "work-environment": "/images/hero-solar.jpg",
+    "work-solar": "/images/hero-solar.jpg",
     "about-founder-photo": "/images/founder-jagannath.jpg",
     "team-jagannath-patnaik": "/images/founder-jagannath.jpg",
     "team-shrabani-patnaik": "/images/team-shrabani-patnaik.jpg",
@@ -76,15 +88,16 @@ export function DynamicImage({
     "team-reema-diddee": "/images/reema-diddee.jpg",
     "team-lhamu-tshering-tamang": "/images/lhamu-tshering-tamang.jpg",
   };
-  const fallbackSrc = fallbackAssets[slotKey] || (slotKey.startsWith("gallery-") ? `/images/${slotKey}.jpg` : undefined);
+  const fallbackSrc =
+    fallbackAssets[slotKey] ||
+    (slotKey.startsWith("gallery-") ? `/images/${slotKey}.jpg` : undefined);
 
   if (!slot && !fallbackSrc) {
     return (
       <div
         className={`${className || ""} image-fallback ${slotKey === "site-logo" ? "logo-fallback" : ""}`}
         aria-hidden="true"
-      >
-      </div>
+      ></div>
     );
   }
 
@@ -93,9 +106,16 @@ export function DynamicImage({
       src={slot ? `${API_URL}${slot.url}` : fallbackSrc}
       alt={alt ?? slot?.alt_text ?? ""}
       className={className}
-      loading={slotKey.startsWith("home-hero-") || slotKey === "site-logo" || slotKey === "gallery-cover" ? "eager" : "lazy"}
+      loading={
+        slotKey.startsWith("home-hero-") ||
+        slotKey === "site-logo" ||
+        slotKey === "gallery-cover"
+          ? "eager"
+          : "lazy"
+      }
       onError={(event) => {
-        if (!fallbackSrc || event.currentTarget.src.endsWith(fallbackSrc)) return;
+        if (!fallbackSrc || event.currentTarget.src.endsWith(fallbackSrc))
+          return;
         event.currentTarget.src = fallbackSrc;
       }}
     />

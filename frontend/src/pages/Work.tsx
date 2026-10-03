@@ -1,7 +1,23 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Layout from "../components/Layout";
 import PageHero from "../components/PageHero";
 import Reveal from "../components/Reveal";
+import { DynamicImage } from "../lib/ImagesContext";
+
+gsap.registerPlugin(useGSAP, ScrollTrigger);
+
+/* which photo slot each programme uses (admin panel can replace them) */
+const photoSlot: Record<string, string> = {
+  "education-literacy": "work-education",
+  "health-family-welfare": "work-health",
+  "youth-skills-sport": "work-youth",
+  "women-livelihoods": "work-livelihoods",
+  "environment-land": "work-environment",
+  "solar-clean-energy": "work-solar",
+};
 
 const programmes = [
   {
@@ -120,6 +136,152 @@ const programmes = [
   },
 ];
 
+type Programme = (typeof programmes)[number];
+
+function ProgrammeCard({ p, index }: { p: Programme; index: number }) {
+  const card = useRef<HTMLElement>(null);
+  const fromRight = index % 2 === 1;
+
+  useGSAP(
+    () => {
+      const el = card.current;
+      if (!el) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+      const q = gsap.utils.selector(el);
+
+      // 1) the whole card rises in once, when it is 85% down the screen
+      const tl = gsap.timeline({
+        defaults: { ease: "power3.out" },
+        scrollTrigger: { trigger: el, start: "top 85%", once: true },
+      });
+      tl.from(el, { autoAlpha: 0, y: 56, duration: 0.9 })
+        // 2) the photo is "uncovered" like a curtain, while it zooms out
+        .fromTo(
+          q(".wp-photo"),
+          { clipPath: fromRight ? "inset(0 0 0 100%)" : "inset(0 100% 0 0)" },
+          { clipPath: "inset(0 0% 0 0%)", duration: 1.3, ease: "power4.inOut" },
+          0.1,
+        )
+        .fromTo(
+          q(".wp-img"),
+          { scale: 1.4 },
+          { scale: 1.12, duration: 1.8, ease: "power2.out" },
+          0.1,
+        )
+        .from(
+          q(".wp-badge"),
+          { autoAlpha: 0, scale: 0.6, duration: 0.7, ease: "back.out(1.8)" },
+          0.9,
+        )
+        // 3) text comes in one by one (same fonts, same sizes - only movement)
+        .from(
+          q(".wp-text > *"),
+          { autoAlpha: 0, y: 26, duration: 0.8, stagger: 0.09 },
+          0.55,
+        )
+        // 4) the side box and its list items
+        .from(
+          q(".wp-aside"),
+          { autoAlpha: 0, x: fromRight ? -30 : 30, duration: 0.9 },
+          0.75,
+        )
+        .from(
+          q(".wp-aside li"),
+          { autoAlpha: 0, x: 18, duration: 0.6, stagger: 0.08 },
+          1.0,
+        );
+
+      // 5) parallax: photo moves slowly while you scroll past
+      gsap.fromTo(
+        q(".wp-img"),
+        { yPercent: -7 },
+        {
+          yPercent: 7,
+          ease: "none",
+          scrollTrigger: {
+            trigger: el,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 0.6,
+          },
+        },
+      );
+    },
+    { scope: card },
+  );
+
+  return (
+    <article
+      ref={card}
+      id={`programme-${p.slug}`}
+      className="work-programme-card rounded-2xl border border-navy-900/10 bg-white p-5 shadow-[0_12px_36px_rgba(24,55,47,.045)] sm:p-7 lg:p-8"
+    >
+      <div className="wp-photo">
+        <DynamicImage
+          slotKey={photoSlot[p.slug]}
+          alt={p.title}
+          className="wp-img"
+        />
+        <span className="wp-badge work-index">{p.num}</span>
+      </div>
+
+      <div className="grid gap-7 lg:grid-cols-[1.02fr_.98fr] lg:gap-9">
+        <div className="wp-text py-1">
+          <p className="mb-2 text-sm font-semibold tracking-wide text-orange-600">
+            {p.num} <span className="text-navy-900/35">/ 06</span>
+          </p>
+          <h2 className="font-serif-heading text-2xl font-bold text-navy-950 sm:text-3xl">
+            {p.title}
+          </h2>
+          <p className="mt-4 text-lg font-semibold leading-7 text-navy-950">
+            {p.lead}
+          </p>
+          <div className="mt-4 space-y-4 text-sm leading-7 text-navy-900/70 sm:text-base">
+            {p.paragraphs.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
+        </div>
+
+        <aside
+          className="wp-aside rounded-xl border border-navy-900/10 bg-[#f8f7f2] p-5 sm:p-6"
+          aria-label={`${p.title} potential activities and intended audience`}
+        >
+          <h3 className="font-serif-heading text-xl font-semibold text-navy-950">
+            Potential areas of work
+          </h3>
+          <ul className="mt-3 divide-y divide-navy-900/10">
+            {p.activities.map((activity) => (
+              <li
+                key={activity}
+                className="py-3 text-sm leading-6 text-navy-900/75"
+              >
+                {activity}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-4 text-sm leading-6 text-navy-900/75">
+            <strong className="font-semibold text-navy-950">
+              Intended focus.{" "}
+            </strong>
+            {p.audience}
+          </p>
+          <a
+            href="/contact"
+            className="mt-5 inline-flex min-h-11 items-center rounded-full border border-navy-900/40 px-5 text-sm font-medium text-navy-950 transition-colors hover:border-orange-600 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+          >
+            Ask about this programme{" "}
+            <span className="ml-2" aria-hidden="true">
+              ↗
+            </span>
+          </a>
+        </aside>
+      </div>
+    </article>
+  );
+}
+
 export default function Work() {
   useEffect(() => {
     const targetId = decodeURIComponent(window.location.hash.slice(1));
@@ -181,68 +343,8 @@ export default function Work() {
         className="wrap space-y-7 py-16 md:space-y-9 md:py-20"
         aria-label="Programme areas"
       >
-        {programmes.map((p) => (
-          <Reveal
-            as="article"
-            key={p.num}
-            id={`programme-${p.slug}`}
-            delay={Number(p.num) % 2 ? 0 : 0.12}
-            direction={Number(p.num) % 2 ? "left" : "right"}
-            className="work-programme-card rounded-2xl border border-navy-900/10 bg-white p-5 shadow-[0_12px_36px_rgba(24,55,47,.045)] sm:p-7 lg:p-8"
-          >
-            <div className="grid gap-7 lg:grid-cols-[1.02fr_.98fr] lg:gap-9">
-              <div className="py-1">
-                <p className="mb-2 text-sm font-semibold tracking-wide text-orange-600">
-                  {p.num} <span className="text-navy-900/35">/ 06</span>
-                </p>
-                <h2 className="font-serif-heading text-2xl font-bold text-navy-950 sm:text-3xl">
-                  {p.title}
-                </h2>
-                <p className="mt-4 text-lg font-semibold leading-7 text-navy-950">
-                  {p.lead}
-                </p>
-                <div className="mt-4 space-y-4 text-sm leading-7 text-navy-900/70 sm:text-base">
-                  {p.paragraphs.map((paragraph) => (
-                    <p key={paragraph}>{paragraph}</p>
-                  ))}
-                </div>
-              </div>
-
-              <aside
-                className="rounded-xl border border-navy-900/10 bg-[#f8f7f2] p-5 sm:p-6"
-                aria-label={`${p.title} potential activities and intended audience`}
-              >
-                <h3 className="font-serif-heading text-xl font-semibold text-navy-950">
-                  Potential areas of work
-                </h3>
-                <ul className="mt-3 divide-y divide-navy-900/10">
-                  {p.activities.map((activity) => (
-                    <li
-                      key={activity}
-                      className="py-3 text-sm leading-6 text-navy-900/75"
-                    >
-                      {activity}
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-4 text-sm leading-6 text-navy-900/75">
-                  <strong className="font-semibold text-navy-950">
-                    Intended focus.{" "}
-                  </strong>
-                  {p.audience}
-                </p>
-                <a
-                  href="/contact"
-                  className="mt-5 inline-flex min-h-11 items-center rounded-full border border-navy-900/40 px-5 text-sm font-medium text-navy-950 transition-colors hover:border-orange-600 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-                >
-                  Ask about this programme{" "}
-                  <span className="ml-2" aria-hidden="true">
-                    ↗
-                  </span>
-                </a>
-              </aside>
-            </div>
-          </Reveal>
+        {programmes.map((p, i) => (
+          <ProgrammeCard key={p.num} p={p} index={i} />
         ))}
       </section>
     </Layout>
