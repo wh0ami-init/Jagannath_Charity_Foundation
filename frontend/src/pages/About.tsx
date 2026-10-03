@@ -27,22 +27,51 @@ const credentialTabs = [
 ];
 
 const appointments = [
-  "Vice Chancellor, ICFAI University (current)",
-  "Vice Chancellor, Kalinga University, Raipur",
-  "Pro Chancellor, Singhania University",
-  "Secretary General, Confederation of Indian Universities",
-  "Director and Vice President, Manipal Academy of Higher Education and the Manipal Education and Medical Group",
-  "Registrar and Director of Distance Education, Sikkim Manipal University",
-  "Academic Registrar, International Medical and Technological University, Dar es Salaam",
-  "Global Chairman, UNAccc",
+  {
+    position: "Global Chairman",
+    org: "UNACCC – Unity of Nations Action For Climate Change Council",
+  },
+  { position: "Vice Chancellor", org: "ICFAI University, Sikkim" },
+  {
+    position: "Vice Chancellor (from 2011)",
+    org: "Kalinga University, Raipur",
+  },
+  { position: "Pro Chancellor", org: "Singhania University" },
+  {
+    position: "Secretary General",
+    org: "Confederation of Indian Universities",
+  },
+  {
+    position: "Director & Vice President",
+    org: "Manipal Academy of Higher Education / MEMG",
+  },
+  {
+    position: "Registrar & Director, Distance Education",
+    org: "Sikkim Manipal University",
+  },
+  {
+    position: "Academic Registrar",
+    org: "International Medical and Technological University, Dar es Salaam",
+  },
 ];
 
-// TODO: add the real book titles here
-const books: string[] = [];
+const books: string[] = [
+  "Higher Education in the Information Age",
+  "Private Initiatives in Higher Education",
+  "Financing of Higher Education in India",
+  "Vivek Management Model for Industrial Productivity and Profits",
+  "Education Management Systems in India",
+  "Regulatory Systems in India",
+  "Politics of Human Rights in India",
+  "Journey of a Curious Mind",
+];
 
 const recognitions = [
-  "Recorded in the World Book of Records",
-  "Utkal Jyoti Award of the Government, for social service",
+  "Outstanding Leadership Award, United Nations University – International Leadership Academy, Jordan",
+  "Ambassador of Peace, International Association of Educators for World Peace, USA",
+  "Doctorates honoris causa in Science, Laws and Literature from international universities",
+  "Sadbhavana Award (2013); Utkal Sanman (2013); Kalinga Sanman (2015)",
+  "Women Empowerment Award and Education Excellence Award (2015)",
 ];
 
 function useMediaQuery(query: string) {
@@ -473,6 +502,68 @@ export default function About() {
         </div>
       </Reveal>
 
+      <section
+        className="about-principles wrap"
+        aria-labelledby="about-principles-title"
+      >
+        <header className="about-principles-heading">
+          <p className="eyebrow">Our commitments</p>
+          <h2 id="about-principles-title">
+            Built for lasting change, guided by public trust.
+          </h2>
+          <p>
+            The way we work in communities and the way we govern the Foundation
+            are rooted in the same promise: lasting public benefit.
+          </p>
+        </header>
+        <div className="about-principles-grid">
+          <Reveal as="article" className="about-principle" direction="left">
+            <span className="about-principle-number" aria-hidden="true">
+              01
+            </span>
+            <p className="eyebrow">Work philosophy</p>
+            <h3>Lasting household assets, not one-time assistance.</h3>
+            <p>
+              Lasting change can mean a child staying in school, care arriving
+              before a crisis, a skill creating income, or a household energy
+              asset reducing monthly costs. We build on the institutions people
+              already rely on: schools, clinics, self-help groups and
+              panchayats.
+            </p>
+            <p className="about-principle-note">
+              Our strategic partnership with UNACCC will support our climate and
+              household-energy objectives.
+            </p>
+          </Reveal>
+          <Reveal
+            as="article"
+            className="about-principle"
+            direction="right"
+            delay={0.12}
+          >
+            <span className="about-principle-number" aria-hidden="true">
+              02
+            </span>
+            <p className="eyebrow">Governance</p>
+            <h3>Accountable leadership. Open participation.</h3>
+            <p>
+              Founder trustees hold the trust for public benefit. A management
+              body leads programmes, while general members can strengthen
+              fieldwork, fundraising and our district presence.
+            </p>
+            <div className="about-membership-callout">
+              <p>
+                Membership is open by application and supports the Foundation’s
+                charitable work.
+              </p>
+              <a className="about-membership-link" href="/contact">
+                Apply to take part <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
       {/* ===== Founder introduction: photo sits LEFT, content on the right ===== */}
       <section
         className="founder-intro wrap"
@@ -628,7 +719,7 @@ export default function About() {
                     Registrar and Director of Distance Education at Sikkim
                     Manipal University; and Academic Registrar of the
                     International Medical and Technological University, Dar es
-                    Salaam. He also serves as Global Chairman of UNAccc — a
+                    Salaam. He also serves as Global Chairman of UNACCC — a
                     strategic partnership that will enhance the Foundation’s
                     climate and household-energy objectives.
                   </p>
@@ -644,11 +735,24 @@ export default function About() {
                 </>
               )}
               {credTab === "appointments" && (
-                <ul>
-                  {appointments.map((a) => (
-                    <li key={a}>{a}</li>
-                  ))}
-                </ul>
+                <div className="cred-table-wrap">
+                  <table className="cred-table">
+                    <thead>
+                      <tr>
+                        <th>Position</th>
+                        <th>Institution / Organization</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {appointments.map((a) => (
+                        <tr key={a.position + a.org}>
+                          <th scope="row">{a.position}</th>
+                          <td>{a.org}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
               {credTab === "books" &&
                 (books.length ? (
