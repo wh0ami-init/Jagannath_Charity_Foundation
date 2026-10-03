@@ -9,39 +9,6 @@ import Reveal from "../components/Reveal";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-const projects = [
-  {
-    title: "Classroom Continuity",
-    description: "A proposed education initiative focused on reading support, first-generation learners and collaboration with existing schools. The activities and locations will depend on local partners and assessed needs.",
-    status: "In design and partner mapping.",
-  },
-  {
-    title: "Household Health Access",
-    description: "A proposed approach to preventive health information, nutrition awareness and family wellbeing, developed alongside qualified local health providers.",
-    status: "In design and district pairing.",
-  },
-  {
-    title: "Youth Skills & Sport Corridor",
-    description: "A proposed combination of practical skills, mentoring and sport, with potential collaboration through Leva Sports Club Federation.",
-    status: "Partnership design; activities and locations are to be confirmed.",
-  },
-  {
-    title: "Women at the Centre of the Household Economy",
-    description: "A proposed programme supporting women’s livelihoods and leadership through collaboration with self-help groups and local institutions.",
-    status: "Group identification with local institutions.",
-  },
-  {
-    title: "Land, Water and Village Green",
-    description: "A proposed community-led approach to greening, water awareness and soil care, shaped around local priorities and suitable sites.",
-    status: "Site identification.",
-  },
-  {
-    title: "Solar Housing for BPL, Tribal and PVTG Families",
-    description: "A proposed household energy initiative exploring rooftop solar and cleaner cooking where technical, household and financial assessments support it.",
-    status: "Assessment model in development; no savings or rollout figures are claimed here.",
-  },
-];
-
 const projectSteps = [
   { number: "01", title: "Listen", description: "Work with communities and local institutions to understand priorities and existing services." },
   { number: "02", title: "Assess", description: "Check feasibility, partner capacity, safeguarding needs and likely costs before setting a scope." },
@@ -118,9 +85,9 @@ export default function Projects() {
       <PageHero
         theme="work"
         motif="projects"
-        eyebrow="Projects · Ideas for lasting care"
-        title="Project proposals and their current stage."
-        description="This page separates project ideas from confirmed delivery. Each status reflects the planning stage currently recorded by the Foundation."
+        eyebrow="Named projects · Ideas for lasting care"
+        title="Named projects and their current stage."
+        description="Explore specific initiatives with a defined concept, location or status. The Foundation’s broader areas of focus are described in its programmes."
       />
 
       <section className="wrap py-16 md:py-24" aria-label="Featured project">
@@ -167,32 +134,6 @@ export default function Projects() {
         </article>
       </section>
 
-      <section className="bg-[#e8ebe2] py-16 md:py-24" aria-labelledby="project-pipeline-title">
-        <div className="wrap">
-          <Reveal as="div" duration={2.1} delayOffset={0.3} start="top 80%" className="mb-9 max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[.19em] text-orange-600">The work ahead</p>
-            <h2 id="project-pipeline-title" className="mt-3 font-serif-heading text-3xl font-bold text-navy-950 sm:text-4xl">Projects built around lasting change.</h2>
-            <p className="project-section-intro mt-4 leading-7 text-navy-900/70">These are initiatives in development across the Foundation’s six programme areas. The status on each card is intended to distinguish planning from active delivery.</p>
-          </Reveal>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {projects.map((project, index) => (
-              <Reveal as="article" key={project.title} duration={2.1} delayOffset={0.3} start="top 80%" delay={(index % 3) * 0.14} direction={index % 2 ? "right" : "left"} className="flex h-full flex-col rounded-xl border border-navy-900/10 bg-white/75 p-6 shadow-[0_12px_34px_rgba(24,55,47,.05)] transition-transform duration-300 hover:-translate-y-1">
-                <span className="text-sm font-semibold text-orange-600">{String(index + 1).padStart(2, "0")}</span>
-                <h3 className="mt-3 font-serif-heading text-xl font-bold leading-snug text-navy-950">{project.title}</h3>
-                <p className="project-summary-copy mt-3 flex-1 text-navy-900/70">{project.description}</p>
-                <p className="project-status mt-5 text-navy-900/70"><strong className="text-navy-950">Status:</strong> {project.status}</p>
-              </Reveal>
-            ))}
-            <Reveal as="article" duration={2.1} delayOffset={0.3} start="top 80%" delay={0.18} className="flex h-full flex-col rounded-xl border border-orange-500/30 bg-[#fff8eb] p-6 shadow-[0_12px_34px_rgba(24,55,47,.05)] transition-transform duration-300 hover:-translate-y-1">
-              <span className="text-sm font-semibold text-orange-600">07</span>
-              <h3 className="mt-3 font-serif-heading text-xl font-bold leading-snug text-navy-950">200-Studio Senior Citizens Home</h3>
-              <p className="project-summary-copy mt-3 flex-1 text-navy-900/70">A proposed courtyard residence at Khuntuni, Dhenkanal. Scope and resident services remain subject to confirmed plans and delivery arrangements.</p>
-              <p className="project-status mt-5 text-navy-900/70"><strong className="text-navy-950">Status:</strong> Concept stage. <a className="font-semibold text-orange-700 underline underline-offset-4" href="#senior-citizens-home">Read the project</a>.</p>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
       <Reveal as="section" duration={2.1} delayOffset={0.3} start="top 80%" id="partner-sponsor-index" className="wrap scroll-mt-28 py-16 md:py-24">
         <div className="rounded-2xl border border-navy-900/10 bg-white/50 p-7 sm:p-10 lg:p-12">
           <p className="text-xs font-semibold uppercase tracking-[.19em] text-orange-600">Work &amp; partners</p>
@@ -222,7 +163,7 @@ export default function Projects() {
             <h2 id="project-admission-title" className="mt-3 font-serif-heading text-3xl font-bold text-navy-950 sm:text-4xl">How a project is admitted.</h2>
             <p className="project-section-intro mt-4 max-w-md leading-7 text-navy-900/70">Projects move from community input and feasibility checks to confirmed plans, delivery and reporting. We will identify active work and measured results as those stages are reached.</p>
             <div className="project-actions mt-7 flex flex-wrap gap-3">
-              <a href="/work" className="project-action">See the six programmes</a>
+              <a href="/programmes" className="project-action">Explore our programmes</a>
               <a href="/volunteer" className="project-action project-action-secondary">Volunteer for a project</a>
             </div>
           </Reveal>

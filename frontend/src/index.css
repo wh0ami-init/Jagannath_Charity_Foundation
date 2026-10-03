@@ -2775,6 +2775,50 @@ h3,
   transition: box-shadow .45s ease, border-color .45s ease, background-color .45s ease;
 }
 
+.programme-contact-button {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  transition: color .3s ease, border-color .3s ease;
+}
+
+.programme-contact-button::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--forest);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform .38s cubic-bezier(.22, 1, .36, 1);
+}
+
+.programme-contact-button:hover {
+  border-color: var(--forest);
+  color: #fff;
+}
+
+.programme-contact-button:hover::before {
+  transform: scaleX(1);
+}
+
+.programme-contact-arrow {
+  transition: transform .3s ease;
+}
+
+.programme-contact-button:hover .programme-contact-arrow {
+  transform: translateX(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .programme-contact-button,
+  .programme-contact-button::before,
+  .programme-contact-arrow {
+    transition: none;
+  }
+}
+
 .work-programme-card.is-highlighted {
   position: relative;
   z-index: 1;
@@ -6505,7 +6549,7 @@ h3,
 }
 
 
-/* ===== Work page: programme photo + GSAP animation ===== */
+/* ===== Programmes page: programme photo + GSAP animation ===== */
 .work-programme-card .wp-photo {
   position: relative;
   height: clamp(190px, 28vw, 320px);

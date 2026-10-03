@@ -269,10 +269,13 @@ function ProgrammeCard({ p, index }: { p: Programme; index: number }) {
           </p>
           <a
             href="/contact"
-            className="mt-5 inline-flex min-h-11 items-center rounded-full border border-navy-900/40 px-5 text-sm font-medium text-navy-950 transition-colors hover:border-orange-600 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+            className="programme-contact-button group mt-5 inline-flex min-h-11 items-center rounded-full border border-navy-900/40 px-5 text-sm font-medium text-navy-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-700"
           >
             Ask about this programme{" "}
-            <span className="ml-2" aria-hidden="true">
+            <span
+              className="programme-contact-arrow ml-2 inline-block"
+              aria-hidden="true"
+            >
               ↗
             </span>
           </a>
@@ -282,7 +285,7 @@ function ProgrammeCard({ p, index }: { p: Programme; index: number }) {
   );
 }
 
-export default function Work() {
+export default function Programmes() {
   useEffect(() => {
     const targetId = decodeURIComponent(window.location.hash.slice(1));
     if (!targetId.startsWith("programme-")) return;

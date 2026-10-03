@@ -4,7 +4,7 @@ import { DynamicImage } from "../lib/ImagesContext";
 
 const primaryLinks = [
   { href: "/about", label: "Our story" },
-  { href: "/work", label: "Our work" },
+  { href: "/programmes", label: "Programmes" },
   { href: "/projects", label: "Projects" },
   { href: "/impact", label: "Our impact" },
 ];

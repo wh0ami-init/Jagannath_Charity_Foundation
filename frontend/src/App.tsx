@@ -1,12 +1,12 @@
 import { lazy, Suspense, useCallback, useState } from "react";
-import { Route, Switch, useLocation } from "wouter";
+import { Redirect, Route, Switch, useLocation } from "wouter";
 import { ImagesProvider } from "./lib/ImagesContext";
 import { SiteContentProvider } from "./lib/SiteContentContext";
 import WelcomeScreen from "./components/WelcomeScreen";
 
 const Home = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
-const Work = lazy(() => import("./pages/Work"));
+const Programmes = lazy(() => import("./pages/Programmes"));
 const Projects = lazy(() => import("./pages/Projects"));
 const Partners = lazy(() => import("./pages/Partners"));
 const Impact = lazy(() => import("./pages/Impact"));
@@ -39,7 +39,10 @@ export default function App() {
             <Switch>
               <Route path="/" component={Home} />
               <Route path="/about" component={About} />
-              <Route path="/work" component={Work} />
+              <Route path="/programmes" component={Programmes} />
+              <Route path="/work">
+                <Redirect to={`/programmes${window.location.search}${window.location.hash}`} />
+              </Route>
               <Route path="/projects" component={Projects} />
               <Route path="/partners" component={Partners} />
               <Route path="/impact" component={Impact} />

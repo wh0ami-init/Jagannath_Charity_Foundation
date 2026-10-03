@@ -4,7 +4,7 @@ import { DynamicImage } from "../lib/ImagesContext";
 
 const foundationLinks = [
   ["Our story", "/about"],
-  ["Our work", "/work"],
+  ["Programmes", "/programmes"],
   ["Our impact", "/impact"],
   ["Our people", "/team"],
   ["Photo gallery", "/gallery"],

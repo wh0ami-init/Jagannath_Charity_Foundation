@@ -182,16 +182,16 @@ export default function Home() {
         </div>
         <div className="hero-actions">
           <Link
-            href="/work"
+            href="/programmes"
             className="hero-action hero-action-primary"
-            aria-label="Explore our work"
-            title="Explore our work"
+            aria-label="Explore our programmes"
+            title="Explore our programmes"
           >
             <span className="hero-action-arrow" aria-hidden="true">
               →
             </span>
             <span className="hero-action-tooltip" aria-hidden="true">
-              Explore our work
+              Explore our programmes
             </span>
           </Link>
           <Link
@@ -363,7 +363,7 @@ export default function Home() {
                 direction={index % 2 === 0 ? "left" : "right"}
               >
                 <Link
-                  href="/work"
+                  href="/programmes"
                   className={`work-feature work-feature-${index + 1} work-${area.theme}`}
                 >
                   <div className="work-photo">
@@ -386,8 +386,8 @@ export default function Home() {
           </div>
           <Reveal className="work-footer" direction="up">
             <span className="work-count"><strong>4 / 6</strong> programme areas featured</span>
-            <Link href="/work" className="text-link">
-              Explore all our work <span>↗</span>
+            <Link href="/programmes" className="text-link">
+              Explore all our programmes <span>↗</span>
             </Link>
           </Reveal>
         </div>

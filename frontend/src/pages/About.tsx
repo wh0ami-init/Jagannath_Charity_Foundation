@@ -480,7 +480,7 @@ export default function About() {
         <div className="about-focus-grid">
           {focusAreas.map((area, index) => (
             <motion.a
-              href={`/work#programme-${area.slug}`}
+              href={`/programmes#programme-${area.slug}`}
               aria-label={`Explore ${area.title} programme`}
               key={area.number}
               className="about-focus-card"
