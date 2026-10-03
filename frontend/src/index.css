@@ -3458,7 +3458,6 @@ h3,
   width: 100%;
   min-width: 0;
   border: 0 !important;
-  outline: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
   color: var(--ink);
@@ -6045,8 +6044,6 @@ h3,
   }
 }
 
-@media (max-width: 640px) {}
-
 @media (max-width: 680px) {
   .site-shell {
     font-size: 16px;
@@ -6239,7 +6236,7 @@ h3,
 
 
 
-/* ===== Founder intro + flying photo  (paste at the END of src/index.css) ===== */
+/* Founder introduction and credentials layout. */
 
 .founder-intro {
   display: grid;

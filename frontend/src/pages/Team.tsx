@@ -5,6 +5,8 @@ import PageHero from "../components/PageHero";
 import Reveal from "../components/Reveal";
 import { DynamicImage } from "../lib/ImagesContext";
 import { useImages } from "../lib/ImagesContext";
+import Stagger from "../components/Stagger";
+import SplitHeading from "../components/SplitHeading";
 
 const trustBoard = [
   {
@@ -201,7 +203,6 @@ const initials = (name: string) =>
 
 function PersonCard({
   person,
-  index,
   onSelect,
 }: {
   person: Person;
@@ -215,12 +216,7 @@ function PersonCard({
     ? !imageSlot.url.endsWith("/placeholder.jpg")
     : slot.startsWith("team-");
   return (
-    <Reveal
-      as="article"
-      direction={index % 2 ? "right" : "left"}
-      delay={(index % 4) * 0.12}
-      className="team-card team-profile-card rounded-xl border border-navy-900/10 overflow-hidden"
-    >
+    <article className="team-card team-profile-card rounded-xl border border-navy-900/10 overflow-hidden">
       {showImage ? (
         <div className="team-portrait-frame">
           <DynamicImage slotKey={slot} alt={name} className="team-portrait" />
@@ -244,7 +240,7 @@ function PersonCard({
           View more <span aria-hidden="true">→</span>
         </button>
       </div>
-    </Reveal>
+    </article>
   );
 }
 
@@ -306,25 +302,37 @@ export default function Team() {
 
       <Reveal as="section" className="wrap py-16">
         <h2 className="team-section-heading">Board of Trustees</h2>
-        <div className="team-profile-grid team-profile-grid-trust">
+        <Stagger
+          className="team-profile-grid team-profile-grid-trust"
+          gap={0.1}
+          distance={28}
+        >
           {renderPeople(trustBoard)}
-        </div>
+        </Stagger>
       </Reveal>
 
       <Reveal as="section" className="wrap pb-16">
         <h2 className="team-section-heading">Board of Management</h2>
-        <div className="team-profile-grid team-profile-grid-management">
+        <Stagger
+          className="team-profile-grid team-profile-grid-management"
+          gap={0.1}
+          distance={28}
+        >
           {renderPeople(boardOfManagement)}
-        </div>
+        </Stagger>
       </Reveal>
 
       <Reveal as="section" className="wrap pb-16">
         <h2 className="team-section-heading">Board of Advisors</h2>
-        <div className="team-profile-grid team-profile-grid-advisors">
+        <Stagger
+          className="team-profile-grid team-profile-grid-advisors"
+          gap={0.1}
+          distance={28}
+        >
           {renderPeople(
             advisors.map((advisor) => ({ ...advisor, body: advisor.note })),
           )}
-        </div>
+        </Stagger>
       </Reveal>
 
       <AnimatePresence>

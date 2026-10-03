@@ -5,6 +5,8 @@ import Layout from "../components/Layout";
 import Reveal from "../components/Reveal";
 import { DynamicImage } from "../lib/ImagesContext";
 import { useSiteContent } from "../lib/SiteContentContext";
+import Stagger from "../components/Stagger";
+import ParallaxLayer from "../components/ParallaxLayer";
 
 const workAreas = [
   {
@@ -136,48 +138,62 @@ export default function Home() {
         </div>
         <div className="hero-copy wrap">
           <AnimatePresence mode="wait" initial={false}>
-          {heroTextVisible && (
-          <motion.div
-            key={slide}
-            className="hero-copy-message"
-            initial={reducedMotion ? false : { opacity: 0, x: -30, filter: "blur(5px)" }}
-            animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-            exit={reducedMotion ? undefined : { opacity: 0, x: 30, filter: "blur(4px)" }}
-            transition={{ duration: reducedMotion ? 0 : 0.85, ease: [0.22, 0.7, 0.2, 1] }}
-          >
-            <p className="eyebrow eyebrow-light">
-              <span />
-              {text("home_eyebrow", "A public charitable trust · Across India")}
-            </p>
-            <h1 aria-label={heroTitle}>
-              {heroTitle.split(/(\s+)/).map((part, index) => {
-                if (!part.trim()) return part;
-                const wordIndex = titleWord++;
-                return (
-                  <motion.span
-                    className="hero-title-word"
-                    key={`${index}-${part}`}
-                    initial={{ opacity: 0, y: reducedMotion ? 0 : 7 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: reducedMotion ? 0 : 0.55,
-                      delay: reducedMotion ? 0 : wordIndex * 0.09,
-                      ease: [0.22, 0.7, 0.2, 1],
-                    }}
-                  >
-                    {part}
-                  </motion.span>
-                );
-              })}
-            </h1>
-            <p className="hero-lede">
-              {text(
-                "home_intro",
-                "We work alongside communities through education, healthcare, livelihoods and clean energy, supporting opportunities people can carry forward.",
-              )}
-            </p>
-          </motion.div>
-          )}
+            {heroTextVisible && (
+              <motion.div
+                key={slide}
+                className="hero-copy-message"
+                initial={
+                  reducedMotion
+                    ? false
+                    : { opacity: 0, x: -30, filter: "blur(5px)" }
+                }
+                animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                exit={
+                  reducedMotion
+                    ? undefined
+                    : { opacity: 0, x: 30, filter: "blur(4px)" }
+                }
+                transition={{
+                  duration: reducedMotion ? 0 : 0.85,
+                  ease: [0.22, 0.7, 0.2, 1],
+                }}
+              >
+                <p className="eyebrow eyebrow-light">
+                  <span />
+                  {text(
+                    "home_eyebrow",
+                    "A public charitable trust · Across India",
+                  )}
+                </p>
+                <h1 aria-label={heroTitle}>
+                  {heroTitle.split(/(\s+)/).map((part, index) => {
+                    if (!part.trim()) return part;
+                    const wordIndex = titleWord++;
+                    return (
+                      <motion.span
+                        className="hero-title-word"
+                        key={`${index}-${part}`}
+                        initial={{ opacity: 0, y: reducedMotion ? 0 : 7 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          duration: reducedMotion ? 0 : 0.55,
+                          delay: reducedMotion ? 0 : wordIndex * 0.09,
+                          ease: [0.22, 0.7, 0.2, 1],
+                        }}
+                      >
+                        {part}
+                      </motion.span>
+                    );
+                  })}
+                </h1>
+                <p className="hero-lede">
+                  {text(
+                    "home_intro",
+                    "We work alongside communities through education, healthcare, livelihoods and clean energy, supporting opportunities people can carry forward.",
+                  )}
+                </p>
+              </motion.div>
+            )}
           </AnimatePresence>
         </div>
         <div className="hero-actions">
@@ -191,7 +207,7 @@ export default function Home() {
               →
             </span>
             <span className="hero-action-tooltip" aria-hidden="true">
-              Explore our programmes
+              Programmes
             </span>
           </Link>
           <Link
@@ -239,23 +255,22 @@ export default function Home() {
       <section className="home-facts" aria-label="About the Foundation">
         <div className="wrap facts-inner">
           <Reveal className="facts-heading" direction="left">
-            <p className="eyebrow"><span />A clear beginning</p>
-            <p className="facts-note">A public trust working across six connected areas, with progress shared as programmes take shape.</p>
+            <p className="eyebrow">
+              <span />A clear beginning
+            </p>
+            <p className="facts-note">
+              A public trust working across six connected areas, with progress
+              shared as programmes take shape.
+            </p>
           </Reveal>
-          <div className="facts-list">
-            {foundationFacts.map((fact, index) => (
-              <Reveal
-                as="article"
-                className="fact-item"
-                delay={index * 0.08}
-                direction={index === 1 ? "down" : "up"}
-                key={fact.value}
-              >
+          <Stagger className="facts-list" gap={0.1} distance={24}>
+            {foundationFacts.map((fact) => (
+              <article className="fact-item" key={fact.value}>
                 <strong>{fact.value}</strong>
                 <span>{fact.label}</span>
-              </Reveal>
+              </article>
             ))}
-          </div>
+          </Stagger>
         </div>
       </section>
 
@@ -274,7 +289,11 @@ export default function Home() {
               }}
             >
               <motion.div
-                initial={reducedMotion ? false : { scale: 1.055, clipPath: "inset(14% 0 0)" }}
+                initial={
+                  reducedMotion
+                    ? false
+                    : { scale: 1.055, clipPath: "inset(14% 0 0)" }
+                }
                 whileInView={{ scale: 1, clipPath: "inset(0% 0 0)" }}
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{
@@ -306,7 +325,11 @@ export default function Home() {
                   initial={reducedMotion ? false : { pathLength: 0 }}
                   whileInView={{ pathLength: 1 }}
                   viewport={{ once: true, amount: 0.2 }}
-                  transition={{ duration: reducedMotion ? 0 : 0.95, delay: reducedMotion ? 0 : 0.16, ease: [0.22, 0.7, 0.2, 1] }}
+                  transition={{
+                    duration: reducedMotion ? 0 : 0.95,
+                    delay: reducedMotion ? 0 : 0.16,
+                    ease: [0.22, 0.7, 0.2, 1],
+                  }}
                 />
               </motion.svg>
             </motion.div>
@@ -352,15 +375,16 @@ export default function Home() {
                 Lasting possibility.
               </h2>
             </div>
-            <p>Six connected areas of work, shaped around the everyday needs of people and families.</p>
+            <p>
+              Six connected areas of work, shaped around the everyday needs of
+              people and families.
+            </p>
           </Reveal>
-          <div className="work-grid">
+          <Stagger className="work-grid" gap={0.12} distance={34}>
             {workAreas.map((area, index) => (
-              <Reveal
+              <div
                 key={area.title}
                 className={`work-feature-reveal work-feature-reveal-${index + 1}`}
-                delay={index * 0.08}
-                direction={index % 2 === 0 ? "left" : "right"}
               >
                 <Link
                   href="/programmes"
@@ -381,11 +405,13 @@ export default function Home() {
                     <b aria-hidden="true">↗</b>
                   </div>
                 </Link>
-              </Reveal>
+              </div>
             ))}
-          </div>
+          </Stagger>
           <Reveal className="work-footer" direction="up">
-            <span className="work-count"><strong>4 / 6</strong> programme areas featured</span>
+            <span className="work-count">
+              <strong>4 / 6</strong> programme areas featured
+            </span>
             <Link href="/programmes" className="text-link">
               Explore all our programmes <span>↗</span>
             </Link>
@@ -401,23 +427,26 @@ export default function Home() {
               How we work
             </p>
             <h2>Good intentions need good practice.</h2>
-            <p>We listen first, work with local partners and focus on what can last.</p>
+            <p>
+              We listen first, work with local partners and focus on what can
+              last.
+            </p>
             <Link href="/impact" className="text-link">
               Our approach to impact <span>↗</span>
             </Link>
           </Reveal>
-          <div className="principles-list">
-            {principles.map((item, index) => (
-              <Reveal as="article" key={item.number} delay={index * 0.08} direction={index % 2 === 0 ? "right" : "left"}>
+          <Stagger className="principles-list" gap={0.1} distance={26}>
+            {principles.map((item) => (
+              <article key={item.number}>
                 <span>{item.number}</span>
                 <div>
                   <h3>{item.title}</h3>
                   <p>{item.body}</p>
                 </div>
                 <b aria-hidden="true">↗</b>
-              </Reveal>
+              </article>
             ))}
-          </div>
+          </Stagger>
         </div>
       </section>
 
@@ -455,8 +484,16 @@ export default function Home() {
                 className={`gallery-frame gallery-frame-${i + 1}`}
               >
                 <div className="gallery-photo">
-                  <DynamicImage slotKey={photo.slot} alt="" className="gallery-image gallery-image-backdrop" />
-                  <DynamicImage slotKey={photo.slot} alt={photo.caption} className="gallery-image gallery-image-foreground" />
+                  <DynamicImage
+                    slotKey={photo.slot}
+                    alt=""
+                    className="gallery-image gallery-image-backdrop"
+                  />
+                  <DynamicImage
+                    slotKey={photo.slot}
+                    alt={photo.caption}
+                    className="gallery-image gallery-image-foreground"
+                  />
                 </div>
                 <span>{photo.caption}</span>
               </Link>

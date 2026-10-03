@@ -1,3 +1,5 @@
+from urllib.parse import urlsplit
+
 from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -24,8 +26,28 @@ class Settings(BaseSettings):
         if self.environment.lower() == "production":
             if self.database_url.startswith("sqlite"):
                 raise ValueError("Production deployments require a persistent database, not SQLite")
-            if not self.cors_origin_list:
+            origins = self.cors_origin_list
+            if not origins:
                 raise ValueError("CORS_ORIGINS must contain the production frontend origin")
+            for origin in origins:
+                parsed = urlsplit(origin)
+                try:
+                    parsed.port
+                except ValueError as exc:
+                    raise ValueError("CORS_ORIGINS contains an invalid port") from exc
+                if (
+                    parsed.scheme != "https"
+                    or not parsed.hostname
+                    or "*" in parsed.netloc
+                    or parsed.username is not None
+                    or parsed.password is not None
+                    or parsed.path
+                    or parsed.query
+                    or parsed.fragment
+                ):
+                    raise ValueError(
+                        "Production CORS_ORIGINS must contain exact HTTPS origins without paths or wildcards"
+                    )
         return self
 
     @property
