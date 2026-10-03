@@ -18,6 +18,10 @@ if "site_content" in inspect(engine).get_table_names():
         with engine.begin() as connection:
             connection.execute(text("ALTER TABLE site_content ADD COLUMN page VARCHAR(60) NOT NULL DEFAULT 'Home'"))
 
+if "category" not in {column["name"] for column in inspect(engine).get_columns("image_slots")}:
+    with engine.begin() as connection:
+        connection.execute(text("ALTER TABLE image_slots ADD COLUMN category VARCHAR(24) NULL"))
+
 app = FastAPI(title="Jagannath Foundation - Site API")
 
 app.add_middleware(

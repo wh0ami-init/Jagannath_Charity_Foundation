@@ -23,6 +23,7 @@ class ImageSlot(Base):
     label = Column(String(200), nullable=False)       # human-readable name shown in admin
     page = Column(String(60), nullable=False)          # which page it belongs to, for grouping in admin UI
     alt_text = Column(String(300), default="")
+    category = Column(String(24), nullable=True)
     file_path = Column(String(400), nullable=False)    # relative path served from /uploads/...
     updated_at = Column(DateTime, default=utcnow, onupdate=utcnow)
 
