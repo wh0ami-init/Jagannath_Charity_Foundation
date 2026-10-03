@@ -580,15 +580,32 @@ export default function About() {
                   aria-controls="founder-cred-panel"
                   onClick={() => setCredTab(t.id)}
                   className="founder-cred-tab"
+                  title={t.label}
                 >
-                  {t.label}
+                  {credTab === t.id && (
+                    <motion.span
+                      className="tab-shape"
+                      aria-hidden="true"
+                      initial={{ opacity: reducedMotion ? 1 : 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: reducedMotion ? 0 : 0.22 }}
+                    />
+                  )}
+                  <span className="tab-label">{t.label}</span>
                 </button>
               ))}
             </div>
-            <div
+            <motion.div
               className="founder-cred-panel"
               id="founder-cred-panel"
               role="tabpanel"
+              key={credTab}
+              initial={{ opacity: 0, y: reducedMotion ? 0 : 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: reducedMotion ? 0 : 0.45,
+                ease: [0.22, 0.7, 0.2, 1],
+              }}
             >
               {credTab === "educationist" && (
                 <>
@@ -650,7 +667,7 @@ export default function About() {
                   ))}
                 </ul>
               )}
-            </div>
+            </motion.div>
           </div>
         </Reveal>
       </section>

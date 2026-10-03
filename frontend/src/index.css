@@ -6070,7 +6070,7 @@ h3,
   font: 600 clamp(34px, 4.4vw, 56px)/1.02 var(--font-serif);
 }
 
-.founder-intro-copy > .eyebrow {
+.founder-intro-copy>.eyebrow {
   color: var(--saffron);
 }
 
@@ -6115,43 +6115,147 @@ h3,
 
 /* credentials tabs */
 .founder-credentials {
+  --tab-surface: #fbfaf6;
+  --tab-line: rgba(24, 55, 47, .16);
   margin-top: 38px;
 }
 
+/* Chrome-style tab strip */
 .founder-cred-tabs {
+  position: relative;
+  z-index: 1;
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 14px;
+  align-items: flex-end;
+  gap: 0;
+  padding: 9px 12px 0;
+  border-radius: 12px 12px 0 0;
+  background: rgba(24, 55, 47, .07);
 }
 
 .founder-cred-tab {
-  padding: 10px 16px;
-  border: 1px solid rgba(24, 55, 47, .19);
-  background: rgba(255, 255, 255, .34);
-  color: #52685d;
+  position: relative;
+  display: flex;
+  flex: 0 1 auto;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+  height: 40px;
+  padding: 0 18px;
+  border: 0;
+  background: none;
+  color: #5f7468;
   font-size: 13px;
   font-weight: 600;
-  text-align: left;
+  white-space: nowrap;
   cursor: pointer;
-  transition: color .25s ease, border-color .25s ease, background .25s ease;
+  transition: color .2s ease;
 }
 
-.founder-cred-tab:hover {
-  border-color: var(--moss);
-  color: var(--forest);
+.tab-label {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* hover pill on inactive tabs */
+.founder-cred-tab::before {
+  position: absolute;
+  z-index: 0;
+  inset: 4px 2px 6px;
+  border-radius: 8px;
+  background: rgba(24, 55, 47, .09);
+  content: "";
+  opacity: 0;
+  transition: opacity .18s ease;
+}
+
+.founder-cred-tab:hover::before {
+  opacity: 1;
+}
+
+/* thin divider between inactive tabs */
+.founder-cred-tab::after {
+  position: absolute;
+  top: 12px;
+  right: -.5px;
+  width: 1px;
+  height: 16px;
+  background: rgba(24, 55, 47, .22);
+  content: "";
+}
+
+.founder-cred-tab:last-child::after,
+.founder-cred-tab:hover::after,
+.founder-cred-tab[aria-selected="true"]::after,
+.founder-cred-tab:has(+ .founder-cred-tab:hover)::after,
+.founder-cred-tab:has(+ .founder-cred-tab[aria-selected="true"])::after {
+  opacity: 0;
 }
 
 .founder-cred-tab[aria-selected="true"] {
-  border-color: var(--forest);
-  background: var(--forest);
-  color: #fff;
+  color: var(--forest);
 }
 
+.founder-cred-tab[aria-selected="true"]::before {
+  opacity: 0;
+}
+
+.founder-cred-tab:hover {
+  color: var(--forest);
+}
+
+.founder-cred-tab:focus-visible {
+  outline: 2px solid var(--forest);
+  outline-offset: -2px;
+  border-radius: 8px;
+}
+
+/* the active tab: rounded top + concave "feet", same colour as the panel */
+.tab-shape {
+  position: absolute;
+  z-index: 0;
+  inset: 0 0 -1px;
+  border-radius: 10px 10px 0 0;
+  background: var(--tab-surface);
+}
+
+.tab-shape::before,
+.tab-shape::after {
+  position: absolute;
+  bottom: 0;
+  width: 12px;
+  height: 12px;
+  content: "";
+}
+
+.tab-shape::before {
+  left: -12px;
+  background: radial-gradient(circle at 0 0, transparent 11.5px, var(--tab-surface) 12px);
+}
+
+.tab-shape::after {
+  right: -12px;
+  background: radial-gradient(circle at 100% 0, transparent 11.5px, var(--tab-surface) 12px);
+}
+
+/* panel joins the active tab */
 .founder-cred-panel {
   padding: clamp(20px, 2.4vw, 30px);
-  border: 1px solid rgba(24, 55, 47, .11);
-  background: linear-gradient(135deg, rgba(255, 255, 255, .44), rgba(232, 238, 227, .42));
+  border: 0;
+  border-radius: 0 0 12px 12px;
+  background: var(--tab-surface);
+}
+
+@media (max-width: 680px) {
+  .founder-cred-tabs {
+    padding-inline: 8px;
+  }
+
+  .founder-cred-tab {
+    padding: 0 12px;
+    font-size: 12px;
+  }
 }
 
 .founder-cred-panel p,
