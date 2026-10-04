@@ -8,10 +8,29 @@
     overflow: hidden;
     isolation: isolate;
     padding: 32px 22px 42px;
-    background: linear-gradient(128deg, #0e2923 0%, #153d31 48%, #214e3d 100%);
-    background-size: 180% 180%;
-    animation: welcome-gradient-drift 18s ease-in-out infinite alternate;
     color: #fff;
+}
+
+/* Two doors that slide apart at the end */
+.welcome-door {
+    position: absolute;
+    z-index: -2;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    background: linear-gradient(128deg, #0e2923 0%, #153d31 48%, #214e3d 100%);
+    background-size: 200% 100%;
+    will-change: transform;
+}
+
+.welcome-door--left {
+    left: 0;
+    background-position: 0 0;
+}
+
+.welcome-door--right {
+    right: 0;
+    background-position: 100% 0;
 }
 
 .welcome-portal {
@@ -66,96 +85,149 @@
     mask-image: radial-gradient(ellipse at center, #000 5%, transparent 80%);
 }
 
-.welcome-giving-art {
+/* Layout: heart on the left, words on the right */
+.welcome-layout {
+    display: grid;
+    width: min(100%, 1320px);
+    grid-template-columns: .85fr 1.15fr;
+    align-items: center;
+    gap: clamp(28px, 5vw, 90px);
+}
+
+.welcome-art-zone,
+.welcome-content {
+    min-width: 0;
+}
+
+.welcome-art-zone {
+    display: grid;
+    place-items: center;
+}
+
+.welcome-art {
+    position: relative;
+    display: grid;
+    width: min(34vw, 62vh, 560px);
+    aspect-ratio: 1;
+    place-items: center;
+}
+
+.welcome-rings {
     position: absolute;
-    top: 50%;
-    right: max(-8vw, -100px);
-    width: min(48vw, 650px);
+    inset: 0;
+    width: 100%;
+    height: 100%;
     overflow: visible;
-    color: rgba(241, 203, 132, .6);
-    opacity: .52;
-    transform: translateY(-50%);
-    animation: giving-art-float 12s ease-in-out infinite alternate;
 }
 
-.welcome-giving-art--left {
-    right: auto;
-    left: max(-175px, -8.75vw);
-    width: min(48vw, 650px);
-    opacity: .32;
-    transform: translateY(-50%) scaleX(-1) scale(.9);
-    animation-delay: -6s;
-}
-
-.giving-orbit {
+.welcome-orbit {
     fill: none;
-    stroke: rgba(241, 203, 132, .28);
+    stroke: rgba(241, 203, 132, .3);
     stroke-width: 1;
     stroke-dasharray: 2 12;
-    transform-origin: 250px 250px;
-    animation: giving-orbit-turn 70s linear infinite;
+    transform-origin: 200px 200px;
+    animation: welcome-orbit-turn 70s linear infinite;
 }
 
-.giving-orbit--inner {
-    stroke: rgba(255, 255, 255, .13);
+.welcome-orbit--inner {
+    stroke: rgba(255, 255, 255, .15);
     stroke-dasharray: 1 9;
     animation-direction: reverse;
     animation-duration: 55s;
 }
 
-.giving-heart,
-.giving-hand,
-.giving-palm {
-    fill: none;
-    stroke: rgba(247, 213, 153, .8);
-    stroke-width: 2.2;
-    stroke-linecap: round;
+.welcome-heart-wrap {
+    width: 62%;
+    filter: drop-shadow(0 0 26px rgba(245, 196, 112, .35));
+}
+
+.welcome-heart {
+    display: block;
+    width: 100%;
+    overflow: visible;
+}
+
+.welcome-heart-line {
+    fill: rgba(255, 255, 255, .04);
+    stroke: #f7d599;
+    stroke-width: 2.6;
     stroke-linejoin: round;
-    stroke-dasharray: 700;
-    stroke-dashoffset: 700;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
 }
 
-.giving-heart {
-    stroke-width: 2.5;
-    filter: drop-shadow(0 0 8px rgba(245, 196, 112, .22));
-    transform: translateY(-22px);
-    animation: giving-line-draw 2.4s 2.75s ease-out forwards, giving-heart-glow .85s 5.15s ease-in-out 1 normal forwards;
+/* Gold seeds that fall into the heart */
+.welcome-seed {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 11px;
+    height: 11px;
+    margin: -5px 0 0 -5px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff1c9 0%, #f0cb83 55%, rgba(240, 203, 131, 0) 100%);
+    box-shadow: 0 0 14px 3px rgba(244, 211, 145, .65);
+    opacity: 0;
 }
 
-.giving-hand {
-    animation: giving-line-draw 2.4s 2.75s ease-out forwards, giving-hand-glow .85s 5.15s ease-in-out 1 normal forwards;
+/* Ring of light when the heart is full */
+.welcome-burst {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 62%;
+    aspect-ratio: 1;
+    margin: -31% 0 0 -31%;
+    border: 2px solid rgba(247, 213, 153, .8);
+    border-radius: 50%;
+    opacity: 0;
 }
 
-.giving-palm {
-    animation: giving-line-draw 2.4s 3.1s ease-out forwards, giving-hand-glow .7s 5.5s ease-in-out 1 normal forwards;
+/* Tiny sparks that rise from the full heart */
+.welcome-spark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    margin: -3px 0 0 -3px;
+    border-radius: 50%;
+    background: #ffe3a8;
+    box-shadow: 0 0 10px 2px rgba(244, 211, 145, .7);
+    opacity: 0;
 }
 
-.giving-spark {
-    fill: #f4d391;
-    filter: drop-shadow(0 0 7px rgba(244, 211, 145, .8));
-    animation: giving-sparkle 3.2s 2.75s ease-in-out infinite alternate;
-}
-
-.giving-spark--two {
-    animation-delay: 3.55s;
-}
-
-.giving-spark--three {
-    animation-delay: 4.25s;
+.welcome-thanks {
+    position: absolute;
+    right: 0;
+    bottom: 3%;
+    left: 0;
+    margin: 0;
+    color: #f0cb83;
+    font: italic 500 clamp(18px, 2vw, 28px)/1.2 var(--font-serif);
+    letter-spacing: .02em;
+    text-align: center;
+    opacity: 0;
 }
 
 .welcome-content {
     display: flex;
-    width: min(100%, 900px);
     flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+}
+
+.welcome-top {
+    display: flex;
     align-items: center;
-    text-align: center;
+    gap: 16px;
+    margin-bottom: 26px;
 }
 
 .welcome-kicker {
-    margin: 0 0 24px;
-    color: rgba(255, 255, 255, .7);
-    font-size: 11px;
+    margin: 0;
+    color: rgba(255, 255, 255, .75);
+    font-size: clamp(11px, 1.05vw, 14px);
     font-weight: 700;
     letter-spacing: .22em;
     text-transform: uppercase;
@@ -163,16 +235,16 @@
 
 .welcome-emblem {
     display: grid;
-    width: 82px;
-    height: 82px;
+    width: clamp(62px, 6vw, 88px);
+    height: clamp(62px, 6vw, 88px);
+    flex: none;
     place-items: center;
     overflow: hidden;
-    margin-bottom: 27px;
     border: 1px solid rgba(241, 203, 132, .72);
     border-radius: 50%;
-    padding: 5px;
+    padding: 4px;
     background: rgba(255, 255, 255, .96);
-    box-shadow: 0 0 0 9px rgba(243, 198, 125, .07), 0 0 48px rgba(243, 198, 125, .17);
+    box-shadow: 0 0 0 7px rgba(243, 198, 125, .07), 0 0 40px rgba(243, 198, 125, .17);
 }
 
 .welcome-emblem img {
@@ -184,12 +256,11 @@
 
 .welcome-content h1 {
     display: flex;
-    width: 100%;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     margin: 0;
     color: #fff;
-    font: 600 clamp(42px, 8vw, 78px)/.98 var(--font-serif);
+    font: 600 clamp(38px, min(5vw, 9vh), 80px)/1 var(--font-serif);
     text-wrap: balance;
 }
 
@@ -197,7 +268,6 @@
     display: block;
     max-width: 100%;
     overflow-wrap: anywhere;
-    text-wrap: balance;
 }
 
 .welcome-foundation-name {
@@ -205,38 +275,64 @@
 }
 
 .welcome-intro-copy {
-    margin: 23px 0 0;
-    color: rgba(255, 255, 255, .8);
-    font-size: clamp(14px, 2vw, 17px);
-    line-height: 1.8;
+    margin: clamp(18px, 3vh, 30px) 0 0;
+    color: rgba(255, 255, 255, .85);
+    font-size: clamp(15px, min(1.55vw, 2.6vh), 24px);
+    line-height: 1.75;
 }
 
+.welcome-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    margin-top: clamp(22px, 4vh, 38px);
+}
+
+.welcome-donate,
 .welcome-enter {
     display: inline-flex;
-    min-height: 50px;
+    min-height: clamp(50px, 7vh, 64px);
     align-items: center;
     justify-content: center;
-    gap: 22px;
-    margin-top: 34px;
-    border: 1px solid rgba(245, 205, 130, .8);
+    gap: 14px;
     border-radius: 999px;
-    padding: 0 22px;
-    background: #f0cb83;
-    color: #173429;
-    font-size: 13px;
+    padding: 0 clamp(24px, 2.4vw, 36px);
+    font-size: clamp(14px, min(1.15vw, 2vh), 18px);
     font-weight: 700;
     cursor: pointer;
-    transition: background-color .22s ease, transform .22s ease;
+    transition: background-color .22s ease, transform .22s ease, color .22s ease;
 }
 
-.welcome-enter:hover {
+.welcome-donate {
+    position: relative;
+    gap: 10px;
+    border: 1px solid #f5cd82;
+    background: #f0cb83;
+    color: #173429;
+    animation: welcome-donate-pulse 2.4s ease-out infinite;
+}
+
+.welcome-donate span {
+    color: #b9573f;
+    font-size: 1.25em;
+    animation: welcome-heartbeat 1.4s ease-in-out infinite;
+}
+
+.welcome-donate:hover {
     transform: translateY(-2px);
     background: #ffda98;
 }
 
-.welcome-enter:focus-visible {
-    outline: 3px solid #fff;
-    outline-offset: 4px;
+.welcome-enter {
+    border: 1px solid rgba(245, 205, 130, .6);
+    background: transparent;
+    color: #f0cb83;
+}
+
+.welcome-enter:hover {
+    transform: translateY(-2px);
+    background: rgba(240, 203, 131, .12);
 }
 
 .welcome-enter span {
@@ -248,10 +344,55 @@
     transform: translateX(4px);
 }
 
-.welcome-countdown {
-    margin: 15px 0 0;
-    color: rgba(255, 255, 255, .54);
-    font-size: 11px;
+.welcome-donate:focus-visible,
+.welcome-enter:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 4px;
+}
+
+.welcome-stats {
+    margin-top: clamp(24px, 5vh, 46px);
+    border-top: 1px solid rgba(240, 203, 131, .25);
+    padding-top: clamp(16px, 2.6vh, 26px);
+}
+
+.welcome-stats-title {
+    margin: 0 0 14px;
+    color: rgba(255, 255, 255, .6);
+    font-size: clamp(11px, 1vw, 13px);
+    font-weight: 700;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+}
+
+.welcome-stats-row {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 16px clamp(20px, 2.6vw, 44px);
+}
+
+.welcome-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.welcome-stat strong {
+    color: #f0cb83;
+    font: 600 clamp(32px, min(4vw, 7vh), 58px)/1 var(--font-serif);
+}
+
+.welcome-stat span {
+    max-width: 150px;
+    color: rgba(255, 255, 255, .72);
+    font-size: clamp(12px, min(1.05vw, 2vh), 15px);
+    line-height: 1.4;
+}
+
+.welcome-trust {
+    margin: clamp(16px, 3vh, 26px) 0 0;
+    color: rgba(255, 255, 255, .55);
+    font-size: clamp(11px, 1vw, 14px);
     letter-spacing: .04em;
 }
 
@@ -272,54 +413,103 @@
     background: linear-gradient(90deg, #82b982, #f0cb83);
 }
 
-@media (max-width: 760px) {
-    .welcome-screen {
-        padding-inline: 20px;
-    }
-
-    .welcome-giving-art {
+@media (max-height: 700px) and (min-width: 861px) {
+    .welcome-trust {
         display: none;
     }
 
-    .welcome-giving-art--left {
-        display: block;
-        top: auto;
-        right: auto;
-        bottom: -57px;
-        left: 50%;
-        width: min(62vw, 300px);
-        opacity: .16;
-        transform: translateX(-50%) scaleX(-1) scale(.9);
-        animation-delay: -6s;
-    }
-
-    .welcome-kicker {
-        margin-bottom: 20px;
-        font-size: 9px;
-    }
-
-    .welcome-emblem {
-        width: 68px;
-        height: 68px;
-        margin-bottom: 24px;
-    }
-
-    .welcome-content h1 {
-        font-size: clamp(32px, 8vw, 46px);
-    }
-
-    .welcome-intro-copy {
-        margin-top: 18px;
-    }
-
-    .welcome-enter {
-        margin-top: 27px;
+    .welcome-top {
+        margin-bottom: 16px;
     }
 }
 
-@media (max-width: 420px) {
+@media (max-width: 860px) {
+    .welcome-screen {
+        padding: 24px 20px 36px;
+    }
+
+    .welcome-layout {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .welcome-art {
+        width: min(52vw, 210px, 25vh);
+    }
+
+    .welcome-content {
+        align-items: center;
+        text-align: center;
+    }
+
     .welcome-content h1 {
-        font-size: clamp(32px, 8.8vw, 37px);
+        align-items: center;
+        font-size: clamp(32px, 9vw, 46px);
+    }
+
+    .welcome-top {
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .welcome-kicker {
+        font-size: 9px;
+    }
+
+    .welcome-actions {
+        justify-content: center;
+        margin-top: 24px;
+    }
+
+    .welcome-stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+
+    .welcome-stat {
+        align-items: center;
+    }
+
+    .welcome-stat span {
+        max-width: none;
+        font-size: 10px;
+    }
+
+    .welcome-stat strong {
+        font-size: 26px;
+    }
+
+    .welcome-thanks {
+        bottom: 1%;
+        font-size: 15px;
+    }
+
+    .welcome-intro-copy {
+        font-size: 15px;
+    }
+
+    .welcome-donate,
+    .welcome-enter {
+        min-height: 50px;
+        font-size: 14px;
+    }
+
+    .welcome-kicker {
+        font-size: 10px;
+    }
+}
+
+@media (max-height: 760px) and (max-width: 860px) {
+    .welcome-stats {
+        display: none;
+    }
+}
+
+@media (max-height: 820px) and (max-width: 860px) {
+    .welcome-trust {
+        display: none;
     }
 }
 
@@ -341,67 +531,33 @@
         transition: none !important;
         opacity: 1;
     }
-
-    .giving-heart,
-    .giving-hand,
-    .giving-palm {
-        stroke-dashoffset: 0;
-    }
 }
 
-@keyframes welcome-gradient-drift {
-    to {
-        background-position: 100% 55%;
-    }
-}
-
-@keyframes giving-art-float {
-    to {
-        translate: 0 -10px;
-        rotate: 2deg;
-    }
-}
-
-@keyframes giving-orbit-turn {
+@keyframes welcome-orbit-turn {
     to {
         rotate: 360deg;
     }
 }
 
-@keyframes giving-line-draw {
-    to {
-        stroke-dashoffset: 0;
+@keyframes welcome-heartbeat {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.25);
     }
 }
 
-@keyframes giving-sparkle {
-    from {
-        opacity: .35;
-        transform: scale(.75);
+@keyframes welcome-donate-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(240, 203, 131, .55);
     }
 
-    to {
-        opacity: 1;
-        transform: scale(1.35);
-    }
-}
-
-@keyframes giving-heart-glow {
-    from {
-        filter: drop-shadow(0 0 5px rgba(245, 196, 112, .2));
-    }
-
-    to {
-        filter: drop-shadow(0 0 20px rgba(245, 196, 112, .78));
-    }
-}
-
-@keyframes giving-hand-glow {
-    from {
-        filter: drop-shadow(0 0 2px rgba(245, 196, 112, .08));
-    }
-
-    to {
-        filter: drop-shadow(0 0 14px rgba(245, 196, 112, .65));
+    70%,
+    100% {
+        box-shadow: 0 0 0 16px rgba(240, 203, 131, 0);
     }
 }
