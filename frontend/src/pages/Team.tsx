@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 import Layout from "../components/Layout";
 import PageHero from "../components/PageHero";
 import Reveal from "../components/Reveal";
@@ -253,15 +255,18 @@ export default function Team() {
 
   useEffect(() => {
     if (!selectedPerson) return;
+    const smoother = ScrollSmoother.get();
     const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    if (smoother) smoother.paused(true);
+    else document.body.style.overflow = "hidden";
     closeButtonRef.current?.focus();
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") setSelectedPerson(null);
     };
     window.addEventListener("keydown", closeOnEscape);
     return () => {
-      document.body.style.overflow = previousOverflow;
+      if (smoother) smoother.paused(false);
+      else document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", closeOnEscape);
       previousFocusRef.current?.focus();
     };
@@ -336,8 +341,7 @@ export default function Team() {
       </Reveal>
 
       <AnimatePresence>
-        {selectedPerson && (
-          <motion.div
+        {selectedPerson && createPortal(<motion.div
             className="team-profile-backdrop"
             role="presentation"
             initial={{ opacity: 0 }}
@@ -407,8 +411,7 @@ export default function Team() {
                 </motion.div>
               </div>
             </motion.aside>
-          </motion.div>
-        )}
+          </motion.div>, document.body)}
       </AnimatePresence>
     </Layout>
   );

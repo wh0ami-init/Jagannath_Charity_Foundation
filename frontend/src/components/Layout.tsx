@@ -2,13 +2,14 @@ import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import Newsletter from "./Newsletter";
-import { useLocation } from "wouter";
+import { useLocation, useRoute } from "wouter";
 
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 
-gsap.registerPlugin(useGSAP, ScrollTrigger);
+gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollSmoother);
 
 export default function Layout({
   children,
@@ -20,6 +21,21 @@ export default function Layout({
   const progressRef = useRef<HTMLDivElement>(null);
   const [showTop, setShowTop] = useState(false);
   const [location] = useLocation();
+  const [isHome] = useRoute("/");
+
+  // ScrollSmoother transforms its content, so viewport controls stay outside
+  // the wrapper and only the long-form page content is smoothed.
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const smoother = ScrollSmoother.create({
+      wrapper: "#smooth-wrapper",
+      content: "#smooth-content",
+      smooth: 1.05,
+      smoothTouch: 0,
+      effects: false,
+    });
+    return () => smoother.kill();
+  }, []);
 
   useEffect(() => {
     const previousScrollRestoration = window.history.scrollRestoration;
@@ -30,13 +46,9 @@ export default function Layout({
   }, []);
 
   useLayoutEffect(() => {
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        ? "instant"
-        : "smooth",
-    });
+    const smoother = ScrollSmoother.get();
+    if (smoother) smoother.scrollTo(0, false);
+    else window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }, [location]);
 
   // Scroll progress bar + "back to top" button, driven by ScrollTrigger
@@ -76,11 +88,15 @@ export default function Layout({
         Skip to main content
       </a>
       <Header />
-      <main id="main-content" className="flex-1">
-        {children}
-      </main>
-      {!hideNewsletter && <Newsletter />}
-      <Footer />
+      <div id="smooth-wrapper">
+        <div id="smooth-content" className={isHome ? "is-home" : undefined}>
+          <main id="main-content" className="flex-1">
+            {children}
+          </main>
+          {!hideNewsletter && <Newsletter />}
+          <Footer />
+        </div>
+      </div>
       <button
         type="button"
         className={`back-to-top${showTop ? " is-visible" : ""}`}
