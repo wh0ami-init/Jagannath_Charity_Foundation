@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
@@ -246,12 +246,98 @@ function PersonCard({
   );
 }
 
+function ProfilePanel({
+  person,
+  showPhoto,
+  closeButtonRef,
+  onClose,
+}: {
+  person: Person;
+  showPhoto: boolean;
+  closeButtonRef: RefObject<HTMLButtonElement>;
+  onClose: () => void;
+}) {
+  const reducedMotion = useReducedMotion();
+  // AnimatePresence only tracks real React elements, so the portal must live
+  // inside this component (a bare createPortal child is silently dropped).
+  return createPortal(
+    <motion.div
+      className="team-profile-backdrop"
+      role="presentation"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: reducedMotion ? 0 : 0.42 }}
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <motion.aside
+        className="team-profile-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="team-profile-name"
+        initial={reducedMotion ? false : { x: "100%" }}
+        animate={{ x: 0 }}
+        exit={reducedMotion ? undefined : { x: "100%" }}
+        transition={{
+          duration: reducedMotion ? 0 : 0.78,
+          ease: [0.22, 0.7, 0.2, 1],
+        }}
+      >
+        <button
+          ref={closeButtonRef}
+          type="button"
+          className="team-profile-close"
+          aria-label="Close profile"
+          onClick={onClose}
+        >
+          ×
+        </button>
+        <div className="team-profile-background">
+          {showPhoto ? (
+            <DynamicImage slotKey={person.slot} alt={person.name} />
+          ) : (
+            <div
+              className="team-profile-placeholder"
+              aria-label={`Portrait for ${person.name} has not been added`}
+            >
+              <span>{initials(person.name)}</span>
+            </div>
+          )}
+          <div className="team-profile-image-shade" />
+          <motion.div
+            className="team-profile-panel-copy"
+            initial={
+              reducedMotion ? false : { opacity: 0, y: 18, scale: 0.985 }
+            }
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{
+              duration: reducedMotion ? 0 : 0.62,
+              delay: reducedMotion ? 0 : 0.88,
+              ease: [0.22, 0.7, 0.2, 1],
+            }}
+          >
+            <p className="eyebrow">
+              <span />
+              {person.role}
+            </p>
+            <h2 id="team-profile-name">{person.name}</h2>
+            <div className="team-profile-rule" />
+            <p>{person.body}</p>
+          </motion.div>
+        </div>
+      </motion.aside>
+    </motion.div>,
+    document.body,
+  );
+}
+
 export default function Team() {
   const { images } = useImages();
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
-  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     if (!selectedPerson) return;
@@ -341,77 +427,15 @@ export default function Team() {
       </Reveal>
 
       <AnimatePresence>
-        {selectedPerson && createPortal(<motion.div
-            className="team-profile-backdrop"
-            role="presentation"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: reducedMotion ? 0 : 0.42 }}
-            onMouseDown={(event) => {
-              if (event.target === event.currentTarget) setSelectedPerson(null);
-            }}
-          >
-            <motion.aside
-              className="team-profile-panel"
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="team-profile-name"
-              initial={reducedMotion ? false : { x: "100%" }}
-              animate={{ x: 0 }}
-              exit={reducedMotion ? undefined : { x: "100%" }}
-              transition={{
-                duration: reducedMotion ? 0 : 0.78,
-                ease: [0.22, 0.7, 0.2, 1],
-              }}
-            >
-              <button
-                ref={closeButtonRef}
-                type="button"
-                className="team-profile-close"
-                aria-label="Close profile"
-                onClick={() => setSelectedPerson(null)}
-              >
-                ×
-              </button>
-              <div className="team-profile-background">
-                {showSelectedPhoto ? (
-                  <DynamicImage
-                    slotKey={selectedPerson.slot}
-                    alt={selectedPerson.name}
-                  />
-                ) : (
-                  <div
-                    className="team-profile-placeholder"
-                    aria-label={`Portrait for ${selectedPerson.name} has not been added`}
-                  >
-                    <span>{initials(selectedPerson.name)}</span>
-                  </div>
-                )}
-                <div className="team-profile-image-shade" />
-                <motion.div
-                  className="team-profile-panel-copy"
-                  initial={
-                    reducedMotion ? false : { opacity: 0, y: 18, scale: 0.985 }
-                  }
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{
-                    duration: reducedMotion ? 0 : 0.62,
-                    delay: reducedMotion ? 0 : 0.88,
-                    ease: [0.22, 0.7, 0.2, 1],
-                  }}
-                >
-                  <p className="eyebrow">
-                    <span />
-                    {selectedPerson.role}
-                  </p>
-                  <h2 id="team-profile-name">{selectedPerson.name}</h2>
-                  <div className="team-profile-rule" />
-                  <p>{selectedPerson.body}</p>
-                </motion.div>
-              </div>
-            </motion.aside>
-          </motion.div>, document.body)}
+        {selectedPerson && (
+          <ProfilePanel
+            key="team-profile-panel"
+            person={selectedPerson}
+            showPhoto={Boolean(showSelectedPhoto)}
+            closeButtonRef={closeButtonRef}
+            onClose={() => setSelectedPerson(null)}
+          />
+        )}
       </AnimatePresence>
     </Layout>
   );

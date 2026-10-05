@@ -3,6 +3,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import Newsletter from "./Newsletter";
 import { useLocation, useRoute } from "wouter";
+import { scrollToTop } from "../lib/scroll";
 
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -34,7 +35,22 @@ export default function Layout({
       smoothTouch: 0,
       effects: false,
     });
-    return () => smoother.kill();
+    // Images, fonts and tabs change the page height after first paint;
+    // tell ScrollTrigger/ScrollSmoother so the page never gets cut off.
+    let timer = 0;
+    const content = document.getElementById("smooth-content");
+    const observer = content
+      ? new ResizeObserver(() => {
+          window.clearTimeout(timer);
+          timer = window.setTimeout(() => ScrollTrigger.refresh(), 150);
+        })
+      : null;
+    if (content) observer?.observe(content);
+    return () => {
+      window.clearTimeout(timer);
+      observer?.disconnect();
+      smoother.kill();
+    };
   }, []);
 
   useEffect(() => {
@@ -102,15 +118,7 @@ export default function Layout({
         className={`back-to-top${showTop ? " is-visible" : ""}`}
         aria-label="Back to top"
         tabIndex={showTop ? 0 : -1}
-        onClick={() =>
-          window.scrollTo({
-            top: 0,
-            behavior: window.matchMedia("(prefers-reduced-motion: reduce)")
-              .matches
-              ? "instant"
-              : "smooth",
-          })
-        }
+        onClick={scrollToTop}
       >
         <span aria-hidden="true">↑</span>
       </button>
