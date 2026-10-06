@@ -37,7 +37,9 @@ export default function App() {
         <div className={`welcome-portal${welcomeVisible && !portalRevealStarted ? " is-covered" : ""}${portalRevealStarted ? " is-revealing" : ""}`}>
           <Suspense fallback={<div className="min-h-screen grid place-items-center text-navy-900/60">Loading page…</div>}>
             <Switch>
-              <Route path="/" component={Home} />
+              <Route path="/">
+                <Home isWelcomeVisible={welcomeVisible} />
+              </Route>
               <Route path="/about" component={About} />
               <Route path="/programmes" component={Programmes} />
               <Route path="/work">

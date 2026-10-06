@@ -79,18 +79,25 @@ const principles = [
   },
 ];
 
-export default function Home() {
+export default function Home({
+  isWelcomeVisible = false,
+}: {
+  isWelcomeVisible?: boolean;
+}) {
   const content = useSiteContent();
   const [slide, setSlide] = useState(0);
   const [heroTextVisible, setHeroTextVisible] = useState(true);
   const reducedMotion = useReducedMotion();
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (
+      isWelcomeVisible ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) return;
     let cycleTimer = 0;
     let imageTimer = 0;
     let returnTimer = 0;
 
-    const runCycle = () => {
+    const scheduleCycle = (delay: number) => {
       cycleTimer = window.setTimeout(() => {
         setHeroTextVisible(false);
         imageTimer = window.setTimeout(() => {
@@ -98,18 +105,20 @@ export default function Home() {
         }, 850);
         returnTimer = window.setTimeout(() => {
           setHeroTextVisible(true);
-          runCycle();
+          scheduleCycle(7000);
         }, 3850);
-      }, 7000);
+      }, delay);
     };
 
-    runCycle();
+    // The photo changes 850 ms into the cycle; this starts that transition
+    // 1.5 seconds after Home is revealed.
+    scheduleCycle(650);
     return () => {
       window.clearTimeout(cycleTimer);
       window.clearTimeout(imageTimer);
       window.clearTimeout(returnTimer);
     };
-  }, []);
+  }, [isWelcomeVisible]);
   const text = (key: string, fallback: string) =>
     content[key]?.value || fallback;
   const heroTitle = text(
