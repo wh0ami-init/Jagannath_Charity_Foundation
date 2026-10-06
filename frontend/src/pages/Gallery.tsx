@@ -40,9 +40,38 @@ const filters = [
 ];
 
 function categoryFor(slot: string) {
-  if (["gallery-kalam", "gallery-patil", "gallery-mukherjee", "gallery-kovind", "gallery-murmu", "gallery-pm-modi", "gallery-manmohan-singh"].includes(slot)) return "national";
-  if (["gallery-vp-dhankhar", "gallery-amit-shah", "gallery-rajnath-singh", "gallery-om-birla", "gallery-jp-nadda", "gallery-dharmendra-pradhan", "gallery-anna-hazare", "gallery-hemant-soren", "gallery-venkaiah-naidu"].includes(slot)) return "public";
-  if (["gallery-cm-sikkim", "gallery-governor-icfai", "gallery-bhutan-official"].includes(slot)) return "regional";
+  const nationalLeaders = [
+    "gallery-kalam",
+    "gallery-patil",
+    "gallery-mukherjee",
+    "gallery-kovind",
+    "gallery-murmu",
+    "gallery-pm-modi",
+    "gallery-manmohan-singh",
+  ];
+  const publicService = [
+    "gallery-vp-dhankhar",
+    "gallery-amit-shah",
+    "gallery-rajnath-singh",
+    "gallery-om-birla",
+    "gallery-jp-nadda",
+    "gallery-dharmendra-pradhan",
+    "gallery-anna-hazare",
+    "gallery-hemant-soren",
+    "gallery-venkaiah-naidu",
+  ];
+  if (
+    nationalLeaders.includes(slot) ||
+    /^gallery-extra-president-(kovind|mukherjee|murmu)-/.test(slot)
+  ) return "national";
+  if (
+    publicService.includes(slot) ||
+    /^gallery-extra-(arjun-ram-meghwal|baba-ramdev-2|dharmendra-pradhan-2|hemant-soren-2|jitendra-singh|jp-nadda-2|law-minister|manohar-lal|rajnath-2|union-minister-greet)$/.test(slot)
+  ) return "public";
+  if (
+    ["gallery-cm-sikkim", "gallery-governor-icfai", "gallery-bhutan-official"].includes(slot) ||
+    /^gallery-extra-(bhutan-flag|chhattisgarh-assembly|cm-|embassy-thimphu|goa-rajbhavan|governor-|international-guest|lok-bhavan-odisha|nepal-dignitary|odisha)/.test(slot)
+  ) return "regional";
   return "culture";
 }
 
@@ -136,6 +165,15 @@ export default function Gallery() {
     (activeFilter === "all" || categoryFor(item.slot_key) === activeFilter)
     && item.label.toLowerCase().includes(search.trim().toLowerCase()),
   ), [allItems, activeFilter, search]);
+  const categoryCounts = useMemo(() => {
+    const counts = Object.fromEntries(filters.map(({ id }) => [id, 0])) as Record<string, number>;
+    counts.all = allItems.length;
+    allItems.forEach((item) => {
+      const category = categoryFor(item.slot_key);
+      counts[category] += 1;
+    });
+    return counts;
+  }, [allItems]);
   const selectedItem = selectedKey && visibleItems.some((item) => item.slot_key === selectedKey) ? selectedKey : null;
   const lastTrigger = useRef<HTMLButtonElement | null>(null);
   const closeLightbox = useCallback(() => {
@@ -171,35 +209,152 @@ export default function Gallery() {
             <p>Browse the Foundation's courtesy meetings and moments of connection. Select a photograph to view it in detail.</p>
           </div>
 
-          <div className="gallery-toolbar">
-            <div className="gallery-filters" role="group" aria-label="Filter gallery by category">
-              {filters.map((filter) => <motion.button key={filter.id} type="button" aria-pressed={activeFilter === filter.id} className={activeFilter === filter.id ? "is-active" : ""} onClick={() => { setActiveFilter(filter.id); setSelectedKey(null); }} whileTap={reducedMotion ? undefined : { scale: 0.97 }}>
-                {activeFilter === filter.id && <motion.span className="gallery-filter-active" layoutId="gallery-active-filter" transition={{ duration: reducedMotion ? 0 : 0.46, ease: [0.22, 0.7, 0.2, 1] }} aria-hidden="true" />}
-                <span className="gallery-filter-label">{filter.label}</span>
-              </motion.button>)}
-            </div>
-            <label className="gallery-search"><span aria-hidden="true">⌕</span><input type="search" value={search} onChange={(event) => { setSearch(event.target.value); setSelectedKey(null); }} placeholder="Find a moment" aria-label="Search gallery" /></label>
-          </div>
+          <div className="gallery-browse-layout">
+            <aside className="gallery-filter-rail" aria-label="Gallery categories">
+              <p className="gallery-filter-heading">Browse by</p>
+              <div className="gallery-filters" role="group" aria-label="Filter gallery by category">
+                {filters.map((filter) => (
+                  <motion.button
+                    key={filter.id}
+                    type="button"
+                    aria-pressed={activeFilter === filter.id}
+                    className={activeFilter === filter.id ? "is-active" : ""}
+                    onClick={() => {
+                      setActiveFilter(filter.id);
+                      setSelectedKey(null);
+                    }}
+                    whileTap={reducedMotion ? undefined : { scale: 0.97 }}
+                  >
+                    {activeFilter === filter.id && (
+                      <motion.span
+                        className="gallery-filter-active"
+                        layoutId="gallery-active-filter"
+                        transition={{ duration: reducedMotion ? 0 : 0.46, ease: [0.22, 0.7, 0.2, 1] }}
+                        aria-hidden="true"
+                      />
+                    )}
+                    <span className="gallery-filter-label">{filter.label}</span>
+                    <span className="gallery-filter-count" aria-hidden="true">
+                      {categoryCounts[filter.id]}
+                    </span>
+                  </motion.button>
+                ))}
+              </div>
+            </aside>
 
-          <div className="gallery-results" aria-live="polite"><AnimatePresence mode="wait" initial={false}><motion.span key={`${visibleItems.length}-${activeFilter}-${search}`} initial={{ opacity: 0, y: 3 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -3 }} transition={{ duration: reducedMotion ? 0 : 0.34 }}>{visibleItems.length} {visibleItems.length === 1 ? "photograph" : "photographs"}</motion.span></AnimatePresence></div>
-          {visibleItems.length ? (
-            <motion.div layout id="gallery-photo-grid" className="gallery-collection" transition={{ layout: { duration: reducedMotion ? 0 : 0.72, ease: [0.22, 0.7, 0.2, 1] } }}>
-              <AnimatePresence initial={false} mode="popLayout">
-              {visibleItems.map((item) => {
-                const tileIndex = allItems.findIndex((entry) => entry.slot_key === item.slot_key);
-                const selected = selectedItem === item.slot_key;
-                return <motion.button type="button" layout="position" className="gallery-tile" key={item.slot_key} onClick={(event) => openLightbox(item.slot_key, event)} aria-label={`View ${item.label}`} aria-hidden={selected || undefined} tabIndex={selected ? -1 : 0} initial={false} animate={{ opacity: selected ? 0 : 1 }} exit={{ opacity: 0, scale: 0.97 }} whileHover={reducedMotion ? undefined : { scale: 1.045, y: -4, zIndex: 2 }} whileTap={reducedMotion ? undefined : { scale: 0.985 }} transition={{ duration: reducedMotion ? 0 : 0.55, layout: { duration: reducedMotion ? 0 : 0.72, ease: [0.22, 0.7, 0.2, 1] } }}>
-                <div className="gallery-tile-image-wrap">
-                  <DynamicImage slotKey={item.slot_key} alt={item.alt_text || item.label} className="gallery-tile-image" />
+            <div className="gallery-content">
+              <div className="gallery-toolbar">
+                <label className="gallery-search">
+                  <span aria-hidden="true">⌕</span>
+                  <input
+                    type="search"
+                    value={search}
+                    onChange={(event) => {
+                      setSearch(event.target.value);
+                      setSelectedKey(null);
+                    }}
+                    placeholder="Find a moment"
+                    aria-label="Search gallery"
+                  />
+                </label>
+              </div>
+
+              <div className="gallery-results" aria-live="polite">
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.span
+                    key={`${visibleItems.length}-${activeFilter}-${search}`}
+                    initial={{ opacity: 0, y: 3 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -3 }}
+                    transition={{ duration: reducedMotion ? 0 : 0.34 }}
+                  >
+                    {visibleItems.length} {visibleItems.length === 1 ? "photograph" : "photographs"}
+                  </motion.span>
+                </AnimatePresence>
+              </div>
+
+              {visibleItems.length ? (
+                <motion.div
+                  layout
+                  id="gallery-photo-grid"
+                  className="gallery-collection"
+                  transition={{
+                    layout: {
+                      duration: reducedMotion ? 0 : 0.72,
+                      ease: [0.22, 0.7, 0.2, 1],
+                    },
+                  }}
+                >
+                  <AnimatePresence initial={false} mode="popLayout">
+                    {visibleItems.map((item) => {
+                      const tileIndex = allItems.findIndex(
+                        (entry) => entry.slot_key === item.slot_key,
+                      );
+                      const selected = selectedItem === item.slot_key;
+                      return (
+                        <motion.button
+                          type="button"
+                          layout="position"
+                          className="gallery-tile"
+                          key={item.slot_key}
+                          onClick={(event) => openLightbox(item.slot_key, event)}
+                          aria-label={`View ${item.label}`}
+                          aria-hidden={selected || undefined}
+                          tabIndex={selected ? -1 : 0}
+                          initial={false}
+                          animate={{ opacity: selected ? 0 : 1 }}
+                          exit={{ opacity: 0, scale: 0.97 }}
+                          whileHover={reducedMotion ? undefined : { scale: 1.045, y: -4, zIndex: 2 }}
+                          whileTap={reducedMotion ? undefined : { scale: 0.985 }}
+                          transition={{
+                            duration: reducedMotion ? 0 : 0.55,
+                            layout: {
+                              duration: reducedMotion ? 0 : 0.72,
+                              ease: [0.22, 0.7, 0.2, 1],
+                            },
+                          }}
+                        >
+                          <div className="gallery-tile-image-wrap">
+                            <DynamicImage
+                              slotKey={item.slot_key}
+                              alt={item.alt_text || item.label}
+                              className="gallery-tile-image"
+                            />
+                          </div>
+                          <span className="gallery-tile-shade" />
+                          <span className="gallery-tile-index">
+                            {String(tileIndex + 1).padStart(2, "0")}
+                          </span>
+                          <span className="gallery-tile-caption">
+                            <i>
+                              {filters.find(
+                                (filter) => filter.id === categoryFor(item.slot_key),
+                              )?.label}
+                            </i>
+                            <strong>{item.label}</strong>
+                            <b aria-hidden="true">↗</b>
+                          </span>
+                        </motion.button>
+                      );
+                    })}
+                  </AnimatePresence>
+                </motion.div>
+              ) : (
+                <div className="gallery-empty">
+                  <h2>No photographs match that search.</h2>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearch("");
+                      setActiveFilter("all");
+                    }}
+                  >
+                    Clear filters
+                  </button>
                 </div>
-                <span className="gallery-tile-shade" />
-                <span className="gallery-tile-index">{String(tileIndex + 1).padStart(2, "0")}</span>
-                <span className="gallery-tile-caption"><i>{filters.find((filter) => filter.id === categoryFor(item.slot_key))?.label}</i><strong>{item.label}</strong><b aria-hidden="true">↗</b></span>
-              </motion.button>;
-              })}
-              </AnimatePresence>
-            </motion.div>
-          ) : <div className="gallery-empty"><h2>No photographs match that search.</h2><button type="button" onClick={() => { setSearch(""); setActiveFilter("all"); }}>Clear filters</button></div>}
+              )}
+            </div>
+          </div>
         </div>
       </Reveal>
 
