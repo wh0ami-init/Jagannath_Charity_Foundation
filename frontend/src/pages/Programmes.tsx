@@ -6,7 +6,6 @@ import Layout from "../components/Layout";
 import PageHero from "../components/PageHero";
 import Reveal from "../components/Reveal";
 import { DynamicImage } from "../lib/ImagesContext";
-import { scrollToElement } from "../lib/scroll";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -297,7 +296,13 @@ export default function Programmes() {
       frame = window.requestAnimationFrame(() => {
         const target = document.getElementById(targetId);
         if (!target) return;
-        scrollToElement(target, "center center");
+        const reducedMotion = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        ).matches;
+        target.scrollIntoView({
+          behavior: reducedMotion ? "auto" : "smooth",
+          block: "center",
+        });
         target.classList.add("is-highlighted");
         clearTimer = window.setTimeout(
           () => target.classList.remove("is-highlighted"),

@@ -1,7 +1,5 @@
 import { MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import { AnimatePresence, LayoutGroup, motion, useReducedMotion, useScroll, useTransform } from "motion/react";
-import { ScrollSmoother } from "gsap/ScrollSmoother";
 import Layout from "../components/Layout";
 import Reveal from "../components/Reveal";
 import { DynamicImage, useImages } from "../lib/ImagesContext";
@@ -63,10 +61,8 @@ function GalleryLightbox({ items, selectedKey, onClose, onSelect }: {
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
-    const smoother = ScrollSmoother.get();
     const previousOverflow = document.body.style.overflow;
-    if (smoother) smoother.paused(true);
-    else document.body.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
     closeRef.current?.focus();
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
@@ -92,15 +88,14 @@ function GalleryLightbox({ items, selectedKey, onClose, onSelect }: {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => {
-      if (smoother) smoother.paused(false);
-      else document.body.style.overflow = previousOverflow;
+      document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [onClose, onSelect]);
 
   if (!item) return null;
 
-  return createPortal((
+  return (
     <motion.div className="gallery-lightbox" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reducedMotion ? 0 : 0.42 }}>
       <motion.section ref={panelRef} className="gallery-lightbox-panel" role="dialog" aria-modal="true" aria-labelledby="gallery-lightbox-title" initial={{ opacity: 0, scale: reducedMotion ? 1 : 0.985 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: reducedMotion ? 1 : 0.99 }} transition={{ duration: reducedMotion ? 0 : 0.72, ease: [0.22, 0.7, 0.2, 1] }}>
         <header className="gallery-lightbox-head">
@@ -115,7 +110,7 @@ function GalleryLightbox({ items, selectedKey, onClose, onSelect }: {
         </footer>
       </motion.section>
     </motion.div>
-  ), document.body);
+  );
 }
 
 export default function Gallery() {

@@ -9,7 +9,6 @@ import PageHero from "../components/PageHero";
 import Reveal from "../components/Reveal";
 import { DynamicImage } from "../lib/ImagesContext";
 import { useSiteContent } from "../lib/SiteContentContext";
-import { pageTop } from "../lib/scroll";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollToPlugin);
 
@@ -259,7 +258,7 @@ export default function About() {
         const r = el.getBoundingClientRect();
         return {
           x: r.left + window.scrollX,
-          y: pageTop(el),
+          y: r.top + window.scrollY,
           w: r.width,
         };
       };
@@ -321,7 +320,7 @@ export default function About() {
       // exactly where the scrub ends, so the photo lands in its place
       y = right.getBoundingClientRect().top + window.scrollY - DOCK + 2;
     } else if (section) {
-      y = pageTop(section) - 96;
+      y = section.getBoundingClientRect().top + window.scrollY - 96;
     }
     const html = document.documentElement;
     html.style.scrollBehavior = "auto"; // stop CSS smooth-scroll fighting GSAP

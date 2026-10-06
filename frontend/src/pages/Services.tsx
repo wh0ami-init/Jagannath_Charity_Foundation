@@ -6,7 +6,6 @@ import Reveal from "../components/Reveal";
 import { submissionPayload, submitForm } from "../lib/api";
 import Stagger from "../components/Stagger";
 import SplitHeading from "../components/SplitHeading";
-import { scrollToElement } from "../lib/scroll";
 
 const services = [
   {
@@ -129,8 +128,9 @@ export default function Services() {
                 type="button"
                 onClick={() => {
                   setService(item.title);
-                  const form = document.getElementById("request-form");
-                  if (form) scrollToElement(form, "top 100px");
+                  document
+                    .getElementById("request-form")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
                 }}
                 className="mt-4 self-start text-sm font-semibold text-navy-800 underline decoration-orange-400 underline-offset-4"
               >
