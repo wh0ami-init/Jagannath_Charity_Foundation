@@ -4,11 +4,8 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
 import Layout from "../components/Layout";
 import PageHero from "../components/PageHero";
-import Reveal from "../components/Reveal";
 import { DynamicImage } from "../lib/ImagesContext";
 import { useImages } from "../lib/ImagesContext";
-import Stagger from "../components/Stagger";
-import SplitHeading from "../components/SplitHeading";
 
 const trustBoard = [
   {
@@ -391,40 +388,28 @@ export default function Team() {
         description="The settlor and managing trustee, the founder trustees, the Board of Management and the Board of Advisors govern the Foundation with clear policy and strategic planning."
       />
 
-      <Reveal as="section" className="wrap py-16">
+      <section className="wrap py-16">
         <h2 className="team-section-heading">Board of Trustees</h2>
-        <Stagger
-          className="team-profile-grid team-profile-grid-trust"
-          gap={0.1}
-          distance={28}
-        >
+        <div className="team-profile-grid team-profile-grid-trust">
           {renderPeople(trustBoard)}
-        </Stagger>
-      </Reveal>
+        </div>
+      </section>
 
-      <Reveal as="section" className="wrap pb-16">
+      <section className="wrap pb-16">
         <h2 className="team-section-heading">Board of Management</h2>
-        <Stagger
-          className="team-profile-grid team-profile-grid-management"
-          gap={0.1}
-          distance={28}
-        >
+        <div className="team-profile-grid team-profile-grid-management">
           {renderPeople(boardOfManagement)}
-        </Stagger>
-      </Reveal>
+        </div>
+      </section>
 
-      <Reveal as="section" className="wrap pb-16">
+      <section className="wrap pb-16">
         <h2 className="team-section-heading">Board of Advisors</h2>
-        <Stagger
-          className="team-profile-grid team-profile-grid-advisors"
-          gap={0.1}
-          distance={28}
-        >
+        <div className="team-profile-grid team-profile-grid-advisors">
           {renderPeople(
             advisors.map((advisor) => ({ ...advisor, body: advisor.note })),
           )}
-        </Stagger>
-      </Reveal>
+        </div>
+      </section>
 
       <AnimatePresence>
         {selectedPerson && (
