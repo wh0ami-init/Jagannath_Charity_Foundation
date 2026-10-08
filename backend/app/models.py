@@ -69,3 +69,26 @@ class DeletedGallerySeed(Base):
     """IDs of removed seed photos, preventing automatic re-creation."""
     __tablename__ = "deleted_gallery_seeds"
     slot_key = Column(String(120), primary_key=True)
+
+
+class Donation(Base):
+    __tablename__ = "donations"
+
+    id = Column(Integer, primary_key=True)
+
+    # Store money in paise: Rs100 = 10000 paise
+    amount_paise = Column(Integer, nullable=False)
+    currency = Column(String(3), nullable=False, default='INR')
+
+    razorpay_order_id = Column(
+        String(100), unique=True, nullable=True
+    )
+
+    razorpay_payment_id = Column(
+        String(100), unique=True, nullable=True
+    )
+
+    status = Column(String(20), nullable=False, default="pending")
+
+    created_at = Column(DateTime, nullable=False, default=utcnow)
+    paid_at = Column(DateTime, nullable=True)
