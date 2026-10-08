@@ -30,7 +30,7 @@ class SessionResponse(BaseModel):
 
 
 class SubmissionCreate(BaseModel):
-    kind: Literal["contact", "volunteer", "pledge", "newsletter"]
+    kind: Literal["contact", "volunteer", "pledge", "newsletter", "service"]
     name: str = Field(default="", max_length=150)
     email: str = Field(max_length=254)
     phone: str = Field(default="", max_length=40)
