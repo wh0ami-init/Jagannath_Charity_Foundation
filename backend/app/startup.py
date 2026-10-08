@@ -3,7 +3,7 @@ from pathlib import Path
 
 from sqlalchemy.orm import Session
 
-from app.models import ImageSlot, SiteContent
+from app.models import ImageSlot, SiteContent, DeletedGallerySeed
 from app.seed_data import IMAGE_SLOTS, SITE_CONTENT
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,9 +14,13 @@ UPLOAD_DIR = BASE_DIR / "uploads"
 def ensure_image_slots(db: Session):
     UPLOAD_DIR.mkdir(exist_ok=True)
     for slot_key, label, page, alt_text, seed_filename in IMAGE_SLOTS:
+        if db.get(DeletedGallerySeed, slot_key) is not None:
+            continue
         existing = db.query(ImageSlot).filter(ImageSlot.slot_key == slot_key).first()
         seed_path = SEED_IMAGES_DIR / seed_filename
         if existing:
+            if existing.deleted_at is not None:
+                continue
             expected_filename = f"{slot_key}{seed_path.suffix.lower()}"
             current_upload = UPLOAD_DIR / existing.file_path
             is_seeded_slot = existing.file_path in {expected_filename, "placeholder.jpg"}

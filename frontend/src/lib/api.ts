@@ -4,32 +4,48 @@ export function apiUrl(path: string) {
   return `${API_URL}${path}`;
 }
 
-const TOKEN_KEY = "jf_admin_token";
+// The admin session lives in an HttpOnly cookie that JavaScript cannot read.
+// The CSRF token is kept only in memory and restored from /api/auth/me after a refresh.
+let csrfToken: string | null = null;
 
-export function getToken() {
-  return localStorage.getItem(TOKEN_KEY);
-}
+// Remove any token saved in localStorage by earlier versions of the site.
+try { localStorage.removeItem("jf_admin_token"); } catch { /* storage unavailable */ }
 
-export function setToken(token: string) {
-  localStorage.setItem(TOKEN_KEY, token);
-}
-
-export function clearToken() {
-  localStorage.removeItem(TOKEN_KEY);
+function csrfHeaders(): Record<string, string> {
+  return csrfToken ? { "X-CSRF-Token": csrfToken } : {};
 }
 
 export async function login(username: string, password: string) {
   const res = await fetch(apiUrl("/api/auth/login"), {
     method: "POST",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password }),
   });
+  if (res.status === 429) {
+    const error = await res.json().catch(() => null);
+    throw new Error(error?.detail || "Too many login attempts. Please try again later.");
+  }
   if (!res.ok) {
     throw new Error("Invalid username or password");
   }
   const data = await res.json();
-  setToken(data.access_token);
+  csrfToken = data.csrf_token;
   return data;
+}
+
+/** Checks the cookie session and restores the CSRF token. Throws if not signed in. */
+export async function fetchSession() {
+  const res = await fetch(apiUrl("/api/auth/me"), { credentials: "include" });
+  if (!res.ok) throw new Error("Session expired");
+  const data = await res.json();
+  csrfToken = data.csrf_token;
+  return data as { username: string };
+}
+
+export async function logout() {
+  csrfToken = null;
+  await fetch(apiUrl("/api/auth/logout"), { method: "POST", credentials: "include" }).catch(() => undefined);
 }
 
 export interface ImageSlot {
@@ -93,9 +109,7 @@ export async function submitForm(payload: Record<string, string | number | boole
 }
 
 export async function fetchSubmissions(): Promise<FormSubmission[]> {
-  const res = await fetch(apiUrl("/api/submissions"), {
-    headers: { Authorization: `Bearer ${getToken()}` },
-  });
+  const res = await fetch(apiUrl("/api/submissions"), { credentials: "include" });
   if (!res.ok) throw new Error("Could not load the admin inbox");
   return res.json();
 }
@@ -103,7 +117,8 @@ export async function fetchSubmissions(): Promise<FormSubmission[]> {
 export async function deleteSubmission(id: number) {
   const res = await fetch(apiUrl(`/api/submissions/${id}`), {
     method: "DELETE",
-    headers: { Authorization: `Bearer ${getToken()}` },
+    credentials: "include",
+    headers: csrfHeaders(),
   });
   if (!res.ok) throw new Error("Could not delete this submission");
 }
@@ -117,7 +132,8 @@ export async function fetchContent(): Promise<SiteContent> {
 export async function updateContent(key: string, value: string) {
   const res = await fetch(apiUrl(`/api/content/${key}`), {
     method: "PUT",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
+    credentials: "include",
+    headers: { "Content-Type": "application/json", ...csrfHeaders() },
     body: JSON.stringify({ value }),
   });
   if (!res.ok) throw new Error("Could not save this update");
@@ -131,12 +147,12 @@ export async function fetchImages(): Promise<ImageSlot[]> {
 }
 
 export async function replaceImage(slotKey: string, file: File): Promise<ImageSlot> {
-  const token = getToken();
   const formData = new FormData();
   formData.append("file", file);
   const res = await fetch(apiUrl(`/api/images/${slotKey}`), {
     method: "POST",
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    credentials: "include",
+    headers: csrfHeaders(),
     body: formData,
   });
   if (!res.ok) {
