@@ -4,6 +4,7 @@ import PageHero from "../components/PageHero";
 import Reveal from "../components/Reveal";
 import { submissionPayload, submitForm } from "../lib/api";
 import Stagger from "../components/Stagger";
+import RazorpayTestButton from "../components/RazorpayTestButton";
 
 const causes = [
   "Education & literacy",
@@ -173,6 +174,7 @@ export default function Donate() {
           )}
         </Stagger>
       </Reveal>
+      <RazorpayTestButton />
     </Layout>
   );
 }
