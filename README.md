@@ -1,243 +1,171 @@
-<div align="center">
+# Jagannath Charity Foundation Website
 
-<img src="frontend/public/images/logo-mark.png" alt="Jagannath Foundation emblem" width="112" />
-
-# Jagannath Foundation
-
-### Public website and administration console
-
-[![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](#requirements)
-[![FastAPI](https://img.shields.io/badge/FastAPI-API-009688?style=for-the-badge&logo=fastapi&logoColor=white)](#architecture)
-[![React](https://img.shields.io/badge/React-18-149ECA?style=for-the-badge&logo=react&logoColor=white)](#architecture)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](#architecture)
-[![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=for-the-badge&logo=vite&logoColor=white)](#architecture)
-
-*A community-focused website for sharing the Foundation’s work, recording its impact,*
-*and making it easier to connect with the team.*
-
-</div>
-
----
-
-## Contents
-
-- [Overview](#overview)
-- [Features](#features)
-- [Architecture](#architecture)
-- [Requirements](#requirements)
-- [Run locally](#run-locally)
-- [Configuration](#configuration)
-- [Deployment](#deployment)
-- [Administration](#administration)
-- [API overview](#api-overview)
-- [Security and privacy](#security-and-privacy)
-- [Project structure](#project-structure)
-
-## Overview
-
-The Jagannath Foundation website brings public information and staff tools into one application. Visitors can learn about the Foundation, explore its programmes and projects, view impact stories, and contact the team. Staff can sign in to manage selected website copy, replace managed images, and review enquiries in a private inbox.
-
-The frontend is a responsive single-page application. Its content and image endpoints are public; administration endpoints require a database-backed administrator account and a signed bearer token.
+Public website and private administration console for Jagannath Charity Foundation. The application uses React, TypeScript and Vite for the frontend, FastAPI for the API, and SQLAlchemy with MySQL or SQLite for persistence.
 
 ## Features
 
-| Area | What it provides |
-| --- | --- |
-| Public pages | Home, Our Story, Programmes, Projects, Impact, People, Partners, Gallery, Donate, Volunteer, Community Portal, Contact, and Privacy Policy. |
-| Programme and impact storytelling | Programme descriptions, impact measures, field records, and photo captions. |
-| Responsive interactions | Mobile navigation, page transitions, scroll reveals, and reduced-motion-aware animations. |
-| Community Portal | Enquiry forms for membership, beneficiary support, opportunities, complaints, donations, projects, events, and records. Requests are sent to the staff inbox for follow-up. |
-| Contact and participation forms | Contact, volunteer, pledge, and newsletter submissions are recorded for staff follow-up. |
-| Administration | Edit selected site text, replace managed images, and filter, export, or delete form submissions. |
-| Image management | Seed images keep the site populated; administrators can replace supported images through the console. |
-| Deployment support | Vercel and Netlify single-page routing files are included for the frontend. |
+- Public pages for the Foundation's programmes, team, gallery, contact, volunteering and pledge notes.
+- Database-backed admin login with bcrypt password hashes; credentials are never configured in source code or hosting environment variables.
+- Admin tools for editing selected site copy, replacing managed images and handling form submissions.
+- Vercel frontend and Railway API deployment support.
 
-Pledge forms record a note only. The site does not process payments, issue or verify certificates, create member accounts, check application status, or automatically send newsletter messages. Community requests are enquiries; staff follow up separately.
+Pledge forms record notes only. The site does not process payments or automatically send newsletter messages. Form submissions contain personal information; restrict database and hosting access and delete data according to the Foundation's retention policy.
 
 ## Architecture
 
 ```text
-┌──────────────────────────────┐
-│ Browser                      │
-│ React + TypeScript + Vite    │
-└──────────────┬───────────────┘
-               │ HTTPS / JSON
-               ▼
-┌──────────────────────────────┐
-│ FastAPI application          │
-│ Auth · submissions · content │
-│ image slots                  │
-└──────────┬───────────┬───────┘
-           │           │
-           ▼           ▼
-      MySQL/SQLite   Upload storage
+Browser ── HTTPS ── Vercel static frontend
+                     │ VITE_API_URL
+                     ▼
+                 Railway FastAPI ── MySQL database
+                     │
+                     └── persistent volume for admin image uploads
 ```
-
-The frontend calls the API at `VITE_API_URL`. The backend uses SQLAlchemy and supports SQLite for local development and MySQL for production. Administrator image uploads are stored under `backend/uploads`; production deployments need persistent storage for that directory.
 
 ## Requirements
 
-- Python 3.11 or later
-- Node.js 18 or later
-- MySQL 8 for production; SQLite is supported for local development
+- Python 3.11+
+- Node.js 18+
+- MySQL 8 for production (SQLite is suitable for local development)
 
-## Run locally
+## Local development
 
-### 1. Start the API
+### Backend
 
 ```bash
 cd backend
 python3 -m venv .venv
 source .venv/bin/activate       # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-cp .env.example .env            # Windows: copy .env.example .env
+cp .env.example .env
 ```
 
-Edit `backend/.env` and replace `JWT_SECRET` with a unique random value of at least 32 characters. For example:
+Edit `backend/.env`. Set a unique `JWT_SECRET` of at least 32 characters. Generate one with:
 
 ```bash
 python -c 'import secrets; print(secrets.token_urlsafe(48))'
 ```
 
-Create the initial administrator, then start the API:
+For local use, the example uses SQLite. Create the database tables, create the initial administrator, and start the API:
 
 ```bash
 python -m app.manage_admin
 uvicorn app.main:app --reload --port 8010
 ```
 
-The administrator tool prompts for a username and password and stores a bcrypt hash in the configured database. Passwords must be at least 12 characters and no more than 72 UTF-8 bytes. Running the tool again rotates the administrator credentials. If multiple administrator accounts exist, the tool asks for confirmation before removing duplicates.
+The admin tool prompts for a username and password, then writes only a bcrypt password hash to the configured database. Use a password of at least 12 characters. Running the tool again rotates the single administrator's username and password. If multiple admins exist, enter the username to keep and type `DELETE` to confirm removing the other admin accounts.
 
-The API health endpoint is available at `http://localhost:8010/api/health`.
+Health endpoint: `http://localhost:8010/api/health`.
 
-### 2. Start the frontend
+### Frontend
 
 In another terminal:
 
 ```bash
 cd frontend
 npm install
-cp .env.example .env            # Windows: copy .env.example .env
+cp .env.example .env
 npm run dev
 ```
 
-Set `VITE_API_URL=http://localhost:8010` in `frontend/.env`. Open `http://localhost:5173`; the administrator sign-in page is at `/admin/login`.
+Set `VITE_API_URL=http://localhost:8010` in `frontend/.env`. Visit `http://localhost:5173`; the admin sign-in is at `/admin/login`.
 
-To preview the optional welcome screen locally, set `VITE_ENABLE_WELCOME_SCREEN=true` before starting Vite. It is disabled by default.
+## Deploy: Railway API + Vercel frontend
 
-### Production build
+Deploy the database and API before the frontend so you can configure the API URL and CORS origin.
 
-```bash
-cd frontend
-npm run build
-npm run preview
-```
+### 1. Railway: database and API
 
-The build runs the TypeScript compiler before creating the optimized Vite output in `frontend/dist`.
+1. Create a Railway project from this GitHub repository and add a MySQL service. Attach a persistent volume to the API service for image uploads, mounted at `/app/uploads` (the backend's `uploads/` directory when the service root is `backend`).
+2. Set the API service's **Root Directory** to `backend`.
+3. Add these variables in the Railway API service settings:
 
-## Configuration
+   | Variable | Value |
+   | --- | --- |
+   | `DATABASE_URL` | Railway MySQL connection URL, using SQLAlchemy's `mysql+mysqlconnector://` format. Use Railway's internal host when both services are in the same project. |
+   | `JWT_SECRET` | A newly generated random value of at least 32 characters. Keep it private. |
+   | `ENVIRONMENT` | `production` |
+   | `CORS_ORIGINS` | Exact Vercel origin, e.g. `https://your-project.vercel.app`; add a custom domain origin if you use one. |
+   | `ACCESS_TOKEN_EXPIRE_MINUTES` | `60` (or a shorter period your team prefers). |
 
-| Variable | Used by | Purpose |
-| --- | --- | --- |
-| `DATABASE_URL` | Backend | SQLAlchemy database URL. Use MySQL in production; the example uses SQLite. |
-| `JWT_SECRET` | Backend | Random signing key of at least 32 characters. Changing it invalidates existing tokens. |
-| `ENVIRONMENT` | Backend | Set to `production` to reject SQLite and missing CORS origins and enable production security headers. |
-| `CORS_ORIGINS` | Backend | Comma-separated exact browser origins, without paths. Required in production. |
-| `ACCESS_TOKEN_EXPIRE_MINUTES` | Backend | Administrator bearer-token lifetime; defaults to 60 minutes. |
-| `VITE_API_URL` | Frontend | Public API origin compiled into the frontend at build time. Do not put secrets in `VITE_*` variables. |
-| `VITE_ENABLE_WELCOME_SCREEN` | Frontend | Set to `true` to enable the optional welcome screen. Defaults to disabled. |
-
-See [`backend/.env.example`](backend/.env.example) and [`frontend/.env.example`](frontend/.env.example) for templates. Never commit real environment files or credentials.
-
-## Deployment
-
-The repository supports a Vercel frontend and Railway API deployment. Deploy the database and API first so the frontend can be configured with the public API origin.
-
-### Railway API
-
-1. Set the service root directory to `backend` and attach a persistent volume at `/app/uploads`.
-2. Configure `DATABASE_URL` with a MySQL SQLAlchemy URL, `JWT_SECRET` with a new random secret, `ENVIRONMENT=production`, and `CORS_ORIGINS` with the exact frontend origin. `ACCESS_TOKEN_EXPIRE_MINUTES` is optional.
-3. Use this start command:
+   Do not set or commit `ADMIN_USERNAME` or `ADMIN_PASSWORD`; the application does not read those variables.
+4. Configure the start command as:
 
    ```bash
    uvicorn app.main:app --host 0.0.0.0 --port $PORT
    ```
 
-4. Check `/api/health`, then create or rotate the administrator from a Railway shell with `python -m app.manage_admin`.
+5. Deploy and confirm `https://<railway-api-domain>/api/health` responds with `{"status":"ok"}`.
+6. Open a Railway shell for the API service and provision the first administrator interactively:
 
-### Vercel frontend
+   ```bash
+   python -m app.manage_admin
+   ```
 
-1. Set the project root directory to `frontend`.
-2. Set `VITE_API_URL` to the public Railway API origin, without a trailing slash.
-3. Deploy and add the exact Vercel origin to the API's `CORS_ORIGINS` setting. Add the custom domain origin too, if used.
+   This uses the service's configured database. Keep the username and password in your team's password manager. To rotate them, run the command again. The tool never prints the password.
 
-The included [`frontend/vercel.json`](frontend/vercel.json) and [`frontend/public/_redirects`](frontend/public/_redirects) route application paths to the single-page app. Vite embeds `VITE_API_URL` at build time, so redeploy the frontend after changing it.
+Railway deployments may replace ephemeral files. The persistent volume is needed to preserve images uploaded through the admin interface. Database backups are also required for recovery.
 
-Use persistent storage for uploads and configure database backups. Uploaded images are separate from database records and should be included in the recovery plan.
+### 2. Vercel: frontend
 
-## Administration
+1. Import the same GitHub repository into Vercel and set **Root Directory** to `frontend`.
+2. Set `VITE_API_URL` to the public Railway API origin, for example `https://your-api.up.railway.app` (no trailing slash).
+3. Deploy. The included [`frontend/vercel.json`](frontend/vercel.json) routes application paths to the single-page app, so direct visits and refreshes work.
+4. Put the resulting exact Vercel origin in Railway's `CORS_ORIGINS`, then redeploy the API. If you add a custom frontend domain, add its exact `https://` origin too.
 
-The admin console is available at `/admin/login`. Create the first account interactively on the backend with `python -m app.manage_admin`; the application does not read administrator credentials from environment variables and does not ship with a default account.
+Vite embeds `VITE_API_URL` at build time. Redeploy the frontend after changing it. Never put database URLs, JWT secrets, or other private values in `VITE_*` variables; frontend variables are public in the built JavaScript.
 
-Administrators can:
+## Configuration
 
-- update selected public-page copy;
-- replace image files associated with managed image slots; and
-- review, filter, export, and delete public form submissions.
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `DATABASE_URL` | Yes | SQLAlchemy database connection. Use MySQL in production; local SQLite is supported. |
+| `JWT_SECRET` | Yes | Random signing key, minimum 32 characters. Changing it invalidates existing login tokens. |
+| `ENVIRONMENT` | Production | Set to `production` to reject SQLite and missing CORS origins and enable production security headers. |
+| `CORS_ORIGINS` | Production | Comma-separated exact browser origins, without paths. |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | No | Admin session lifetime; defaults to 60 minutes. |
+| `COOKIE_SAMESITE` | No | `lax`, `strict` or `none`. Blank = `none` in production (cross-site Vercel + Railway), `lax` locally. |
+| `TRUSTED_PROXY_COUNT` | No | Reverse proxies in front of the API, used to find the real client IP for rate limits. Blank = `1` in production (Railway), `0` locally. |
+| `LOGIN_IP_LIMIT`, `LOGIN_USER_FAILURE_LIMIT`, `LOGIN_WINDOW_SECONDS` | No | Login limits: attempts per IP and failed attempts per account within the window. Defaults `10`, `10`, `900`. |
+| `FORM_IP_LIMIT`, `FORM_WINDOW_SECONDS` | No | Public form submissions per IP within the window. Defaults `10`, `900`. |
+| `VITE_API_URL` | Frontend | Public API origin, compiled into the frontend at build time. |
 
-The frontend currently stores the bearer token in browser local storage. Anyone able to run script on the site origin could access it, so keep site dependencies and managed content trusted. An HttpOnly-cookie session would provide stronger protection against token access through cross-site scripting.
+## Security and operations
+
+- Admin identity is checked against the database. Passwords are bcrypt hashes; the application has no default admin account and does not provision credentials from environment variables.
+- The admin session is a signed JWT stored in an `HttpOnly` cookie (`Secure` in production), so page scripts cannot read it, and nothing is kept in local storage. Because browsers send cookies automatically, every state-changing admin request must also carry an `X-CSRF-Token` header. The frontend keeps that token in memory only and restores it from `/api/auth/me` after a refresh.
+- In production the frontend (`*.vercel.app`) and API (`*.up.railway.app`) are on different sites, so the cookie is sent as `SameSite=None; Secure`. Some browsers block third-party cookies, which can break admin sign-in. The robust fix is to serve both from one site (for example `www.example.org` and `api.example.org`) and set `COOKIE_SAMESITE=lax`.
+- Rate limits (in memory, per API process): 10 login attempts per IP and 10 failed logins per account every 15 minutes, and 10 public form submissions per IP every 15 minutes. Over-limit requests get HTTP 429. The account limit also means someone can deliberately lock the administrator out for up to 15 minutes; the trade-off is that distributed guessing is capped. Set `TRUSTED_PROXY_COUNT` correctly or every visitor will share one IP bucket. If you run more than one API instance, limits apply per instance, so also add proxy/WAF limits.
+- Admin routes require a valid token. CORS restricts browser origins, but it is not an API access control mechanism.
+- Image uploads are size-limited and check file signatures as well as extensions. Keep the uploads volume writable only by the service.
+- Do not expose database ports publicly. Restrict access to Railway/Vercel teams, enable provider MFA, rotate leaked credentials immediately, and back up the database and uploads.
+- Public forms accept unauthenticated submissions, include a honeypot field, and are rate limited per IP. Add a managed rate limiter/WAF in front of the API before a high-traffic launch; proxy-level rate limiting should also cover login and public form submission.
+- The database contains contact details and messages. Limit staff access, retain only what is needed, and ensure backups are protected and routinely tested.
+- Before publishing this public repository, inspect Git history as well as the current tree for secrets. Removing a secret from the latest commit does not remove it from earlier commits; rotate any credential that was ever committed.
 
 ## API overview
 
 | Method | Endpoint | Access |
 | --- | --- | --- |
 | `GET` | `/api/health` | Public |
-| `POST` | `/api/auth/login` | Public; returns a bearer token |
-| `GET` | `/api/auth/me` | Administrator |
+| `POST` | `/api/auth/login` | Public, rate limited; sets the session cookie and returns the CSRF token |
+| `POST` | `/api/auth/logout` | Clears the session cookie |
+| `GET` | `/api/auth/me` | Admin; returns username and CSRF token |
 | `GET` | `/api/images` | Public |
-| `GET` | `/api/images/{slot_key}` | Public |
-| `POST` | `/api/images/{slot_key}` | Administrator; replaces an image |
+| `POST` | `/api/images/{slot_key}` | Admin |
 | `GET` | `/api/content` | Public |
-| `PUT` | `/api/content/{content_key}` | Administrator |
-| `POST` | `/api/submissions` | Public; records a form submission |
-| `GET` | `/api/submissions` | Administrator; accepts a `limit` query parameter |
-| `DELETE` | `/api/submissions/{submission_id}` | Administrator |
+| `PUT` | `/api/content/{content_key}` | Admin |
+| `POST` | `/api/submissions` | Public, rate limited |
+| `GET` | `/api/submissions` | Admin |
+| `DELETE` | `/api/submissions/{submission_id}` | Admin |
 
-Submission kinds are `contact`, `volunteer`, `pledge`, `newsletter`, and `service`. The `service` kind uses `subject` for the selected community service. The API also requires consent for stored submissions and accepts a honeypot field for basic bot filtering.
-
-## Security and privacy
-
-- Administrator passwords are stored as bcrypt hashes. Login tokens are signed JWT bearer tokens; there is no default administrator account.
-- CORS limits browser origins but does not replace API authentication or authorization.
-- Image uploads are limited to 8 MB and checked against supported file signatures and extensions. Keep the upload directory writable only by the service.
-- Public form submissions contain personal information. Restrict database and hosting access, retain only what is needed, and protect backups.
-- Public forms include a honeypot, but the API does not provide distributed rate limiting. Add a managed rate limiter or WAF before a high-traffic launch, covering login and public submissions.
-- Do not expose database ports publicly. Restrict hosting access, enable provider MFA, and rotate any leaked credentials immediately.
-- Before making the repository public, inspect Git history for secrets. Removing a secret from the current files does not remove it from previous commits.
-
-## Project structure
+## Repository layout
 
 ```text
-backend/
-  app/
-    routers/          Authentication, content, images, and submissions APIs
-    auth.py           Password hashing and JWT authentication
-    config.py         Environment-backed settings and validation
-    database.py       SQLAlchemy engine and session dependency
-    models.py         Database tables
-    schemas.py        Request and response validation
-    startup.py        Initial image slots and site content
-  seed_images/        Source images for managed image slots
-  uploads/            Runtime uploads; persist this directory in production
-  .env.example        Backend configuration template
-  requirements.txt    Python dependencies
-frontend/
-  public/images/      Brand, page, gallery, and impact photography
-  src/
-    components/       Shared layout, navigation, forms, and animation helpers
-    lib/              API client and shared content/image contexts
-    pages/            Public pages and admin screens
-  public/_redirects   Netlify single-page routing rule
-  vercel.json         Vercel single-page routing rule
-  package.json        Frontend scripts and dependencies
+backend/app/          FastAPI application, models, authentication and routes
+backend/seed_images/  Source images used to populate managed image slots
+backend/uploads/      Runtime uploads; use persistent storage in production
+frontend/src/         React website and admin interface
+frontend/public/      Static assets
+frontend/vercel.json  SPA route rewrite for Vercel
 ```
