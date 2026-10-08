@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 60
     cors_origins: str = ""
     environment: str = "development"
+    razorpay_key_id: str = ""
+    razorpay_key_secret: str = ""
+    razorpay_webhook_secret: str = ""
 
     # Admin session cookie. Blank SameSite = "none" in production (frontend and API on
     # different sites, e.g. vercel.app + railway.app), "lax" otherwise. Use "lax" or

@@ -7,7 +7,7 @@ from sqlalchemy import inspect, text
 
 from app.config import settings
 from app.database import Base, engine, SessionLocal
-from app.routers import auth, images, content, submissions
+from app.routers import auth, images, content, submissions, payments
 from app.startup import ensure_image_slots, ensure_site_content
 
 Base.metadata.create_all(bind=engine)
@@ -60,6 +60,7 @@ app.include_router(auth.router)
 app.include_router(images.router)
 app.include_router(content.router)
 app.include_router(submissions.router)
+app.include_router(payments.router)
 
 
 @app.on_event("startup")
