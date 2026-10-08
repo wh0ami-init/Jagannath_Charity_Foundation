@@ -23,6 +23,8 @@ class ImageSlot(Base):
     label = Column(String(200), nullable=False)       # human-readable name shown in admin
     page = Column(String(60), nullable=False)          # which page it belongs to, for grouping in admin UI
     alt_text = Column(String(300), default="")
+    category = Column(String(24), nullable=True)
+    deleted_at = Column(DateTime, nullable=True)
     file_path = Column(String(400), nullable=False)    # relative path served from /uploads/...
     updated_at = Column(DateTime, default=utcnow, onupdate=utcnow)
 
@@ -61,3 +63,9 @@ class FormSubmission(Base):
     cause = Column(String(160), nullable=False, default="")
     consent_given = Column(Boolean, nullable=False, default=True)
     created_at = Column(DateTime, default=utcnow, nullable=False, index=True)
+
+
+class DeletedGallerySeed(Base):
+    """IDs of removed seed photos, preventing automatic re-creation."""
+    __tablename__ = "deleted_gallery_seeds"
+    slot_key = Column(String(120), primary_key=True)

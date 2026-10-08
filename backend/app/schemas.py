@@ -11,6 +11,7 @@ class ImageSlotOut(BaseModel):
     label: str
     page: str
     alt_text: str
+    category: Literal["national", "public", "regional", "culture"] | None = None
     url: str
     updated_at: datetime
 
