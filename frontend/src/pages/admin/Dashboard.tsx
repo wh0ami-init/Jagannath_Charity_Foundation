@@ -7,6 +7,8 @@ import {
   useState,
 } from "react";
 import { useLocation } from "wouter";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 import {
   API_URL,
   deleteSubmission,
@@ -24,6 +26,8 @@ import Reveal from "../../components/Reveal";
 
 type Status = { tone: "success" | "error"; message: string } | null;
 type Section = "images" | "text" | "inbox";
+
+gsap.registerPlugin(useGSAP);
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_SIZE = 8 * 1024 * 1024;
@@ -49,6 +53,22 @@ export default function AdminDashboard() {
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<Status>(null);
   const fileInputs = useRef<Record<string, HTMLInputElement | null>>({});
+  const dashboardRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    const root = dashboardRef.current;
+    if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
+    tl.fromTo(root.querySelectorAll(".admin-intro, .admin-overview-card"),
+      { autoAlpha: 0, y: 14 },
+      { autoAlpha: 1, y: 0, duration: 0.48, stagger: 0.07, clearProps: "all" },
+    );
+    tl.fromTo(root.querySelectorAll(".admin-image-card, .admin-copy-row, .inbox-item"),
+      { autoAlpha: 0, y: 12 },
+      { autoAlpha: 1, y: 0, duration: 0.38, stagger: 0.045, clearProps: "all" },
+      "-=0.2",
+    );
+  }, { scope: dashboardRef, dependencies: [section, imagePage, checkingAuth, loading] });
 
   // Add-image form state (frontend only)
   const addFileInput = useRef<HTMLInputElement | null>(null);
@@ -324,14 +344,14 @@ export default function AdminDashboard() {
   const canSubmit = !!newImage.file && !!newImage.title.trim();
 
   return (
-    <div className="admin-shell min-h-screen">
+    <div className="admin-shell min-h-screen" ref={dashboardRef}>
       <header className="admin-header">
         <div className="wrap flex min-h-20 flex-wrap items-center justify-between gap-4 py-3">
-          <div>
+          <div className="admin-brand">
             <h1 className="font-serif-heading text-xl font-bold">
               Jagannath Foundation
             </h1>
-            <p className="text-xs text-white/65">Website administration</p>
+            <p className="text-xs text-white/65">Website dashboard</p>
           </div>
           <div className="flex items-center gap-3">
             <a
@@ -340,7 +360,7 @@ export default function AdminDashboard() {
               rel="noreferrer"
               className="text-sm text-white/80 hover:text-white"
             >
-              View website ↗
+              <span className="admin-header-link-icon" aria-hidden="true">↗</span> View website
             </a>
             <button
               onClick={logout}
@@ -355,6 +375,7 @@ export default function AdminDashboard() {
       <div className="flex min-h-[calc(100vh-5rem)] flex-col items-start md:flex-row">
         {/* Sidebar: stays fixed in view while the page scrolls */}
         <aside className="sticky top-0 z-20 w-full shrink-0 border-b border-navy-950/10 bg-white p-2 md:h-screen md:w-60 md:self-start md:overflow-y-auto md:border-b-0 md:border-r md:p-4">
+          <p className="admin-nav-label">YOUR WORKSPACE</p>
           <nav
             role="tablist"
             aria-orientation="vertical"
@@ -371,7 +392,7 @@ export default function AdminDashboard() {
                   onClick={() => setSection(item.key)}
                   className={`flex items-center justify-between gap-2 whitespace-nowrap border-b-[3px] px-4 py-3 text-left text-sm font-semibold transition-colors md:w-full md:border-b-0 md:border-l-[3px] ${active ? "border-navy-950 bg-navy-950/5 text-navy-950" : "border-transparent text-navy-700 hover:bg-navy-950/5"}`}
                 >
-                  <span>{item.label}</span>
+                  <span className="admin-nav-copy"><span>{item.label === "text" ? "Website words" : item.label === "inbox" ? "Messages" : "Website photos"}</span><small>{item.key === "images" ? "Change photos" : item.key === "text" ? "Edit page text" : "Read requests"}</small></span>
                   <span
                     className={`min-w-[1.5rem] rounded-full px-2 py-1 text-center font-mono text-[11px] font-semibold leading-none tabular-nums tracking-tight transition-colors ${active ? "bg-navy-950 text-white" : "bg-navy-950/10 text-navy-700"}`}
                   >
@@ -387,6 +408,16 @@ export default function AdminDashboard() {
           className="admin-content w-full min-w-0 flex-1 px-4 pb-16 pt-5 md:px-8 md:pt-8"
           key={section}
         >
+          <div className="admin-overview">
+            <div className="admin-intro">
+              <p className="admin-welcome-kicker">JAGANNATH FOUNDATION · ADMIN</p>
+              <h2>Good to see you.</h2>
+              <p>Everything you need to keep the website up to date is here.</p>
+            </div>
+            <div className="admin-overview-card"><span>Website photos</span><strong>{Object.keys(images).length}</strong><small>Ready to update</small></div>
+            <div className="admin-overview-card"><span>Website words</span><strong>{Object.keys(content).length}</strong><small>Editable sections</small></div>
+            <div className="admin-overview-card admin-overview-card--accent"><span>Messages</span><strong>{submissions.length}</strong><small>Received by the website</small></div>
+          </div>
           {status && (
             <div
               role="status"

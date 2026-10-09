@@ -121,7 +121,7 @@ export default function Projects() {
             <div className="grid lg:grid-cols-[1.08fr_.92fr]">
               <div className="project-visual relative min-h-[320px] overflow-hidden bg-navy-950 sm:min-h-[460px]">
                 <img
-                  src="/images/senior-citizens-home.jpg"
+                  src="/images/senior-citizens-home.webp"
                   alt="Architectural concept rendering of a landscaped courtyard at a senior citizens home"
                   className="absolute inset-0 h-full w-full object-cover object-center"
                   loading="lazy"

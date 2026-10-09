@@ -126,7 +126,7 @@ const galleryDefaults: ImageSlot[] = [
   label,
   alt_text,
   page: "Gallery",
-  url: `/images/${slot_key}.jpg`,
+  url: `/images/${slot_key}.webp`,
   updated_at: "",
 }));
 

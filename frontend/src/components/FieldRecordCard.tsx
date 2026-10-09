@@ -132,7 +132,7 @@ export default function FieldRecordCard({
             <div className="fr-clip aspect-[4/3] overflow-hidden">
               <div className="fr-zoom h-full w-full">
                 <img
-                  src={`/images/activities/${image}.jpg`}
+                  src={`/images/activities/${image}.webp`}
                   alt={alt}
                   loading="lazy"
                   className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"

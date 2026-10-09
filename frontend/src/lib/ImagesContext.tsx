@@ -66,31 +66,31 @@ export function DynamicImage({
   const slot = images[slotKey];
   const fallbackAssets: Record<string, string> = {
     "site-logo": "/images/logo-mark.png",
-    "home-hero-education": "/images/hero-education.jpg",
-    "home-hero-health": "/images/hero-health.jpg",
-    "home-hero-livelihoods": "/images/hero-livelihoods.jpg",
-    "home-hero-solar": "/images/hero-solar.jpg",
-    "gallery-cover": "/images/gallery-cover.jpg",
-    "work-education": "/images/hero-education.jpg",
-    "work-health": "/images/hero-health.jpg",
-    "work-youth": "/images/hero-education.jpg",
-    "work-livelihoods": "/images/hero-livelihoods.jpg",
-    "work-environment": "/images/hero-solar.jpg",
-    "work-solar": "/images/hero-solar.jpg",
-    "about-founder-photo": "/images/founder-jagannath.jpg",
-    "team-jagannath-patnaik": "/images/founder-jagannath.jpg",
-    "team-shrabani-patnaik": "/images/team-shrabani-patnaik.jpg",
-    "team-prakriti-patnaik": "/images/team-prakriti-patnaik.jpg",
-    "team-purushraj-patnaik": "/images/team-purushraj-patnaik.jpg",
-    "team-sarita-patwal": "/images/sarita-patwal.jpg",
-    "team-prateek-nayak": "/images/prateek-nayak.jpg",
-    "team-samarendra-patra": "/images/samarendra-patra.jpg",
-    "team-reema-diddee": "/images/reema-diddee.jpg",
-    "team-lhamu-tshering-tamang": "/images/lhamu-tshering-tamang.jpg",
+    "home-hero-education": "/images/hero-education.webp",
+    "home-hero-health": "/images/hero-health.webp",
+    "home-hero-livelihoods": "/images/hero-livelihoods.webp",
+    "home-hero-solar": "/images/hero-solar.webp",
+    "gallery-cover": "/images/gallery-cover.webp",
+    "work-education": "/images/hero-education.webp",
+    "work-health": "/images/hero-health.webp",
+    "work-youth": "/images/hero-education.webp",
+    "work-livelihoods": "/images/hero-livelihoods.webp",
+    "work-environment": "/images/hero-solar.webp",
+    "work-solar": "/images/hero-solar.webp",
+    "about-founder-photo": "/images/founder-jagannath.webp",
+    "team-jagannath-patnaik": "/images/founder-jagannath.webp",
+    "team-shrabani-patnaik": "/images/team-shrabani-patnaik.webp",
+    "team-prakriti-patnaik": "/images/team-prakriti-patnaik.webp",
+    "team-purushraj-patnaik": "/images/team-purushraj-patnaik.webp",
+    "team-sarita-patwal": "/images/sarita-patwal.webp",
+    "team-prateek-nayak": "/images/prateek-nayak.webp",
+    "team-samarendra-patra": "/images/samarendra-patra.webp",
+    "team-reema-diddee": "/images/reema-diddee.webp",
+    "team-lhamu-tshering-tamang": "/images/lhamu-tshering-tamang.webp",
   };
   const fallbackSrc =
     fallbackAssets[slotKey] ||
-    (slotKey.startsWith("gallery-") ? `/images/${slotKey}.jpg` : undefined);
+    (slotKey.startsWith("gallery-") ? `/images/${slotKey}.webp` : undefined);
 
   if (!slot && !fallbackSrc) {
     return (
