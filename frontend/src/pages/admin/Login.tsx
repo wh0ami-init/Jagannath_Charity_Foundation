@@ -11,14 +11,6 @@ const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-// Little gold "seeds" that float up, same idea as the welcome screen.
-const SEEDS = Array.from({ length: 16 }, (_, i) => ({
-  x: `${(i * 37 + 8) % 96}%`,
-  s: `${10 + ((i * 7) % 12)}px`,
-  d: `${9 + ((i * 5) % 9)}s`,
-  delay: `${-((i * 3) % 11)}s`,
-}));
-
 export default function AdminLogin() {
   const [, navigate] = useLocation();
   const [username, setUsername] = useState("");
@@ -36,7 +28,7 @@ export default function AdminLogin() {
       .catch(() => undefined);
   }, [navigate]);
 
-  // Card glides in, then its parts appear one by one.
+  // Reveal the sign-in card and its contents on initial load.
   useGSAP(
     () => {
       const card = cardRef.current;
@@ -95,22 +87,6 @@ export default function AdminLogin() {
 
   return (
     <div className="ac-login">
-      <div className="ac-seeds" aria-hidden="true">
-        {SEEDS.map((seed, i) => (
-          <span
-            key={i}
-            style={
-              {
-                "--x": seed.x,
-                "--s": seed.s,
-                "--d": seed.d,
-                "--delay": seed.delay,
-              } as React.CSSProperties
-            }
-          />
-        ))}
-      </div>
-
       <div
         ref={cardRef}
         className={`ac-login-card${leaving ? " is-leaving" : ""}`}

@@ -79,6 +79,10 @@ login_ip_limiter = SlidingWindowLimiter(settings.login_ip_limit, settings.login_
 login_user_limiter = SlidingWindowLimiter(settings.login_user_failure_limit, settings.login_window_seconds)
 # Public form submissions per IP.
 form_ip_limiter = SlidingWindowLimiter(settings.form_ip_limit, settings.form_window_seconds)
+# Payment order creation calls an external provider and writes a donation row.
+# Limit it separately from forms so a public page cannot fill the database or
+# consume provider resources with an unbounded burst of test orders.
+payment_order_ip_limiter = SlidingWindowLimiter(limit=10, window_seconds=900)
 
 
 def client_ip(request: Request) -> str:
@@ -107,3 +111,9 @@ def limit_form_submissions(request: Request) -> None:
     wait = form_ip_limiter.check_and_hit(client_ip(request))
     if wait:
         raise too_many_requests(wait, "submissions")
+
+
+def limit_payment_orders(request: Request) -> None:
+    wait = payment_order_ip_limiter.check_and_hit(client_ip(request))
+    if wait:
+        raise too_many_requests(wait, "payment order requests")

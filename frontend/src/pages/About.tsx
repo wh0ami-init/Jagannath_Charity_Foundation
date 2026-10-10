@@ -242,7 +242,7 @@ export default function About() {
   const rightSlotRef = useRef<HTMLDivElement>(null);
   const tabsRef = useRef<HTMLElement>(null);
 
-  /* ---- The photo flight: intro (left) -> founder's dream section (right).
+  /* Move the founder photo from its introduction into the founder's story.
      Scrubbed, so scrolling back up plays it in reverse automatically. ---- */
   useGSAP(
     () => {
@@ -278,7 +278,7 @@ export default function About() {
         onUpdate: () => setLanded(tl.progress() > 0.985),
       });
 
-      // vertical + scale: linear, so the photo stays docked while you scroll
+      // Keep the photo aligned with the viewport during the scroll.
       tl.to(
         flyer,
         {
@@ -288,7 +288,7 @@ export default function About() {
         },
         0,
       );
-      // horizontal: slides across late, so it doesn't sweep over the text early
+      // Move the photo horizontally after the story text is visible.
       tl.to(
         flyer,
         {
@@ -317,7 +317,7 @@ export default function About() {
     const section = tabsRef.current;
     let y = 0;
     if (flyEnabled && right) {
-      // exactly where the scrub ends, so the photo lands in its place
+      // Match the transform endpoint to the photo's final layout position.
       y = right.getBoundingClientRect().top + window.scrollY - DOCK + 2;
     } else if (section) {
       y = section.getBoundingClientRect().top + window.scrollY - 96;
@@ -564,14 +564,14 @@ export default function About() {
         </div>
       </section>
 
-      {/* ===== Founder introduction: photo sits LEFT, content on the right ===== */}
+      {/* Founder introduction and profile content. */}
       <section
         className="founder-intro wrap"
         aria-labelledby="founder-intro-title"
       >
         <div className="founder-intro-photo">
           <div ref={leftSlotRef} className="founder-slot founder-slot--left">
-            {/* GSAP moves this wrapper. Motion's entrance lives on the child. */}
+            {/* The parent handles the scroll transition; the child handles entry. */}
             <div ref={flyerRef} className="founder-flyer">
               <motion.div
                 className="about-founder-visual"

@@ -17,6 +17,7 @@ with patch.dict(os.environ, {
     from app.database import Base
     from app.models import Donation
     from app.routers import payments
+from app.ratelimit import limit_payment_orders, payment_order_ip_limiter
 
 
 class PaymentOrderTests(unittest.TestCase):
@@ -92,6 +93,19 @@ class PaymentOrderTests(unittest.TestCase):
                 self.create()
         self.assertEqual(caught.exception.status_code, 500)
         self.assertEqual(self.db.query(Donation).count(), 0)
+
+    def test_payment_order_requests_are_rate_limited_per_ip(self):
+        key = "payment-order-test-ip"
+        payment_order_ip_limiter.reset(key)
+        try:
+            with patch("app.ratelimit.client_ip", return_value=key):
+                for _ in range(payment_order_ip_limiter.limit):
+                    limit_payment_orders(Mock())
+                with self.assertRaises(HTTPException) as caught:
+                    limit_payment_orders(Mock())
+            self.assertEqual(caught.exception.status_code, 429)
+        finally:
+            payment_order_ip_limiter.reset(key)
 
 
 if __name__ == "__main__":

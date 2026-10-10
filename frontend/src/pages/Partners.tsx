@@ -2,7 +2,6 @@ import Layout from "../components/Layout";
 import PageHero from "../components/PageHero";
 import Reveal from "../components/Reveal";
 import Stagger from "../components/Stagger";
-import SplitHeading from "../components/SplitHeading";
 
 type IndexEntry = {
   name: string;

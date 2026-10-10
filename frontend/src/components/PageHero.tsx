@@ -3,6 +3,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useReducedMotion } from "motion/react";
 import { Link } from "wouter";
+import "./PageHero.css";
 
 gsap.registerPlugin(useGSAP);
 
@@ -14,10 +15,11 @@ type Theme =
   | "donate"
   | "contact"
   | "volunteer"
-  | "privacy";
+  | "privacy"
+  | "certificates";
 
 type Fact = { value: string; label: string };
-type Motif = "origin" | "programmes" | "measure" | "leadership" | "giving" | "place" | "volunteers" | "privacy" | "projects" | "partners" | "services";
+type Motif = "origin" | "programmes" | "measure" | "leadership" | "giving" | "place" | "volunteers" | "privacy" | "projects" | "partners" | "services" | "documents";
 
 type PageHeroProps = {
   theme: Theme;
@@ -51,53 +53,21 @@ export default function PageHero({
     const entersFromRight = ["programmes", "leadership", "place", "privacy", "partners"].includes(motif);
     gsap.fromTo(hero, {
       autoAlpha: 0,
-      x: entersFromRight ? 42 : -42,
-      y: -28,
-      scale: 0.988,
+      x: entersFromRight ? 18 : -18,
+      y: -12,
+      scale: 0.996,
     }, {
       autoAlpha: 1,
       x: 0,
       y: 0,
       scale: 1,
-      duration: 1.75,
-      delay: 0.18,
+      duration: 0.55,
+      delay: 0.04,
       ease: "power3.out",
       clearProps: "transform,opacity,visibility",
       overwrite: "auto",
     });
 
-    const lights = hero.querySelectorAll<HTMLElement>(".pagehero-glow");
-    if (!lights.length) return;
-
-    gsap.to(lights[0], {
-      xPercent: 18,
-      yPercent: 12,
-      scale: 1.18,
-      duration: 12,
-      ease: "sine.inOut",
-      repeat: -1,
-      yoyo: true,
-    });
-    gsap.to(lights[1], {
-      xPercent: -22,
-      yPercent: -14,
-      scale: 1.2,
-      duration: 15,
-      delay: 0.6,
-      ease: "sine.inOut",
-      repeat: -1,
-      yoyo: true,
-    });
-    gsap.to(lights[2], {
-      xPercent: 12,
-      yPercent: -18,
-      scale: 1.12,
-      duration: 17,
-      delay: 0.9,
-      ease: "sine.inOut",
-      repeat: -1,
-      yoyo: true,
-    });
   }, { scope, dependencies: [reducedMotion, motif], revertOnUpdate: true });
 
   return (
@@ -120,6 +90,7 @@ export default function PageHero({
           {motif === "projects" && <g><path className="pagehero-art-line" d="M235 390 H545 V326 H470 V262 H405 V198 H340 V134 H275 V390" /><path className="pagehero-art-accent" d="M250 420 H565" /><circle className="pagehero-art-node" cx="308" cy="164" r="8" /><circle className="pagehero-art-node" cx="373" cy="228" r="8" /><circle className="pagehero-art-node" cx="438" cy="292" r="8" /></g>}
           {motif === "partners" && <g><path className="pagehero-art-line" d="M367 212 L339 184 C306 151 251 151 218 184 C185 217 185 272 218 305 L271 358 C304 391 359 391 392 358 L421 329 M413 288 L441 316 C474 349 529 349 562 316 C595 283 595 228 562 195 L509 142 C476 109 421 109 388 142 L359 171" /><path className="pagehero-art-accent" d="M319 279 L461 187" /></g>}
           {motif === "services" && <g><circle className="pagehero-art-orbit" cx="390" cy="252" r="69" /><path className="pagehero-art-line" d="M390 183 V112 M450 217 L513 181 M450 287 L513 323 M390 321 V392 M330 287 L267 323 M330 217 L267 181" /><circle className="pagehero-art-node" cx="390" cy="252" r="28" /><circle className="pagehero-art-node" cx="390" cy="112" r="11" /><circle className="pagehero-art-node" cx="513" cy="181" r="11" /><circle className="pagehero-art-node" cx="513" cy="323" r="11" /><circle className="pagehero-art-node" cx="390" cy="392" r="11" /><circle className="pagehero-art-node" cx="267" cy="323" r="11" /><circle className="pagehero-art-node" cx="267" cy="181" r="11" /></g>}
+          {motif === "documents" && <g><path className="pagehero-art-line" d="M286 107 H431 L503 179 V393 H286 Z M431 107 V180 H503 M326 229 H454 M326 273 H454 M326 317 H414" /><circle className="pagehero-art-orbit" cx="482" cy="348" r="71" /><path className="pagehero-art-accent" d="M447 349 L472 374 L519 321" /></g>}
         </svg>
       </div>
 

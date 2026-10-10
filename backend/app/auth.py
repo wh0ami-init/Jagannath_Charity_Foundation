@@ -1,3 +1,4 @@
+import hashlib
 import hmac
 import secrets
 from datetime import datetime, timedelta, timezone
@@ -19,6 +20,13 @@ CSRF_HEADER = "x-csrf-token"
 SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
 
 
+def _auth_version(password_hash: str) -> str:
+    """Return a keyed fingerprint so credential rotation revokes old sessions."""
+    return hmac.new(
+        settings.jwt_secret.encode(), password_hash.encode(), hashlib.sha256
+    ).hexdigest()
+
+
 def verify_password(plain: str, hashed: str) -> bool:
     return pwd_context.verify(plain, hashed)
 
@@ -29,11 +37,16 @@ def hash_password(plain: str) -> str:
     return pwd_context.hash(plain)
 
 
-def create_access_token(username: str) -> tuple[str, str]:
+def create_access_token(username: str, password_hash: str) -> tuple[str, str]:
     """Returns (jwt, csrf_token). The CSRF token is also embedded in the JWT."""
     expire = datetime.now(timezone.utc) + timedelta(minutes=settings.access_token_expire_minutes)
     csrf = secrets.token_urlsafe(32)
-    payload = {"sub": username, "exp": expire, "csrf": csrf}
+    payload = {
+        "sub": username,
+        "exp": expire,
+        "csrf": csrf,
+        "auth_version": _auth_version(password_hash),
+    }
     return jwt.encode(payload, settings.jwt_secret, algorithm=settings.jwt_algorithm), csrf
 
 
@@ -84,7 +97,12 @@ def get_current_admin(request: Request, db: Session = Depends(get_db)) -> AdminU
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="CSRF token missing or invalid")
 
     user = db.query(AdminUser).filter(AdminUser.username == username).first()
-    if user is None:
+    token_version = payload.get("auth_version")
+    if (
+        user is None
+        or not isinstance(token_version, str)
+        or not hmac.compare_digest(token_version, _auth_version(user.password_hash))
+    ):
         raise credentials_error
     request.state.csrf_token = csrf
     return user

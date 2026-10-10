@@ -135,14 +135,6 @@ function greeting() {
   return "Good evening";
 }
 
-// Gold "seeds" that float up inside the welcome card.
-const SEEDS = Array.from({ length: 12 }, (_, i) => ({
-  x: `${(i * 41 + 6) % 94}%`,
-  s: `${9 + ((i * 7) % 11)}px`,
-  d: `${8 + ((i * 5) % 8)}s`,
-  delay: `${-((i * 3) % 9)}s`,
-}));
-
 /* ------------------------------------------------------------------ */
 /* Icons (tiny inline SVGs)                                            */
 /* ------------------------------------------------------------------ */
@@ -341,21 +333,6 @@ function HomeView({
   return (
     <div className="ac-view">
       <section className="ac-hero ac-reveal">
-        <div className="ac-seeds" aria-hidden="true">
-          {SEEDS.map((seed, i) => (
-            <span
-              key={i}
-              style={
-                {
-                  "--x": seed.x,
-                  "--s": seed.s,
-                  "--d": seed.d,
-                  "--delay": seed.delay,
-                } as React.CSSProperties
-              }
-            />
-          ))}
-        </div>
         <p className="ac-kicker">{greeting()}</p>
         <h2>Namaste 🙏</h2>
         <p>

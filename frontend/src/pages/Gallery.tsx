@@ -447,7 +447,6 @@ export default function Gallery() {
     const apiItems = Object.values(images).filter(
       (item) => item.page === "Gallery" && item.slot_key !== "gallery-cover",
     );
-    const byKey = new Map(apiItems.map((item) => [item.slot_key, item]));
     const defaultKeys = new Set(galleryDefaults.map((item) => item.slot_key));
     // The defaults are only a temporary/offline fallback. Once the API has
     // loaded, a missing seeded row means an administrator intentionally deleted it.

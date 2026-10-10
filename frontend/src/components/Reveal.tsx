@@ -3,7 +3,6 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useReducedMotion } from "motion/react";
-import "./PageHero.css";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -20,7 +19,7 @@ type RevealProps = HTMLAttributes<any> & {
   type?: "button" | "submit" | "reset";
 };
 
-export default function Reveal({ as = "div", delay = 0, duration = 1.3, delayOffset = 0.14, start = "top 86%", direction = "up", ...props }: RevealProps) {
+export default function Reveal({ as = "div", delay = 0, duration = 0.55, delayOffset = 0.06, start = "top 86%", direction = "up", ...props }: RevealProps) {
   const scope = useRef<HTMLElement | null>(null);
   const reducedMotion = useReducedMotion();
 
@@ -34,12 +33,12 @@ export default function Reveal({ as = "div", delay = 0, duration = 1.3, delayOff
     }
 
     const offset = direction === "left"
-      ? { x: -42, y: 0 }
+      ? { x: -18, y: 0 }
       : direction === "right"
-        ? { x: 42, y: 0 }
+        ? { x: 18, y: 0 }
         : direction === "down"
-          ? { x: 0, y: -28 }
-          : { x: 0, y: 28 };
+          ? { x: 0, y: -14 }
+          : { x: 0, y: 14 };
 
     gsap.fromTo(element, { autoAlpha: 0, ...offset }, {
       autoAlpha: 1,

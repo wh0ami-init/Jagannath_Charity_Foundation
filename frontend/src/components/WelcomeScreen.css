@@ -10,7 +10,6 @@
     padding: 32px 22px 42px;
     color: #fff;
 }
-
 /* Two doors that slide apart at the end */
 .welcome-door {
     position: absolute;
@@ -126,7 +125,6 @@
     stroke-width: 1;
     stroke-dasharray: 2 12;
     transform-origin: 200px 200px;
-    animation: welcome-orbit-turn 70s linear infinite;
 }
 
 .welcome-orbit--inner {
@@ -180,20 +178,6 @@
     margin: -31% 0 0 -31%;
     border: 2px solid rgba(247, 213, 153, .8);
     border-radius: 50%;
-    opacity: 0;
-}
-
-/* Tiny sparks that rise from the full heart */
-.welcome-spark {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 6px;
-    height: 6px;
-    margin: -3px 0 0 -3px;
-    border-radius: 50%;
-    background: #ffe3a8;
-    box-shadow: 0 0 10px 2px rgba(244, 211, 145, .7);
     opacity: 0;
 }
 
@@ -310,13 +294,11 @@
     border: 1px solid #f5cd82;
     background: #f0cb83;
     color: #173429;
-    animation: welcome-donate-pulse 2.4s ease-out infinite;
 }
 
 .welcome-donate span {
     color: #b9573f;
     font-size: 1.25em;
-    animation: welcome-heartbeat 1.4s ease-in-out infinite;
 }
 
 .welcome-donate:hover {
@@ -530,34 +512,5 @@
         animation: none !important;
         transition: none !important;
         opacity: 1;
-    }
-}
-
-@keyframes welcome-orbit-turn {
-    to {
-        rotate: 360deg;
-    }
-}
-
-@keyframes welcome-heartbeat {
-
-    0%,
-    100% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.25);
-    }
-}
-
-@keyframes welcome-donate-pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(240, 203, 131, .55);
-    }
-
-    70%,
-    100% {
-        box-shadow: 0 0 0 16px rgba(240, 203, 131, 0);
     }
 }

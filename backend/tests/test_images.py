@@ -50,7 +50,7 @@ class ImageApiTests(unittest.TestCase):
                 yield db
 
         self.app.dependency_overrides[get_db] = test_db
-        self.token = create_access_token("tester")
+        self.token, self.csrf = create_access_token("tester", "unused")
 
     def tearDown(self):
         self.engine.dispose()
@@ -76,7 +76,9 @@ class ImageApiTests(unittest.TestCase):
             body = json.dumps(json_body).encode()
             headers.append((b"content-type", b"application/json"))
         if authenticated:
-            headers.append((b"authorization", f"Bearer {self.token}".encode()))
+            headers.append((b"cookie", f"jf_admin_session={self.token}".encode()))
+            if method not in {"GET", "HEAD", "OPTIONS"}:
+                headers.append((b"x-csrf-token", self.csrf.encode()))
         headers.append((b"content-length", str(len(body)).encode()))
 
         async def run():
@@ -104,6 +106,18 @@ class ImageApiTests(unittest.TestCase):
         status, _ = self.request("POST", "/api/images/site-logo", file=("photo.png", PHOTO))
         self.assertEqual(status, 401)
         self.assertEqual(list(self.directory.iterdir()), [])
+
+    def test_password_rotation_invalidates_existing_admin_session(self):
+        with self.sessions() as db:
+            db.query(AdminUser).filter_by(username="tester").one().password_hash = "rotated-password-hash"
+            db.commit()
+        self.assertEqual(
+            self.request(
+                "POST", "/api/images/site-logo",
+                file=("photo.png", PHOTO), authenticated=True,
+            )[0],
+            401,
+        )
 
     def test_existing_image_can_be_replaced(self):
         status, result = self.request("POST", "/api/images/site-logo", file=("photo.png", PHOTO), authenticated=True)
@@ -174,6 +188,7 @@ class ImageApiTests(unittest.TestCase):
         self.assertEqual(replaced["alt_text"], "New description")
         self.assertEqual(replaced["category"], "public")
         self.assertNotEqual(replaced["url"], photo["url"])
+        self.assertFalse((self.directory / photo["url"].split("/")[-1]).exists())
 
     def test_details_cannot_edit_other_sections_or_cover(self):
         with self.sessions() as db:
@@ -247,7 +262,7 @@ class ImageApiTests(unittest.TestCase):
         photo = self.add_photo()[1]
         path = "/api/images/" + photo["slot_key"]
         self.request("POST", path, file=("replacement.png", PHOTO), authenticated=True)
-        self.assertEqual(len(list(self.directory.iterdir())), 2)
+        self.assertEqual(len(list(self.directory.iterdir())), 1)
         self.assertEqual(self.request("DELETE", path, authenticated=True)[0], 204)
         self.assertEqual(list(self.directory.iterdir()), [])
 

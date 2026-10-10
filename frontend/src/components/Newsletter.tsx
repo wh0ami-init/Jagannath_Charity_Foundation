@@ -4,6 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { submissionPayload, submitForm } from "../lib/api";
 import DataCollectionNotice from "./DataCollectionNotice";
 import Reveal from "./Reveal";
+import { Link } from "wouter";
 
 export default function Newsletter() {
   const [email, setEmail] = useState("");
@@ -67,6 +68,7 @@ export default function Newsletter() {
                   placeholder="you@example.com"
                   className="w-full border border-navy-900/20 rounded-lg px-3 py-2 text-sm"
                 />
+                <p className="mt-2 text-xs text-navy-900/55">Your request is saved, but programme emails are not sent automatically yet.</p>
               </div>
               <div className="form-honeypot" aria-hidden="true"><label htmlFor="news-website">Leave this field blank</label><input id="news-website" name="website" tabIndex={-1} autoComplete="off" /></div>
               <details className="newsletter-privacy-notice" open onToggle={() => window.requestAnimationFrame(() => ScrollTrigger.refresh())}>
@@ -83,11 +85,10 @@ export default function Newsletter() {
                   className="mt-0.5"
                 />
                 <span>
-                  I have read and understood the Data Collection &amp; Consent Notice (DPDP Act, 2023)
-                  and give my specific and informed consent to Jagannath Foundation to process my
-                  personal data for the stated purposes.
+                  I consent to Jagannath Foundation saving my email address and using it to handle my request for programme updates.
                 </span>
               </label>
+              <p className="text-xs text-navy-900/60">Read our <Link className="underline" href="/privacy-policy">privacy policy</Link>.</p>
               <button
                 type="submit"
                 disabled={sending}

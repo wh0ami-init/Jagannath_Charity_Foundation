@@ -6,7 +6,6 @@ import Reveal from "../components/Reveal";
 import { DynamicImage } from "../lib/ImagesContext";
 import { useSiteContent } from "../lib/SiteContentContext";
 import Stagger from "../components/Stagger";
-import ParallaxLayer from "../components/ParallaxLayer";
 
 const workAreas = [
   {

@@ -4,13 +4,11 @@ import json
 import re
 
 import razorpay
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 
 from uuid import uuid4
-from fastapi import HTTPException
 from pydantic import BaseModel, Field
 
-from fastapi import Depends
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -19,6 +17,7 @@ from app.models import Donation
 
 from app.config import settings
 from app.payment_status import confirm_captured_payment
+from app.ratelimit import limit_payment_orders
 from starlette.concurrency import run_in_threadpool
 
 router  = APIRouter(
@@ -40,7 +39,11 @@ class CreateOrderRequest(BaseModel):
     amount_rupees: int = Field(strict=True, ge=1, le=10000)
 
 
-@router.post("/create-order", status_code=201)
+@router.post(
+    "/create-order",
+    status_code=201,
+    dependencies=[Depends(limit_payment_orders)],
+)
 def create_order(
     payload: CreateOrderRequest,
     db: Session = Depends(get_db),

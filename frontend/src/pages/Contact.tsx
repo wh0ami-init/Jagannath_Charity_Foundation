@@ -1,4 +1,5 @@
 import { useState, FormEvent } from "react";
+import { Link } from "wouter";
 import Layout from "../components/Layout";
 import PageHero from "../components/PageHero";
 import Reveal from "../components/Reveal";
@@ -180,12 +181,10 @@ export default function Contact() {
                   className="mt-0.5"
                 />
                 <span>
-                  I have read and understood the Data Collection &amp; Consent
-                  Notice (DPDP Act, 2023) and give my specific and informed
-                  consent to Jagannath Foundation to process my personal data
-                  for the stated purposes.
+                  I consent to Jagannath Foundation using these details to respond to my message.
                 </span>
               </label>
+              <p className="text-xs text-navy-900/60">Read our <Link className="underline" href="/privacy-policy">privacy policy</Link>.</p>
               <button
                 type="submit"
                 disabled={sending}

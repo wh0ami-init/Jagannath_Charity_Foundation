@@ -21,8 +21,8 @@ type StaggerProps = HTMLAttributes<any> & {
  */
 export default function Stagger({
   as = "div",
-  gap = 0.12,
-  distance = 30,
+  gap = 0.07,
+  distance = 18,
   start = "top 90%",
   children,
   ...props
@@ -52,7 +52,7 @@ export default function Stagger({
           gsap.to(batch, {
             opacity: 1,
             y: 0,
-            duration: 1,
+            duration: 0.55,
             ease: "power3.out",
             stagger: gap,
             overwrite: true,
@@ -63,7 +63,7 @@ export default function Stagger({
             if (line) {
               gsap.to(line, {
                 scaleX: 1,
-                duration: 1.1,
+                duration: 0.55,
                 ease: "power2.inOut",
                 delay: i * gap + 0.25,
               });

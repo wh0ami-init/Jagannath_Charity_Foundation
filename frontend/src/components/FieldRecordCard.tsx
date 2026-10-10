@@ -32,6 +32,7 @@ export default function FieldRecordCard({
       // 1) Card intro: label, drawing line, title, description
       gsap
         .timeline({
+          delay: 0.16,
           defaults: { ease: "power3.out" },
           scrollTrigger: { trigger: el, start: "top 82%", once: true },
         })
@@ -77,7 +78,7 @@ export default function FieldRecordCard({
         onEnter: (batch) => {
           batch.forEach((fig, i) => {
             gsap
-              .timeline({ delay: i * 0.14, defaults: { ease: "power3.out" } })
+              .timeline({ delay: 0.24 + i * 0.22, defaults: { ease: "power3.out" } })
               .to(fig, { autoAlpha: 1, y: 0, duration: 0.9 }, 0)
               .to(
                 fig.querySelector(".fr-clip"),
@@ -92,7 +93,7 @@ export default function FieldRecordCard({
               .to(
                 fig.querySelector(".fr-caption"),
                 { autoAlpha: 1, y: 0, duration: 0.8 },
-                0.55,
+                0.75,
               );
           });
         },

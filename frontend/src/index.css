@@ -53,8 +53,6 @@
   content: "";
   pointer-events: none;
   background: linear-gradient(118deg, #fbfaf6 0%, #e6eee5 30%, #f5f4ec 56%, #dce9df 78%, #f9f8f2 100%);
-  background-size: 280% 280%;
-  animation: foundation-wash 72s ease-in-out infinite alternate;
 }
 
 * {
@@ -681,7 +679,6 @@ h3,
   place-items: center;
   font-size: 22px;
   transition: translate .32s ease;
-  animation: hero-arrow-drift 1.4s ease-in-out infinite alternate;
 }
 
 .hero-action-primary {
@@ -855,7 +852,6 @@ h3,
   border: 1px solid rgba(248, 213, 155, .65);
   border-radius: 50%;
   color: #f4cd88;
-  animation: seal-turn 32s linear infinite;
 }
 
 .hero-seal::before {
@@ -1618,7 +1614,6 @@ h3,
 .join-ornament {
   color: #e2b766;
   font-size: 25px;
-  animation: seal-turn 35s linear infinite;
 }
 
 .home-join h2 {
@@ -2003,7 +1998,6 @@ h3,
   height: 190px;
   border-width: 1px;
   box-shadow: 0 0 0 22px rgba(240, 205, 135, .055), 0 0 0 54px rgba(255, 255, 255, .035);
-  animation: page-hero-orbit-right 12s ease-in-out infinite alternate;
 }
 
 .page-hero--about,
@@ -3770,16 +3764,6 @@ h3,
   }
 }
 
-@keyframes page-hero-orbit-right {
-  from {
-    transform: translate3d(0, 0, 0) rotate(4deg);
-  }
-
-  to {
-    transform: translate3d(-37px, 25px, 0) rotate(-4deg);
-  }
-}
-
 @keyframes content-switch {
   from {
     opacity: 0;
@@ -4837,12 +4821,6 @@ h3,
   transform: none !important;
 }
 
-@keyframes seal-turn {
-  to {
-    rotate: 360deg;
-  }
-}
-
 @keyframes hero-enter {
   from {
     transform: translateY(18px);
@@ -4859,16 +4837,6 @@ h3,
   }
 }
 
-@keyframes hero-arrow-drift {
-  from {
-    translate: 0 0;
-  }
-
-  to {
-    translate: 4px 0;
-  }
-}
-
 @keyframes image-arrive {
   from {
     scale: 1.035;
@@ -4876,16 +4844,6 @@ h3,
 
   to {
     scale: 1;
-  }
-}
-
-@keyframes foundation-wash {
-  from {
-    background-position: 0% 50%;
-  }
-
-  to {
-    background-position: 100% 50%;
   }
 }
 
@@ -5188,7 +5146,7 @@ h3,
   }
 }
 
-/* Switch to the compact menu before desktop links become crowded at browser zoom. */
+/* Keep the compact navigation usable at medium desktop widths. */
 @media (min-width: 1001px) and (max-width: 1240px) {
   .site-header .nav-explore.is-open::after {
     display: none;
@@ -6705,7 +6663,7 @@ h3,
 /* Gallery browsing: keep categories in view while the collection scrolls. */
 .gallery-browse-layout {
   display: grid;
-  grid-template-columns: minmax(190px, 220px) minmax(0, 1fr);
+  grid-template-columns: minmax(255px, 280px) minmax(0, 1fr);
   align-items: start;
   gap: clamp(28px, 4vw, 58px);
 }
@@ -6714,19 +6672,25 @@ h3,
   position: sticky;
   z-index: 8;
   top: 104px;
-  padding: 18px 14px 14px;
+  padding: 24px 18px 18px;
   border: 1px solid rgba(24, 55, 47, .14);
   border-radius: 8px;
   background: rgba(250, 250, 244, .88);
   box-shadow: 0 12px 34px rgba(24, 55, 47, .06);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  animation: gallery-rail-arrive .72s cubic-bezier(.2, .75, .25, 1) both;
+}
+
+@keyframes gallery-rail-arrive {
+  from { opacity: 0; transform: translateX(-22px) scale(.98); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
 }
 
 .gallery-filter-heading {
-  margin: 0 0 10px 10px;
+  margin: 0 0 14px 12px;
   color: #879188;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: .15em;
   text-transform: uppercase;
@@ -6734,7 +6698,7 @@ h3,
 
 .gallery-filters {
   display: grid;
-  gap: 4px;
+  gap: 7px;
   overflow: visible;
 }
 
@@ -6743,21 +6707,26 @@ h3,
   width: 100%;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  min-height: 42px;
-  padding-inline: 11px;
+  gap: 12px;
+  min-height: 58px;
+  padding: 12px 14px;
   text-align: left;
+  transition: transform .24s cubic-bezier(.2, .75, .25, 1), box-shadow .24s ease;
+}
+
+.gallery-filters button:hover {
+  transform: translateX(4px);
 }
 
 .gallery-filter-count {
   position: relative;
   z-index: 1;
-  min-width: 25px;
-  padding: 2px 6px;
+  min-width: 30px;
+  padding: 4px 7px;
   border: 1px solid rgba(24, 55, 47, .1);
   border-radius: 999px;
   color: #758178;
-  font-size: 9px;
+  font-size: 11px;
   font-variant-numeric: tabular-nums;
   line-height: 1.3;
   text-align: center;
@@ -6857,16 +6826,17 @@ h3,
 
 /* Larger, easier-to-scan labels in the sticky category rail. */
 .gallery-filter-heading {
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .gallery-filter-label {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.35;
 }
 
 .gallery-filter-count {
-  font-size: 10px;
+  font-size: 11px;
 }
 
 @media (max-width: 680px) {
@@ -6876,6 +6846,16 @@ h3,
 
   .gallery-filter-label {
     font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery-filter-rail {
+    animation: none;
+  }
+
+  .gallery-filters button {
+    transition: none;
   }
 }
 
@@ -7081,6 +7061,16 @@ h3,
 }
 
 @media (max-width: 680px) {
+  .gallery-hero-caption {
+    left: 16px;
+    right: 16px;
+    max-width: calc(100% - 32px);
+    font-size: 7px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    text-align: right;
+  }
+
   .gallery-lightbox {
     padding: 8px;
   }

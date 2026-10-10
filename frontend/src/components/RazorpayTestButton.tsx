@@ -1,5 +1,8 @@
 import { useRef, useState } from "react";
 import { apiUrl } from "../lib/api";
+import Reveal from "./Reveal";
+import Stagger from "./Stagger";
+import "./DonationCheckout.css";
 
 type CheckoutResponse = {
   razorpay_payment_id: string;
@@ -15,7 +18,7 @@ type CheckoutOptions = {
   description: string;
   handler: (response: CheckoutResponse) => void;
   modal: { ondismiss: () => void };
-  theme: { color: string };
+  theme: { color: string; backdrop_color: string };
 };
 type Checkout = {
   open: () => void;
@@ -133,7 +136,7 @@ export default function RazorpayTestButton() {
         order_id: order.order_id,
         name: "Jagannath Foundation",
         description: "Test donation - INR 100",
-        theme: { color: "#18372f" },
+        theme: { color: "#18372f", backdrop_color: "#2563eb" },
         handler: (response) => {
           responded = true;
           setPendingResponse(response);
@@ -161,24 +164,73 @@ export default function RazorpayTestButton() {
 
   return (
     <section className="wrap pb-16" aria-labelledby="razorpay-test-heading">
-      <div className="border border-navy-900/10 rounded-xl p-6 space-y-4">
-        <h2 id="razorpay-test-heading" className="text-xl font-serif-heading font-bold text-navy-950">
-          Try an online donation
-        </h2>
-        <p className="text-sm text-navy-900/70">Test Mode: try a INR 100 donation. No real money is collected.</p>
-        <button type="button" disabled={busy || !!pendingResponse || completed} onClick={openPayment}
-          className="bg-orange-500 hover:bg-orange-400 disabled:opacity-60 text-white px-5 py-2 rounded-full text-sm font-semibold">
-          {completed ? "Test donation confirmed" : busy ? "Payment in progress..." : "Donate with Razorpay"}
-        </button>
-        {pendingResponse && !busy && (
-          <button type="button" onClick={() => void verifyPayment(pendingResponse)}
-            className="ml-3 border border-navy-900/20 rounded-full px-5 py-2 text-sm font-semibold">
-            Check payment status again
+      <Reveal as="div" className="donation-checkout-card">
+        <div className="donation-checkout-glow" aria-hidden="true" />
+        <div className="donation-checkout-copy">
+          <span className="donation-checkout-eyebrow">
+            <span aria-hidden="true" /> Online giving
+          </span>
+          <h2>Make your support count.</h2>
+          <p>
+            Continue through Razorpay Checkout to try the Foundation’s secure
+            online giving flow. Your payment response is confirmed by our
+            server before it is marked complete.
+          </p>
+          <div className="donation-checkout-assurance">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3 19 6v5c0 4.8-2.9 8.1-7 10-4.1-1.9-7-5.2-7-10V6l7-3Z" />
+              <path d="m9 12 2 2 4-4" />
+            </svg>
+            <span>Payment status is verified by the Foundation’s server</span>
+          </div>
+        </div>
+
+        <Stagger as="div" className="donation-checkout-panel" gap={0.08} distance={12}>
+          <div className="donation-checkout-panel-top">
+            <span className="donation-checkout-provider">
+              <span className="donation-checkout-provider-mark" aria-hidden="true">J</span>
+              Jagannath Foundation
+            </span>
+            <span className="donation-checkout-test">Test mode</span>
+          </div>
+          <div>
+            <p className="donation-checkout-label">Try an online donation</p>
+            <h3>₹100 <span>one-time test</span></h3>
+            <p className="donation-checkout-disclaimer">
+              This is a test transaction. No real money will be collected.
+            </p>
+          </div>
+          <button
+            type="button"
+            disabled={busy || !!pendingResponse || completed}
+            onClick={openPayment}
+            className="donation-checkout-button"
+          >
+            <span>
+              {completed
+                ? "Test donation confirmed"
+                : busy
+                  ? "Payment in progress…"
+                  : "Donate with Razorpay"}
+            </span>
+            {!busy && !completed && <span className="donation-checkout-arrow" aria-hidden="true">→</span>}
           </button>
-        )}
-        {error && <p className="form-error" role="alert">{error}</p>}
-        {message && <p className="text-sm text-navy-900" role="status">{message}</p>}
-      </div>
+          {pendingResponse && !busy && (
+            <button
+              type="button"
+              onClick={() => void verifyPayment(pendingResponse)}
+              className="donation-checkout-retry"
+            >
+              Check payment status again
+            </button>
+          )}
+          {error && <p className="form-error" role="alert">{error}</p>}
+          {message && <p className="donation-checkout-status" role="status">{message}</p>}
+          <p className="donation-checkout-footnote">
+            Secure checkout opens in a Razorpay popup.
+          </p>
+        </Stagger>
+      </Reveal>
     </section>
   );
 }

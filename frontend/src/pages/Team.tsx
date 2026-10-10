@@ -6,7 +6,6 @@ import Reveal from "../components/Reveal";
 import { DynamicImage } from "../lib/ImagesContext";
 import { useImages } from "../lib/ImagesContext";
 import Stagger from "../components/Stagger";
-import SplitHeading from "../components/SplitHeading";
 
 const trustBoard = [
   {
@@ -206,11 +205,10 @@ function PersonCard({
   onSelect,
 }: {
   person: Person;
-  index: number;
   onSelect: (person: Person) => void;
 }) {
   const { images } = useImages();
-  const { slot, role, name, body } = person;
+  const { slot, role, name } = person;
   const imageSlot = images[slot];
   const showImage = imageSlot
     ? !imageSlot.url.endsWith("/placeholder.jpg")
@@ -281,11 +279,10 @@ export default function Team() {
       : selectedPerson.slot.startsWith("team-"));
 
   const renderPeople = (people: Person[]) =>
-    people.map((person, index) => (
+    people.map((person) => (
       <PersonCard
         key={person.name}
         person={person}
-        index={index}
         onSelect={openPerson}
       />
     ));

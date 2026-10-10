@@ -32,7 +32,6 @@ const format = (n: number, d: number) =>
   });
 
 const SEEDS = 12;
-const SPARKS = 9;
 
 export default function WelcomeScreen({
   onExitStart,
@@ -100,7 +99,7 @@ export default function WelcomeScreen({
           5.6,
         );
 
-      // Heart: outline draws, seeds fall in slowly, heart fills with gold
+      // Draw the heart outline and fill it with gold particles.
       const art = scope.current?.querySelector<HTMLElement>(".welcome-art");
       const W = art?.offsetWidth ?? 400;
       const H = art?.offsetHeight ?? 400;
@@ -186,48 +185,6 @@ export default function WelcomeScreen({
           6.1,
         );
 
-      // After it is full: a gentle heartbeat, a slow float, and tiny sparks rising
-      gsap
-        .timeline({ delay: 7.2, repeat: -1, repeatDelay: 0.9 })
-        .to(".welcome-heart-wrap", {
-          scale: 1.07,
-          duration: 0.16,
-          ease: "power2.out",
-        })
-        .to(".welcome-heart-wrap", {
-          scale: 1,
-          duration: 0.2,
-          ease: "power2.in",
-        })
-        .to(".welcome-heart-wrap", {
-          scale: 1.04,
-          duration: 0.14,
-          ease: "power2.out",
-        })
-        .to(".welcome-heart-wrap", {
-          scale: 1,
-          duration: 0.32,
-          ease: "power2.in",
-        });
-
-      gsap.utils.toArray<HTMLElement>(".welcome-spark").forEach((spark, i) => {
-        gsap
-          .timeline({
-            delay: 7 + i * 0.45,
-            repeat: -1,
-            repeatDelay: gsap.utils.random(0.2, 1),
-          })
-          .set(spark, {
-            x: gsap.utils.random(-W * 0.17, W * 0.17),
-            y: H * 0.08,
-            scale: gsap.utils.random(0.6, 1.2),
-          })
-          .addLabel("go")
-          .to(spark, { y: -H * 0.42, duration: 2.6, ease: "power1.out" }, "go")
-          .to(spark, { autoAlpha: 1, duration: 0.5 }, "go")
-          .to(spark, { autoAlpha: 0, duration: 1.2 }, "go+=1.4");
-      });
-
       // Count up the real numbers
       stats.forEach((s, i) => {
         const el = scope.current?.querySelector<HTMLElement>(
@@ -260,25 +217,6 @@ export default function WelcomeScreen({
           transformOrigin: "left center",
         },
       );
-      gsap.to(".welcome-glow--one", {
-        x: 70,
-        y: -24,
-        scale: 1.12,
-        duration: 9,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
-      });
-      gsap.to(".welcome-glow--two", {
-        x: -64,
-        y: 28,
-        scale: 1.14,
-        duration: 11,
-        delay: 0.4,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
-      });
     },
     { scope, dependencies: [reducedMotion], revertOnUpdate: true },
   );
@@ -292,7 +230,7 @@ export default function WelcomeScreen({
     };
   }, []);
 
-  // Cursor magic: glow and heart follow the mouse a little
+  // Apply subtle pointer movement to the glow and heart artwork.
   useEffect(() => {
     const screen = scope.current;
     if (!screen || reducedMotion) return;
@@ -395,9 +333,6 @@ export default function WelcomeScreen({
               <span className="welcome-burst" />
               {Array.from({ length: SEEDS }).map((_, i) => (
                 <span key={i} className="welcome-seed" />
-              ))}
-              {Array.from({ length: SPARKS }).map((_, i) => (
-                <span key={i} className="welcome-spark" />
               ))}
               <div className="welcome-heart-wrap">
                 <svg viewBox="0 0 300 300" className="welcome-heart">

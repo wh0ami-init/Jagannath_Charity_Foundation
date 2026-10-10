@@ -1,3 +1,5 @@
+from urllib.parse import urlsplit
+
 from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -53,6 +55,21 @@ class Settings(BaseSettings):
                 raise ValueError("Production deployments require a persistent database, not SQLite")
             if not self.cors_origin_list:
                 raise ValueError("CORS_ORIGINS must contain the production frontend origin")
+            for origin in self.cors_origin_list:
+                parsed = urlsplit(origin)
+                if (
+                    origin == "*"
+                    or parsed.scheme != "https"
+                    or not parsed.netloc
+                    or parsed.path
+                    or parsed.query
+                    or parsed.fragment
+                    or parsed.username
+                    or parsed.password
+                ):
+                    raise ValueError(
+                        "Production CORS_ORIGINS must list exact HTTPS origins without paths"
+                    )
         return self
 
     @property

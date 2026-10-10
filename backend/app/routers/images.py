@@ -81,6 +81,7 @@ def slot_to_out(slot):
 
 def save_file(db, slot, filename, contents):
     path = UPLOAD_DIR / filename
+    previous_filename = slot.file_path if slot.id is not None else None
     try:
         path.write_bytes(contents)
         slot.file_path = filename
@@ -91,6 +92,35 @@ def save_file(db, slot, filename, contents):
         path.unlink(missing_ok=True)
         raise
     db.refresh(slot)
+    if previous_filename:
+        # Replacements use versioned filenames so a failed database commit never
+        # leaves a slot pointing at a missing image. Once committed, remove stale
+        # versions that are not shared by another slot to prevent disk growth.
+        upload_root = UPLOAD_DIR.resolve()
+        candidates = {
+            UPLOAD_DIR / previous_filename,
+            *UPLOAD_DIR.glob(f"{slot.slot_key}-*"),
+            *UPLOAD_DIR.glob(f"{slot.slot_key}.*"),
+        }
+        shared_names = {
+            stored_name
+            for (stored_name,) in db.query(ImageSlot.file_path)
+            .filter(ImageSlot.id != slot.id)
+            .all()
+        }
+        for candidate in candidates:
+            if (
+                candidate.name != filename
+                and candidate.name not in shared_names
+                and candidate.resolve().parent == upload_root
+                and candidate.is_file()
+            ):
+                try:
+                    candidate.unlink()
+                except OSError:
+                    # The image update already committed; a stale file is safe
+                    # to leave behind if the filesystem temporarily refuses it.
+                    pass
     return slot_to_out(slot)
 
 

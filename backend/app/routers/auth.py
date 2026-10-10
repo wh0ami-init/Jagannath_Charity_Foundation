@@ -39,7 +39,7 @@ def login(payload: LoginRequest, request: Request, response: Response, db: Sessi
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
 
     login_user_limiter.reset(user_key)
-    token, csrf = create_access_token(user.username)
+    token, csrf = create_access_token(user.username, user.password_hash)
     set_session_cookie(response, token)
     return SessionResponse(username=user.username, csrf_token=csrf)
 

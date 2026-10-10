@@ -245,6 +245,7 @@ export default function Header() {
                 }}
               />
             ))}
+            <NavLink href="/certificates" label="Certificates" onNavigate={() => { setOpen(false); setExploreOpen(false); }} />
             <div
               className={`nav-explore${exploreOpen ? " is-open" : ""}`}
               onPointerEnter={(event) => {

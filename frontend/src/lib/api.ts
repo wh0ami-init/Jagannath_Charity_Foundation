@@ -1,4 +1,10 @@
-export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8010";
+const configuredApiUrl = import.meta.env.VITE_API_URL?.trim();
+// The localhost fallback is useful during local development, but a production
+// build without VITE_API_URL should use same-origin API routes instead of
+// accidentally sending visitors' browsers to their own localhost.
+export const API_URL = (
+  configuredApiUrl || (import.meta.env.DEV ? "http://localhost:8010" : "")
+).replace(/\/+$/, "");
 
 export function apiUrl(path: string) {
   return `${API_URL}${path}`;

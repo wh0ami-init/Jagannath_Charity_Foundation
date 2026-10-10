@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { Redirect, Route, Switch, useLocation } from "wouter";
 import { ImagesProvider } from "./lib/ImagesContext";
 import { SiteContentProvider } from "./lib/SiteContentContext";
@@ -12,6 +12,7 @@ const Partners = lazy(() => import("./pages/Partners"));
 const Impact = lazy(() => import("./pages/Impact"));
 const Team = lazy(() => import("./pages/Team"));
 const Gallery = lazy(() => import("./pages/Gallery"));
+const Certificates = lazy(() => import("./pages/Certificates"));
 const Donate = lazy(() => import("./pages/Donate"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Volunteer = lazy(() => import("./pages/Volunteer"));
@@ -28,8 +29,6 @@ export default function App() {
     welcomeScreenEnabled && location === "/",
   );
   const [portalRevealStarted, setPortalRevealStarted] = useState(false);
-  const finishWelcome = useCallback(() => setWelcomeVisible(false), []);
-  const startPortalReveal = useCallback(() => setPortalRevealStarted(true), []);
 
   return (
     <ImagesProvider>
@@ -50,6 +49,7 @@ export default function App() {
               <Route path="/impact" component={Impact} />
               <Route path="/team" component={Team} />
               <Route path="/gallery" component={Gallery} />
+              <Route path="/certificates" component={Certificates} />
               <Route path="/donate" component={Donate} />
               <Route path="/contact" component={Contact} />
               <Route path="/volunteer" component={Volunteer} />
@@ -65,7 +65,12 @@ export default function App() {
             </Switch>
           </Suspense>
         </div>
-        {welcomeVisible && <WelcomeScreen onExitStart={startPortalReveal} onComplete={finishWelcome} />}
+        {welcomeVisible && (
+          <WelcomeScreen
+            onExitStart={() => setPortalRevealStarted(true)}
+            onComplete={() => setWelcomeVisible(false)}
+          />
+        )}
       </SiteContentProvider>
     </ImagesProvider>
   );
