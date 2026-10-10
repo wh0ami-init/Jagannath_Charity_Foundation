@@ -55,6 +55,7 @@ export interface ImageSlot {
   alt_text: string;
   url: string;
   updated_at: string;
+  category?: "national" | "public" | "regional" | "culture" | null;
 }
 
 export type SiteContent = Record<string, { label: string; page: string; value: string }>;
@@ -160,4 +161,26 @@ export async function replaceImage(slotKey: string, file: File): Promise<ImageSl
     throw new Error(err.detail || "Upload failed");
   }
   return res.json();
+}
+
+export async function addGalleryImage(input: { label: string; alt_text: string; category: NonNullable<ImageSlot["category"]>; file: File }): Promise<ImageSlot> {
+  const form = new FormData();
+  form.append("label", input.label);
+  form.append("alt_text", input.alt_text);
+  form.append("category", input.category);
+  form.append("file", input.file);
+  const res = await fetch(apiUrl("/api/images"), { method: "POST", credentials: "include", headers: csrfHeaders(), body: form });
+  if (!res.ok) { const err = await res.json().catch(() => ({ detail: "Could not add this photo" })); throw new Error(err.detail || "Could not add this photo"); }
+  return res.json();
+}
+
+export async function updateGalleryImage(slotKey: string, input: { label: string; alt_text: string; category: NonNullable<ImageSlot["category"]> }): Promise<ImageSlot> {
+  const res = await fetch(apiUrl(`/api/images/${encodeURIComponent(slotKey)}`), { method: "PUT", credentials: "include", headers: { "Content-Type": "application/json", ...csrfHeaders() }, body: JSON.stringify(input) });
+  if (!res.ok) { const err = await res.json().catch(() => ({ detail: "Could not save this photo" })); throw new Error(err.detail || "Could not save this photo"); }
+  return res.json();
+}
+
+export async function deleteGalleryImage(slotKey: string): Promise<void> {
+  const res = await fetch(apiUrl(`/api/images/${encodeURIComponent(slotKey)}`), { method: "DELETE", credentials: "include", headers: csrfHeaders() });
+  if (!res.ok) { const err = await res.json().catch(() => ({ detail: "Could not delete this photo" })); throw new Error(err.detail || "Could not delete this photo"); }
 }

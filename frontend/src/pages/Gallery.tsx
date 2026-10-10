@@ -427,7 +427,7 @@ function GalleryLightbox({
 }
 
 export default function Gallery() {
-  const { images } = useImages();
+  const { images, loading: imagesLoading } = useImages();
   const [activeFilter, setActiveFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
@@ -448,22 +448,23 @@ export default function Gallery() {
       (item) => item.page === "Gallery" && item.slot_key !== "gallery-cover",
     );
     const byKey = new Map(apiItems.map((item) => [item.slot_key, item]));
-    const defaults = galleryDefaults.map(
-      (item) => byKey.get(item.slot_key) || item,
-    );
     const defaultKeys = new Set(galleryDefaults.map((item) => item.slot_key));
+    // The defaults are only a temporary/offline fallback. Once the API has
+    // loaded, a missing seeded row means an administrator intentionally deleted it.
+    if (imagesLoading) return galleryDefaults;
+    if (!apiItems.length && !Object.keys(images).length) return galleryDefaults;
     return [
-      ...defaults,
+      ...apiItems.filter((item) => defaultKeys.has(item.slot_key)),
       ...apiItems.filter((item) => !defaultKeys.has(item.slot_key)),
     ].sort((a, b) => a.label.localeCompare(b.label));
-  }, [images]);
+  }, [images, imagesLoading]);
 
   const visibleItems = useMemo(
     () =>
       allItems.filter(
         (item) =>
           (activeFilter === "all" ||
-            categoryFor(item.slot_key) === activeFilter) &&
+            (item.category || categoryFor(item.slot_key)) === activeFilter) &&
           item.label.toLowerCase().includes(search.trim().toLowerCase()),
       ),
     [allItems, activeFilter, search],
@@ -474,7 +475,7 @@ export default function Gallery() {
     ) as Record<string, number>;
     counts.all = allItems.length;
     allItems.forEach((item) => {
-      const category = categoryFor(item.slot_key);
+      const category = item.category || categoryFor(item.slot_key);
       counts[category] += 1;
     });
     return counts;
