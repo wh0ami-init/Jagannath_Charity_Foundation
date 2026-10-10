@@ -48,27 +48,78 @@ export default function PageHero({
 
   useGSAP(() => {
     const hero = scope.current;
-    if (!hero || reducedMotion) return;
+    if (!hero) return;
 
-    const entersFromRight = ["programmes", "leadership", "place", "privacy", "partners"].includes(motif);
-    gsap.fromTo(hero, {
-      autoAlpha: 0,
-      x: entersFromRight ? 18 : -18,
-      y: -12,
-      scale: 0.996,
-    }, {
-      autoAlpha: 1,
-      x: 0,
-      y: 0,
-      scale: 1,
-      duration: 0.55,
-      delay: 0.04,
-      ease: "power3.out",
-      clearProps: "transform,opacity,visibility",
-      overwrite: "auto",
+    const paths = gsap.utils.toArray<SVGPathElement>(
+      ".pagehero-art-line, .pagehero-art-accent",
+      hero,
+    );
+    const nodes = gsap.utils.toArray<SVGCircleElement>(
+      ".pagehero-art-node",
+      hero,
+    );
+
+    if (reducedMotion) {
+      gsap.set(paths, { strokeDashoffset: 0 });
+      gsap.set(nodes, { autoAlpha: 1, scale: 1 });
+      return;
+    }
+
+    paths.forEach((path) => {
+      const length = path.getTotalLength();
+      gsap.set(path, { strokeDasharray: length, strokeDashoffset: length });
     });
+    gsap.set(nodes, { autoAlpha: 0, scale: 0, transformOrigin: "50% 50%" });
 
-  }, { scope, dependencies: [reducedMotion, motif], revertOnUpdate: true });
+    const entrance = gsap.timeline();
+    entrance
+      .fromTo(
+        ".pagehero-content",
+        { autoAlpha: 0, y: 16, filter: "blur(5px)" },
+        { autoAlpha: 1, y: 0, filter: "blur(0px)", duration: 0.7, ease: "power3.out" },
+        0.04,
+      )
+      .to(paths, {
+        strokeDashoffset: 0,
+        duration: 1.25,
+        stagger: 0.1,
+        ease: "power2.inOut",
+      }, 0.12)
+      .to(nodes, {
+        autoAlpha: 1,
+        scale: 1,
+        duration: 0.5,
+        stagger: 0.07,
+        ease: "back.out(1.6)",
+      }, 0.78);
+
+    gsap.to(".pagehero-art", {
+      y: -8,
+      duration: 5.5,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+    });
+    gsap.to(".pagehero-glow--one", {
+      x: 34,
+      y: 18,
+      scale: 1.08,
+      duration: 13,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+    });
+    gsap.to(".pagehero-glow--two", {
+      x: -28,
+      y: -16,
+      scale: 1.06,
+      duration: 15,
+      delay: 0.4,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+    });
+  }, { scope, dependencies: [reducedMotion], revertOnUpdate: true });
 
   return (
     <section ref={scope} className={`pagehero pagehero--${theme}`}>

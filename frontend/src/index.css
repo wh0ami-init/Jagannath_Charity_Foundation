@@ -667,7 +667,7 @@ h3,
   overflow: hidden;
   padding-inline: 16px;
   border: 1px solid rgba(255, 255, 255, .72);
-  border-radius: 3px;
+  border-radius: 999px;
   color: white;
   transition: width .42s cubic-bezier(.22, .7, .2, 1), background .28s ease, border-color .28s ease;
 }
@@ -7126,5 +7126,456 @@ h3,
 
   .gallery-lightbox-foot p {
     flex-basis: 100%;
+  }
+}
+
+/* Our Story: one shared, softly shaped card for the organisation overview. */
+.about-organisation {
+  position: relative;
+  grid-template-columns: minmax(0, 1.12fr) minmax(280px, .88fr);
+  gap: clamp(30px, 5vw, 68px);
+  padding: clamp(34px, 5vw, 62px);
+  border: 1px solid rgba(24, 55, 47, .12);
+  border-radius: 34px 104px 34px 34px;
+  background:
+    radial-gradient(ellipse at 100% 0%, rgba(217, 154, 70, .11), transparent 35%),
+    linear-gradient(135deg, rgba(255, 255, 255, .84), rgba(232, 238, 227, .7));
+  box-shadow: 0 22px 60px rgba(24, 55, 47, .08), inset 0 1px rgba(255, 255, 255, .9);
+}
+
+.about-organisation-facts {
+  position: relative;
+  align-self: stretch;
+  padding: 0 0 0 clamp(24px, 3vw, 42px);
+  border: 0;
+  border-left: 1px solid rgba(24, 55, 47, .16);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.about-organisation-facts::before {
+  position: absolute;
+  top: 2px;
+  left: -2px;
+  width: 3px;
+  height: 42px;
+  border-radius: 99px;
+  background: linear-gradient(#d49b54, rgba(212, 155, 84, 0));
+  content: "";
+}
+
+/* Center the statutory record as a clear, readable information panel. */
+.about-statutory {
+  padding-block: clamp(50px, 6vw, 82px);
+}
+
+.about-statutory-inner {
+  max-width: 960px;
+  margin-inline: auto;
+  padding: clamp(24px, 4vw, 48px);
+  border: 1px solid rgba(24, 55, 47, .13);
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, .78), rgba(232, 238, 227, .55));
+  box-shadow: 0 20px 54px rgba(24, 55, 47, .07), inset 0 1px rgba(255, 255, 255, .9);
+}
+
+.about-statutory-heading {
+  max-width: 720px;
+  margin: 0 auto 28px;
+  text-align: center;
+}
+
+.about-statutory-heading .eyebrow {
+  margin: 0 0 10px;
+  color: #a45a3b;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.about-statutory-heading h2 {
+  margin: 0 0 12px;
+  color: var(--forest);
+  font: 600 clamp(30px, 3.5vw, 42px)/1.1 var(--font-serif);
+}
+
+.about-statutory-heading>p:last-child {
+  margin: 0;
+  color: #5c6d63;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.about-statutory-list {
+  display: grid;
+  grid-template-columns: minmax(220px, .8fr) minmax(0, 1.2fr);
+  margin: 0;
+  border-top: 1px solid rgba(24, 55, 47, .15);
+}
+
+.about-statutory-list dt,
+.about-statutory-list dd {
+  margin: 0;
+  padding: 15px 18px;
+  border-bottom: 1px solid rgba(24, 55, 47, .12);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.about-statutory-list dt {
+  color: #617168;
+  font-weight: 600;
+}
+
+.about-statutory-list dd {
+  color: #203b30;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+/* Improve scanability of the six service area cards. */
+.about-focus-heading>p {
+  font-size: 17px;
+}
+
+.about-focus-card>span {
+  font-size: 14px;
+}
+
+.about-focus-card h3 {
+  font-size: 25px;
+}
+
+.about-focus-card p {
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+@media (max-width: 1023px) {
+  .about-organisation {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 30px;
+    padding: clamp(26px, 5vw, 42px);
+    border-radius: 30px 72px 30px 30px;
+  }
+
+  .about-organisation-facts {
+    padding: 24px 0 0;
+    border-top: 1px solid rgba(24, 55, 47, .16);
+    border-left: 0;
+  }
+
+  .about-organisation-facts::before {
+    top: -2px;
+    left: 0;
+    width: 42px;
+    height: 3px;
+    background: linear-gradient(90deg, #d49b54, rgba(212, 155, 84, 0));
+  }
+
+  .about-statutory-list {
+    grid-template-columns: minmax(180px, .75fr) minmax(0, 1.25fr);
+  }
+}
+
+@media (max-width: 680px) {
+  .about-organisation {
+    gap: 24px;
+    padding: 24px 20px;
+    border-radius: 24px 54px 24px 24px;
+  }
+
+  .about-organisation-facts {
+    padding-top: 20px;
+  }
+
+  .about-statutory {
+    padding-block: 34px;
+  }
+
+  .about-statutory-inner {
+    padding: 24px 18px;
+    border-radius: 14px;
+  }
+
+  .about-statutory-heading {
+    margin-bottom: 20px;
+  }
+
+  .about-statutory-heading>p:last-child {
+    font-size: 15px;
+  }
+
+  .about-statutory-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .about-statutory-list dt {
+    padding: 13px 10px 2px;
+    border-bottom: 0;
+    font-size: 14px;
+  }
+
+  .about-statutory-list dd {
+    padding: 2px 10px 13px;
+    font-size: 15px;
+  }
+
+  .about-focus-heading>p {
+    font-size: 16px;
+  }
+
+  .about-focus-card h3 {
+    font-size: 21px;
+  }
+
+  .about-focus-card p {
+    font-size: 15px;
+  }
+}
+
+/* Make only “At a glance” read as a clear label-and-value table. */
+.about-organisation-facts h3 {
+  margin-bottom: 20px;
+  font-size: 35px;
+}
+
+.about-organisation {
+  grid-template-columns: minmax(0, .95fr) minmax(430px, 1.05fr);
+}
+
+@media (max-width: 1023px) {
+  .about-organisation {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.about-organisation-facts dl {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(24, 55, 47, .13);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .5);
+}
+
+.about-organisation-fact {
+  display: grid;
+  grid-template-columns: minmax(150px, .82fr) minmax(0, 1.18fr);
+  align-items: center;
+  gap: 20px;
+  min-height: 76px;
+  padding: 18px 20px;
+  border-bottom: 1px solid rgba(24, 55, 47, .1);
+  background: linear-gradient(105deg, rgba(228, 237, 226, .74), rgba(255, 255, 255, .88));
+}
+
+.about-organisation-fact:nth-child(even) {
+  background: linear-gradient(105deg, rgba(247, 239, 224, .76), rgba(255, 255, 255, .9));
+}
+
+.about-organisation-fact:last-child {
+  border-bottom: 0;
+}
+
+.about-organisation-fact dt {
+  margin: 0;
+  color: #68786d;
+  font: 650 15px/1.45 var(--font-sans);
+  letter-spacing: .025em;
+}
+
+.about-organisation-fact dd {
+  color: #203b30;
+  font-size: 18px;
+  font-weight: 650;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 680px) {
+  .about-organisation-facts h3 {
+    font-size: 30px;
+  }
+
+  .about-organisation-fact {
+    grid-template-columns: minmax(110px, .8fr) minmax(0, 1.2fr);
+    gap: 14px;
+    min-height: 70px;
+    padding: 15px 13px;
+  }
+
+  .about-organisation-fact dt {
+    font-size: 14px;
+  }
+
+  .about-organisation-fact dd {
+    font-size: 16px;
+  }
+}
+
+/* Home page details and the responsive, scroll-aware photo slider. */
+.facts-heading .eyebrow {
+  font-size: 18px;
+  letter-spacing: .08em;
+}
+
+.facts-note {
+  max-width: 310px;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.story-photo-caption {
+  font-size: 18px;
+  line-height: 1.35;
+}
+
+.story-photo-caption i {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.gallery-slider-reveal {
+  min-width: 0;
+}
+
+.home-gallery-carousel {
+  position: relative;
+  padding-bottom: 34px;
+}
+
+.gallery-slider-viewport {
+  overflow: hidden;
+  padding: 2px 1px 18px;
+  margin: -2px -1px -18px;
+}
+
+.gallery-slider-track {
+  display: flex;
+  width: max-content;
+  align-items: start;
+  gap: 11px;
+  will-change: transform;
+}
+
+.gallery-slide {
+  flex: 0 0 calc((min(1280px, 100vw - 56px) - 55px) / 6);
+  width: calc((min(1280px, 100vw - 56px) - 55px) / 6);
+}
+
+.gallery-slider-toggle {
+  position: absolute;
+  right: 1px;
+  bottom: 0;
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border: 1px solid rgba(24, 55, 47, .16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .72);
+  color: #425a4c;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease;
+}
+
+.gallery-slider-toggle:hover {
+  background: var(--forest);
+  color: #fff;
+}
+
+.gallery-slider-toggle:focus-visible {
+  outline: 2px solid #b87932;
+  outline-offset: 3px;
+}
+
+.home-gallery-carousel.is-static .gallery-slider-viewport {
+  overflow: visible;
+}
+
+.home-gallery-carousel.is-static .gallery-slider-track {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+@media (max-width: 1000px) {
+  .gallery-slide {
+    flex-basis: calc((min(1280px, 100vw - 56px) - 22px) / 3);
+    width: calc((min(1280px, 100vw - 56px) - 22px) / 3);
+  }
+
+  .home-gallery-carousel.is-static .gallery-slider-track {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .facts-heading .eyebrow {
+    font-size: 18px;
+  }
+
+  .facts-note {
+    max-width: 36ch;
+    font-size: 16px;
+  }
+
+  .story-photo-caption {
+    font-size: 17px;
+  }
+
+  .story-photo-caption i {
+    font-size: 14px;
+  }
+
+  .gallery-slide {
+    flex-basis: calc((min(100vw - 36px, 540px) - 10px) / 2);
+    width: calc((min(100vw - 36px, 540px) - 10px) / 2);
+  }
+
+  .home-gallery-carousel.is-static .gallery-slider-track {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery-slider-track {
+    transform: none !important;
+  }
+
+  .gallery-slider-toggle {
+    display: none;
+  }
+}
+
+/* Phone reading scale: keep body copy comfortably legible across every page. */
+@media (max-width: 680px) {
+  .site-shell {
+    font-size: 17px;
+    line-height: 1.65;
+  }
+
+  .site-shell .text-sm {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .site-shell .text-xs {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .site-shell main p:not(.eyebrow):not(.gallery-hero-caption),
+  .site-shell main li {
+    font-size: max(16px, 1em);
+    line-height: 1.65;
+  }
+
+  .site-shell main :is(.pagehero-crumbs, .pagehero-facts dt, .pagehero-facts dd) {
+    font-size: 14px;
   }
 }

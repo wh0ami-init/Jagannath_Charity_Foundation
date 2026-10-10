@@ -6,6 +6,7 @@ import Reveal from "../components/Reveal";
 import { DynamicImage } from "../lib/ImagesContext";
 import { useSiteContent } from "../lib/SiteContentContext";
 import Stagger from "../components/Stagger";
+import HomeGallerySlider from "../components/HomeGallerySlider";
 
 const workAreas = [
   {
@@ -45,6 +46,12 @@ const galleryHome = [
   { slot: "home-gallery-kovind", caption: "Shri Ram Nath Kovind" },
   { slot: "home-gallery-murmu", caption: "Smt. Droupadi Murmu" },
   { slot: "home-gallery-pm", caption: "Shri Narendra Modi" },
+  { slot: "gallery-manmohan-singh", caption: "Dr Manmohan Singh" },
+  { slot: "gallery-vp-dhankhar", caption: "Shri Jagdeep Dhankhar" },
+  { slot: "gallery-amit-shah", caption: "Shri Amit Shah" },
+  { slot: "gallery-rajnath-singh", caption: "Shri Rajnath Singh" },
+  { slot: "gallery-om-birla", caption: "Shri Om Birla" },
+  { slot: "gallery-jp-nadda", caption: "Shri J.P. Nadda" },
 ];
 
 const heroImages = [
@@ -341,10 +348,20 @@ export default function Home({
                 />
               </motion.svg>
             </motion.div>
-            <div className="story-photo-caption">
-              Dr Jagannath Patnaik
+            <motion.div
+              className="story-photo-caption"
+              initial={reducedMotion ? false : { opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.35 }}
+              transition={{
+                duration: reducedMotion ? 0 : 0.8,
+                delay: reducedMotion ? 0 : 0.58,
+                ease: [0.22, 0.7, 0.2, 1],
+              }}
+            >
+              <span>Dr Jagannath Patnaik</span>
               <i>Founder, Settlor &amp; Managing Trustee</i>
-            </div>
+            </motion.div>
           </Reveal>
           <Reveal className="story-copy" direction="right" duration={1.1}>
             <p className="eyebrow">
@@ -479,35 +496,9 @@ export default function Home({
             View the gallery <span>↗</span>
           </Link>
         </Reveal>
-        <div className="gallery-ribbon">
-          {galleryHome.map((photo, i) => (
-            <Reveal
-              key={photo.slot}
-              className={`gallery-reveal gallery-reveal-${i + 1}`}
-              delay={i * 0.08}
-              direction={i % 2 === 0 ? "left" : "right"}
-            >
-              <Link
-                href="/gallery"
-                className={`gallery-frame gallery-frame-${i + 1}`}
-              >
-                <div className="gallery-photo">
-                  <DynamicImage
-                    slotKey={photo.slot}
-                    alt=""
-                    className="gallery-image gallery-image-backdrop"
-                  />
-                  <DynamicImage
-                    slotKey={photo.slot}
-                    alt={photo.caption}
-                    className="gallery-image gallery-image-foreground"
-                  />
-                </div>
-                <span>{photo.caption}</span>
-              </Link>
-            </Reveal>
-          ))}
-        </div>
+        <Reveal className="gallery-slider-reveal" delay={0.12} direction="up">
+          <HomeGallerySlider photos={galleryHome} reducedMotion={Boolean(reducedMotion)} />
+        </Reveal>
       </section>
 
       <Reveal as="section" className="home-join">

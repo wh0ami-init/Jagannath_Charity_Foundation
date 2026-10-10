@@ -112,7 +112,6 @@
     stroke-dashoffset: 1400;
     vector-effect: non-scaling-stroke;
     filter: drop-shadow(0 0 4px rgba(255,255,255,.38));
-    animation: pagehero-line-draw 1s .08s cubic-bezier(.2, .7, .2, 1) forwards;
 }
 
 .pagehero-art-accent {
@@ -125,7 +124,6 @@
     stroke-dashoffset: 900;
     vector-effect: non-scaling-stroke;
     filter: drop-shadow(0 0 6px rgba(243,198,125,.55));
-    animation: pagehero-line-draw 1s .16s cubic-bezier(.2, .7, .2, 1) forwards;
 }
 
 .pagehero-art-node {
@@ -135,7 +133,6 @@
     transform-box: fill-box;
     transform-origin: center;
     filter: drop-shadow(0 0 5px rgba(243,198,125,.58));
-    animation: pagehero-node-appear .45s .2s cubic-bezier(.2, .7, .2, 1) both;
 }
 
 .pagehero-content {
@@ -262,15 +259,6 @@
     color: rgba(255, 255, 255, .82);
     font-size: 14px;
     line-height: 1.35;
-}
-
-@keyframes pagehero-line-draw {
-    to { stroke-dashoffset: 0; }
-}
-
-@keyframes pagehero-node-appear {
-    from { opacity: 0; transform: scale(.6); }
-    to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes pagehero-rise {

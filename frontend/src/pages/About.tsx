@@ -9,6 +9,7 @@ import PageHero from "../components/PageHero";
 import Reveal from "../components/Reveal";
 import { DynamicImage } from "../lib/ImagesContext";
 import { useSiteContent } from "../lib/SiteContentContext";
+import Stagger from "../components/Stagger";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollToPlugin);
 
@@ -394,67 +395,51 @@ export default function About() {
           delay={0.16}
         >
           <h3>At a glance</h3>
-          <dl>
-            {organisationFacts.map(([label, value], index) => (
-              <motion.div
-                key={label}
-                className="about-organisation-fact"
-                initial={reducedMotion ? false : { opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{
-                  duration: reducedMotion ? 0 : 0.65,
-                  delay: reducedMotion ? 0 : 0.2 + index * 0.1,
-                  ease: [0.22, 0.7, 0.2, 1],
-                }}
-              >
-                <motion.dt
-                  initial={reducedMotion ? false : { opacity: 0, x: -10 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, amount: 0.6 }}
-                  transition={{
-                    duration: reducedMotion ? 0 : 0.7,
-                    delay: reducedMotion ? 0 : 0.12,
-                    ease: [0.22, 0.7, 0.2, 1],
-                  }}
-                >
-                  {label}
-                </motion.dt>
+          <Stagger
+            as="dl"
+            className="about-organisation-facts-table"
+            gap={0.14}
+            distance={18}
+            start="top 45%"
+          >
+            {organisationFacts.map(([label, value]) => (
+              <div className="about-organisation-fact" key={label}>
+                <dt>{label}</dt>
                 <dd>{value}</dd>
-              </motion.div>
+              </div>
             ))}
-          </dl>
+          </Stagger>
         </Reveal>
       </section>
 
-      <Reveal as="section" className="wrap py-12">
-        <div className="max-w-4xl">
-          <h2 className="text-3xl font-serif-heading font-bold text-navy-950 mb-3">
-            Statutory registrations
-          </h2>
-          <p className="text-sm text-navy-900/70 mb-6">
-            The Foundation is a public charitable trust, recorded on NITI Aayog
-            DARPAN, provisionally registered for tax exemption, and approved by
-            the Ministry of Corporate Affairs to undertake CSR activities.
-          </p>
-          <dl className="grid sm:grid-cols-[minmax(12rem,1fr)_2fr] gap-x-6 gap-y-3 text-sm border border-navy-900/10 rounded-xl p-5">
-            <dt className="text-navy-900/60">PAN</dt>
-            <dd className="font-medium text-navy-950">AAFTJ8006Q</dd>
-            <dt className="text-navy-900/60">DARPAN (NITI Aayog)</dt>
-            <dd className="font-medium text-navy-950">
+      <Reveal as="section" className="about-statutory wrap">
+        <div className="about-statutory-inner">
+          <header className="about-statutory-heading">
+            <p className="eyebrow">Public record</p>
+            <h2>Statutory registrations</h2>
+            <p>
+              The Foundation is a public charitable trust, recorded on NITI
+              Aayog DARPAN, provisionally registered for tax exemption, and
+              approved by the Ministry of Corporate Affairs to undertake CSR
+              activities.
+            </p>
+          </header>
+          <dl className="about-statutory-list">
+            <dt>PAN</dt>
+            <dd>AAFTJ8006Q</dd>
+            <dt>DARPAN (NITI Aayog)</dt>
+            <dd>
               OR/2026/1196699 · registered 02-09-2026
             </dd>
-            <dt className="text-navy-900/60">
-              Provisional registration u/s 12A
-            </dt>
-            <dd className="font-medium text-navy-950">URN AAFTJ8006QE20261</dd>
-            <dt className="text-navy-900/60">Provisional approval u/s 80G</dt>
-            <dd className="font-medium text-navy-950">
+            <dt>Provisional registration u/s 12A</dt>
+            <dd>URN AAFTJ8006QE20261</dd>
+            <dt>Provisional approval u/s 80G</dt>
+            <dd>
               URN AAFTJ8006QF20261 · Form 10G dated 07-09-2026 · valid TY
               2026-27 to TY 2028-29
             </dd>
-            <dt className="text-navy-900/60">MCA CSR registration</dt>
-            <dd className="font-medium text-navy-950">
+            <dt>MCA CSR registration</dt>
+            <dd>
               CSR00118119 · Form CSR-1 dated 21-09-2026 · SRN AC6085516 · ROC
               Delhi
             </dd>

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { apiUrl } from "../lib/api";
 import Reveal from "./Reveal";
 import Stagger from "./Stagger";
@@ -18,7 +18,7 @@ type CheckoutOptions = {
   description: string;
   handler: (response: CheckoutResponse) => void;
   modal: { ondismiss: () => void };
-  theme: { color: string; backdrop_color: string };
+  theme: { color: string };
 };
 type Checkout = {
   open: () => void;
@@ -86,6 +86,14 @@ export default function RazorpayTestButton() {
   const [pendingResponse, setPendingResponse] = useState<CheckoutResponse | null>(null);
   const [completed, setCompleted] = useState(false);
 
+  useEffect(() => () => {
+    document.body.classList.remove("razorpay-checkout-active");
+  }, []);
+
+  const setCheckoutBackdrop = (active: boolean) => {
+    document.body.classList.toggle("razorpay-checkout-active", active);
+  };
+
   async function verifyPayment(result: CheckoutResponse) {
     inProgress.current = true;
     setBusy(true);
@@ -112,12 +120,14 @@ export default function RazorpayTestButton() {
   async function openPayment() {
     if (inProgress.current) return;
     inProgress.current = true;
+    setCheckoutBackdrop(true);
     setBusy(true);
     setMessage("");
     setError("");
     const finish = () => {
       inProgress.current = false;
       setBusy(false);
+      setCheckoutBackdrop(false);
     };
     let responded = false;
     try {
@@ -136,9 +146,10 @@ export default function RazorpayTestButton() {
         order_id: order.order_id,
         name: "Jagannath Foundation",
         description: "Test donation - INR 100",
-        theme: { color: "#18372f", backdrop_color: "#2563eb" },
+        theme: { color: "#18372f" },
         handler: (response) => {
           responded = true;
+          setCheckoutBackdrop(false);
           setPendingResponse(response);
           void verifyPayment(response);
         },

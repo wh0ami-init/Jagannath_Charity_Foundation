@@ -19,7 +19,7 @@ type RevealProps = HTMLAttributes<any> & {
   type?: "button" | "submit" | "reset";
 };
 
-export default function Reveal({ as = "div", delay = 0, duration = 0.55, delayOffset = 0.06, start = "top 86%", direction = "up", ...props }: RevealProps) {
+export default function Reveal({ as = "div", delay = 0, duration = 0.85, delayOffset = 0.16, start = "top 86%", direction = "up", ...props }: RevealProps) {
   const scope = useRef<HTMLElement | null>(null);
   const reducedMotion = useReducedMotion();
 

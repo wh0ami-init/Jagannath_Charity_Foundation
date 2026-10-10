@@ -7,7 +7,7 @@ import { useReducedMotion } from "motion/react";
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 type StaggerProps = HTMLAttributes<any> & {
-  as?: "div" | "section" | "ul" | "ol" | "form" | "nav";
+  as?: "div" | "section" | "ul" | "ol" | "form" | "nav" | "dl";
   gap?: number; // seconds between one child and the next
   distance?: number; // how far (px) each child slides up
   start?: string;
@@ -21,8 +21,8 @@ type StaggerProps = HTMLAttributes<any> & {
  */
 export default function Stagger({
   as = "div",
-  gap = 0.07,
-  distance = 18,
+  gap = 0.14,
+  distance = 22,
   start = "top 90%",
   children,
   ...props
@@ -44,6 +44,8 @@ export default function Stagger({
         transformOrigin: "left center",
       });
 
+      const itemGap = gap;
+
       ScrollTrigger.batch(items, {
         start,
         once: true,
@@ -52,9 +54,10 @@ export default function Stagger({
           gsap.to(batch, {
             opacity: 1,
             y: 0,
-            duration: 0.55,
+            duration: 0.85,
             ease: "power3.out",
-            stagger: gap,
+            delay: 0.12,
+            stagger: itemGap,
             overwrite: true,
             clearProps: "opacity,transform",
           });
@@ -65,7 +68,7 @@ export default function Stagger({
                 scaleX: 1,
                 duration: 0.55,
                 ease: "power2.inOut",
-                delay: i * gap + 0.25,
+                delay: 0.12 + i * itemGap + 0.25,
               });
             }
           });
