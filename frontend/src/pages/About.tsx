@@ -424,26 +424,40 @@ export default function About() {
               activities.
             </p>
           </header>
-          <dl className="about-statutory-list">
-            <dt>PAN</dt>
-            <dd>AAFTJ8006Q</dd>
-            <dt>DARPAN (NITI Aayog)</dt>
-            <dd>
-              OR/2026/1196699 · registered 02-09-2026
-            </dd>
-            <dt>Provisional registration u/s 12A</dt>
-            <dd>URN AAFTJ8006QE20261</dd>
-            <dt>Provisional approval u/s 80G</dt>
-            <dd>
-              URN AAFTJ8006QF20261 · Form 10G dated 07-09-2026 · valid TY
-              2026-27 to TY 2028-29
-            </dd>
-            <dt>MCA CSR registration</dt>
-            <dd>
-              CSR00118119 · Form CSR-1 dated 21-09-2026 · SRN AC6085516 · ROC
-              Delhi
-            </dd>
-          </dl>
+          <Stagger
+            as="dl"
+            className="about-statutory-list"
+            gap={0.08}
+            distance={16}
+            start="top 84%"
+          >
+            <div className="about-statutory-row">
+              <dt>PAN</dt>
+              <dd>AAFTJ8006Q</dd>
+            </div>
+            <div className="about-statutory-row">
+              <dt>DARPAN (NITI Aayog)</dt>
+              <dd>OR/2026/1196699 · registered 02-09-2026</dd>
+            </div>
+            <div className="about-statutory-row">
+              <dt>Provisional registration u/s 12A</dt>
+              <dd>URN AAFTJ8006QE20261</dd>
+            </div>
+            <div className="about-statutory-row">
+              <dt>Provisional approval u/s 80G</dt>
+              <dd>
+                URN AAFTJ8006QF20261 · Form 10G dated 07-09-2026 · valid TY
+                2026-27 to TY 2028-29
+              </dd>
+            </div>
+            <div className="about-statutory-row">
+              <dt>MCA CSR registration</dt>
+              <dd>
+                CSR00118119 · Form CSR-1 dated 21-09-2026 · SRN AC6085516 · ROC
+                Delhi
+              </dd>
+            </div>
+          </Stagger>
         </div>
       </Reveal>
 
@@ -491,7 +505,11 @@ export default function About() {
         className="about-principles wrap"
         aria-labelledby="about-principles-title"
       >
-        <header className="about-principles-heading">
+        <Reveal
+          as="header"
+          className="about-principles-heading"
+          direction="left"
+        >
           <p className="eyebrow">Our commitments</p>
           <h2 id="about-principles-title">
             Built for lasting change, guided by public trust.
@@ -500,7 +518,7 @@ export default function About() {
             The way we work in communities and the way we govern the Foundation
             are rooted in the same promise: lasting public benefit.
           </p>
-        </header>
+        </Reveal>
         <div className="about-principles-grid">
           <Reveal as="article" className="about-principle" direction="left">
             <span className="about-principle-number" aria-hidden="true">
@@ -766,7 +784,7 @@ export default function About() {
         id="founder-dream"
         className="about-content wrap py-16 grid lg:grid-cols-[2fr_1fr] gap-10"
       >
-        <div className="about-information">
+        <Reveal as="div" className="about-information" direction="left">
           <div
             className="about-tabs flex flex-wrap gap-2 mb-6"
             role="tablist"
@@ -834,7 +852,7 @@ export default function About() {
               </p>
             )}
           </motion.div>
-        </div>
+        </Reveal>
         <aside className="about-founder-column">
           {flyEnabled && (
             <div
@@ -843,12 +861,14 @@ export default function About() {
               aria-hidden="true"
             />
           )}
-          <a
-            href="/assets/organization-profile.pdf"
-            className="about-profile-download"
-          >
-            Download Organisation Profile (PDF)
-          </a>
+          <Reveal as="div" direction="right" delay={0.12}>
+            <a
+              href="/assets/organization-profile.pdf"
+              className="about-profile-download"
+            >
+              Download Organisation Profile (PDF)
+            </a>
+          </Reveal>
         </aside>
       </section>
     </Layout>

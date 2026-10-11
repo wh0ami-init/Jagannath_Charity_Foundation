@@ -181,7 +181,7 @@ export default function Header() {
   return (
     <>
       <header
-        className={`site-header backdrop-blur-xl${homeActive ? " is-home" : ""}${homeActive && scrolled ? " is-scrolled" : ""}`}
+        className={`site-header backdrop-blur-xl${homeActive ? " is-home" : ""}${homeActive && scrolled ? " is-scrolled" : ""}${exploreOpen ? " is-explore-open" : ""}`}
         ref={headerRef}
       >
         <div className="wrap header-main">
@@ -273,7 +273,15 @@ export default function Header() {
                   }
                 }}
               >
-                Explore <span aria-hidden="true">⌄</span>
+                Explore
+                <svg
+                  className="nav-explore-chevron"
+                  aria-hidden="true"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                >
+                  <path d="m2.5 4.5 3.5 3 3.5-3" />
+                </svg>
               </button>
               <div
                 id="nav-explore-panel"

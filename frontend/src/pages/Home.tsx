@@ -1,4 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Link } from "wouter";
 import Layout from "../components/Layout";
@@ -8,32 +11,38 @@ import { useSiteContent } from "../lib/SiteContentContext";
 import Stagger from "../components/Stagger";
 import HomeGallerySlider from "../components/HomeGallerySlider";
 
+gsap.registerPlugin(useGSAP, ScrollTrigger);
+
 const workAreas = [
   {
     title: "Learning that lasts",
     theme: "learning",
-    slot: "work-education",
+    photo: "/images/community/education.webp",
+    secondary: "/images/hero-education.webp",
     label: "Education & literacy",
     body: "Learning support that helps children stay in school and thrive.",
   },
   {
     title: "Care within reach",
     theme: "care",
-    slot: "work-health",
+    photo: "/images/community/health.webp",
+    secondary: "/images/hero-health.webp",
     label: "Health & family welfare",
     body: "Community health and family support, close to where people live.",
   },
   {
     title: "Skills into livelihoods",
     theme: "livelihood",
-    slot: "work-livelihoods",
+    photo: "/images/community/womens-livelihoods.webp",
+    secondary: "/images/hero-livelihoods.webp",
     label: "Women's livelihoods",
     body: "Skills, income and leadership opportunities for women and girls.",
   },
   {
     title: "Energy for everyday life",
     theme: "energy",
-    slot: "work-solar",
+    photo: "/images/community/solar-household.webp",
+    secondary: "/images/community/solar-energy.webp",
     label: "Clean energy",
     body: "Cleaner, more reliable energy for everyday household life.",
   },
@@ -54,11 +63,55 @@ const galleryHome = [
   { slot: "gallery-jp-nadda", caption: "Shri J.P. Nadda" },
 ];
 
+const peopleHome = [
+  {
+    slot: "team-jagannath-patnaik",
+    caption: "Dr Jagannath Patnaik",
+  },
+  {
+    slot: "team-shrabani-patnaik",
+    caption: "Dr Shrabani Patnaik",
+  },
+  {
+    slot: "team-prakriti-patnaik",
+    caption: "Adv. Prakriti Patnaik",
+  },
+  {
+    slot: "team-purushraj-patnaik",
+    caption: "Mr Purushraj Patnaik",
+  },
+  {
+    slot: "team-sarita-patwal",
+    caption: "Ms Sarita Patwal",
+  },
+  {
+    slot: "team-prateek-nayak",
+    caption: "Adv. Prateek Nayak",
+  },
+  {
+    slot: "team-samarendra-patra",
+    caption: "Er. Samarendra Patra",
+  },
+  {
+    slot: "team-reema-diddee",
+    caption: "CA Reema Diddee",
+  },
+  {
+    slot: "team-lhamu-tshering-tamang",
+    caption: "Adv. Lhamu Tshering Tamang",
+  },
+  {
+    slot: "advisor-pradeep-joshi",
+    caption: "Prof. Pradeep Kumar Joshi",
+  },
+];
+
 const heroImages = [
-  ["home-hero-education", "Education and learning"],
-  ["home-hero-health", "Community health"],
-  ["home-hero-livelihoods", "Livelihoods and skills"],
-  ["home-hero-solar", "Clean household energy"],
+  ["home-hero-community", "A village community at sunrise"],
+  ["community-hero-education", "Community education and learning"],
+  ["community-hero-health", "Community health outreach"],
+  ["community-hero-livelihoods", "Women working together in their community"],
+  ["community-hero-solar", "Solar energy for rural homes"],
 ];
 
 const foundationFacts = [
@@ -85,6 +138,31 @@ const principles = [
   },
 ];
 
+function WorkFeatureSlideshow({ photo, secondary, alt }: {
+  photo: string;
+  secondary: string;
+  alt: string;
+}) {
+  return (
+    <div className="work-photo-slideshow" aria-hidden="true">
+      {[photo, secondary].map((src, index) => (
+        <div
+          key={src}
+          className={`work-image-slide ${index === 0 ? "work-image-slide-primary" : "work-image-slide-secondary"}`}
+        >
+          <img
+            src={src}
+            alt={index === 0 ? alt : ""}
+            className="work-image"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function Home({
   isWelcomeVisible = false,
 }: {
@@ -94,6 +172,50 @@ export default function Home({
   const [slide, setSlide] = useState(0);
   const [heroTextVisible, setHeroTextVisible] = useState(true);
   const reducedMotion = useReducedMotion();
+  const workSection = useRef<HTMLElement>(null);
+
+  useGSAP(
+    () => {
+      const section = workSection.current;
+      if (!section || reducedMotion) return;
+      const frames = gsap.utils.toArray<HTMLElement>(".work-photo-slideshow", section);
+      if (!frames.length) return;
+
+      const imageHold = 4.4;
+      const slideshow = gsap.timeline({ paused: true });
+      frames.forEach((frame, index) => {
+        const [primary, secondary] = frame.querySelectorAll<HTMLElement>(".work-image-slide");
+        if (!primary || !secondary) return;
+        gsap.set(primary, { autoAlpha: 1, scale: 1 });
+        gsap.set(secondary, { autoAlpha: 0, scale: 1.035 });
+        const cardSlideshow = gsap.timeline({ repeat: -1 });
+        cardSlideshow
+          .to(secondary, { autoAlpha: 1, scale: 1, duration: 1.25, ease: "power2.inOut" })
+          .to(primary, { autoAlpha: 0, scale: 1.02, duration: 1.25, ease: "power2.inOut" }, "<")
+          .to({}, { duration: imageHold })
+          .to(primary, { autoAlpha: 1, scale: 1, duration: 1.25, ease: "power2.inOut" })
+          .to(secondary, { autoAlpha: 0, scale: 1.035, duration: 1.25, ease: "power2.inOut" }, "<")
+          .to({}, { duration: imageHold });
+        slideshow.add(cardSlideshow, index * 0.9);
+      });
+
+      const trigger = ScrollTrigger.create({
+        trigger: section,
+        start: "top 90%",
+        end: "bottom 10%",
+        onEnter: () => slideshow.play(),
+        onEnterBack: () => slideshow.play(),
+        onLeave: () => slideshow.pause(),
+        onLeaveBack: () => slideshow.pause(),
+      });
+
+      return () => {
+        trigger.kill();
+        slideshow.kill();
+      };
+    },
+    { scope: workSection, dependencies: [reducedMotion], revertOnUpdate: true },
+  );
   useEffect(() => {
     if (
       isWelcomeVisible ||
@@ -147,6 +269,7 @@ export default function Home({
               slotKey={slot}
               alt={alt}
               className={`hero-scene-image ${index === slide ? "active" : ""}`}
+              preferLocal
             />
           ))}
           <div className="hero-shade" />
@@ -386,7 +509,7 @@ export default function Home({
         </div>
       </section>
 
-      <section className="home-work">
+      <section className="home-work" ref={workSection}>
         <div className="wrap">
           <Reveal className="section-topline" direction="down">
             <div>
@@ -416,10 +539,10 @@ export default function Home({
                   className={`work-feature work-feature-${index + 1} work-${area.theme}`}
                 >
                   <div className="work-photo">
-                    <DynamicImage
-                      slotKey={area.slot}
+                    <WorkFeatureSlideshow
+                      photo={area.photo}
+                      secondary={area.secondary}
                       alt={area.label}
-                      className="work-image"
                     />
                     <span className="work-index">0{index + 1}</span>
                   </div>
@@ -442,6 +565,38 @@ export default function Home({
             </Link>
           </Reveal>
         </div>
+      </section>
+
+      <section className="home-gallery home-people wrap">
+        <Reveal className="gallery-heading" delay={0.04} direction="down">
+          <div>
+            <p className="eyebrow">
+              <span />
+              People and leadership
+            </p>
+            <h2>Meet the people behind the work.</h2>
+            <p>
+              Trustees, management and advisors bring experience and care to
+              the Foundation’s public service.
+            </p>
+          </div>
+          <Link href="/team" className="text-link">
+            Meet our people <span>↗</span>
+          </Link>
+        </Reveal>
+        <Reveal
+          className="gallery-slider-reveal"
+          delay={0.04}
+          delayOffset={0.08}
+          direction="up"
+        >
+          <HomeGallerySlider
+            photos={peopleHome}
+            reducedMotion={Boolean(reducedMotion)}
+            href="/team"
+            variant="people"
+          />
+        </Reveal>
       </section>
 
       <section className="home-principles">

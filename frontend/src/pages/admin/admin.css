@@ -434,7 +434,7 @@
     z-index: 1;
 }
 
-.ac-hero > * {
+.ac-hero>* {
     position: relative;
     z-index: 1;
 }
@@ -876,16 +876,59 @@
     border-radius: 20px;
     background: var(--card);
 }
-.ac-gallery-add h3 { margin: 0 0 5px; color: var(--g950); }
-.ac-gallery-add p { margin: 0; color: var(--muted); font-size: 14px; }
-.ac-gallery-add input, .ac-gallery-add select, .ac-gallery-details input, .ac-gallery-details select {
-    width: 100%; min-width: 0; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink); font: inherit;
+
+.ac-gallery-add h3 {
+    margin: 0 0 5px;
+    color: var(--g950);
 }
-.ac-gallery-add input[type="file"] { font-size: 13px; }
-.ac-gallery-details { display: grid; gap: 10px; margin-top: 14px; }
-.ac-gallery-details label { display: grid; gap: 5px; color: var(--muted); font-size: 12px; font-weight: 700; }
-.ac-gallery-details .ac-btn { margin-top: 0; }
-@media (max-width: 760px) { .ac-gallery-add { grid-template-columns: 1fr; } }
+
+.ac-gallery-add p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.ac-gallery-add input,
+.ac-gallery-add select,
+.ac-gallery-details input,
+.ac-gallery-details select {
+    width: 100%;
+    min-width: 0;
+    padding: 11px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ink);
+    font: inherit;
+}
+
+.ac-gallery-add input[type="file"] {
+    font-size: 13px;
+}
+
+.ac-gallery-details {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.ac-gallery-details label {
+    display: grid;
+    gap: 5px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.ac-gallery-details .ac-btn {
+    margin-top: 0;
+}
+
+@media (max-width: 760px) {
+    .ac-gallery-add {
+        grid-template-columns: 1fr;
+    }
+}
 
 /* ---------- Words ---------- */
 .ac-fields {
@@ -1158,7 +1201,9 @@
     background: rgba(255, 255, 255, 0.5);
 }
 
-.ac-empty svg { color: var(--gold); }
+.ac-empty svg {
+    color: var(--gold);
+}
 
 .ac-empty strong {
     font-size: 20px;

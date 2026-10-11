@@ -14,6 +14,9 @@ type RecordItem = {
   imageAlt?: string;
 };
 
+const pendingRecognitionScan =
+  "Listed on the Foundation’s public certificates page. The supporting scan can be added when a verified copy is supplied.";
+
 // Add a verified scan under /public/images/certificates and set its path here.
 // Keeping image paths in this list makes future document updates straightforward.
 const foundationRecords: RecordItem[] = [
@@ -97,6 +100,88 @@ const founderRecognitions: RecordItem[] = [
     title: "Selected recognitions",
     detail:
       "Women Empowerment Award and Education Excellence Award, listed in the founder’s public profile.",
+    reference: "2015",
+  },
+  {
+    label: "Academic recognition · Honoris causa",
+    title: "Doctor of Philosophy",
+    detail: pendingRecognitionScan,
+  },
+  {
+    label: "Academic recognition · Honoris causa",
+    title: "Doctor of Science",
+    detail:
+      "A 2016 honorary doctorate listed on the Foundation’s public certificates page. The supporting scan can be added when a verified copy is supplied.",
+    reference: "2016",
+  },
+  {
+    label: "Academic recognition · Honoris causa",
+    title: "Doctor of Philosophy",
+    detail:
+      "A 2016 honorary doctorate listed on the Foundation’s public certificates page. The supporting scan can be added when a verified copy is supplied.",
+    reference: "2016",
+  },
+  {
+    label: "Natural medicine",
+    title: "Grand Award of International Natural Medicine",
+    detail: pendingRecognitionScan,
+  },
+  {
+    label: "International peace",
+    title: "Outstanding Leadership Award · Middle East Peace Process",
+    detail: pendingRecognitionScan,
+  },
+  {
+    label: "International peace",
+    title: "Ambassador of Peace",
+    detail:
+      "An international recognition listed on the Foundation’s public certificates page. The supporting scan can be added when a verified copy is supplied.",
+  },
+  {
+    label: "Human rights education",
+    title: "World Human Rights Educators Award",
+    detail: pendingRecognitionScan,
+    reference: "2002",
+  },
+  {
+    label: "Education quality",
+    title: "India Quality Award",
+    detail: pendingRecognitionScan,
+  },
+  {
+    label: "National recognition",
+    title: "Pride of India Award",
+    detail: pendingRecognitionScan,
+    reference: "2003",
+  },
+  {
+    label: "Youth leadership",
+    title: "Youth Leadership Award",
+    detail: pendingRecognitionScan,
+    reference: "2014",
+  },
+  {
+    label: "Public service",
+    title: "Swachh Bharat Award",
+    detail: pendingRecognitionScan,
+    reference: "2015",
+  },
+  {
+    label: "Education",
+    title: "CUTE Award",
+    detail: pendingRecognitionScan,
+    reference: "2015",
+  },
+  {
+    label: "Education leadership",
+    title: "Outstanding Educationist Award",
+    detail: pendingRecognitionScan,
+    reference: "2015",
+  },
+  {
+    label: "Public service",
+    title: "Seva Excellence Award",
+    detail: pendingRecognitionScan,
     reference: "2015",
   },
   {

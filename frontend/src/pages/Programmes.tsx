@@ -9,14 +9,14 @@ import { DynamicImage } from "../lib/ImagesContext";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-/* which photo slot each programme uses (admin panel can replace them) */
+/* Curated community photos used to illustrate each programme. */
 const photoSlot: Record<string, string> = {
-  "education-literacy": "work-education",
-  "health-family-welfare": "work-health",
-  "youth-skills-sport": "work-youth",
-  "women-livelihoods": "work-livelihoods",
-  "environment-land": "work-environment",
-  "solar-clean-energy": "work-solar",
+  "education-literacy": "community-work-education",
+  "health-family-welfare": "community-work-health",
+  "youth-skills-sport": "community-work-youth",
+  "women-livelihoods": "community-work-livelihoods",
+  "environment-land": "community-work-environment",
+  "solar-clean-energy": "community-work-solar",
 };
 
 const programmes = [
@@ -165,8 +165,8 @@ function ProgrammeCard({ p, index }: { p: Programme; index: number }) {
         )
         .fromTo(
           q(".wp-img"),
-          { scale: 1.4 },
-          { scale: 1.12, duration: 1.8, ease: "power2.out" },
+          { scale: 1.12, filter: "brightness(.72)" },
+          { scale: 1, filter: "brightness(.84)", duration: 2.2, ease: "power2.out" },
           0.1,
         )
         .from(
@@ -174,22 +174,27 @@ function ProgrammeCard({ p, index }: { p: Programme; index: number }) {
           { autoAlpha: 0, scale: 0.6, duration: 0.7, ease: "back.out(1.8)" },
           0.9,
         )
-        // 3) text comes in one by one (same fonts, same sizes - only movement)
+        // Hold on the photo, then reveal the glass content panel.
+        .from(
+          q(".wp-content-panel"),
+          { autoAlpha: 0, y: 42, scale: 0.975, duration: 0.95, ease: "power3.out" },
+          1.9,
+        )
+        // 4) bring the main copy up and the activity panel in from the right.
         .from(
           q(".wp-text > *"),
-          { autoAlpha: 0, y: 26, duration: 0.8, stagger: 0.09 },
-          0.55,
+          { autoAlpha: 0, y: 22, duration: 0.72, stagger: 0.08 },
+          2.15,
         )
-        // 4) the side box and its list items
         .from(
           q(".wp-aside"),
-          { autoAlpha: 0, x: fromRight ? -30 : 30, duration: 0.9 },
-          0.75,
+          { autoAlpha: 0, x: 64, duration: 0.9, ease: "power3.out" },
+          2.1,
         )
         .from(
           q(".wp-aside li"),
-          { autoAlpha: 0, x: 18, duration: 0.6, stagger: 0.08 },
-          1.0,
+          { autoAlpha: 0, x: 18, duration: 0.56, stagger: 0.07 },
+          2.35,
         );
 
       // 5) parallax: photo moves slowly while you scroll past
@@ -215,18 +220,19 @@ function ProgrammeCard({ p, index }: { p: Programme; index: number }) {
     <article
       ref={card}
       id={`programme-${p.slug}`}
-      className="work-programme-card rounded-2xl border border-navy-900/10 bg-white p-5 shadow-[0_12px_36px_rgba(24,55,47,.045)] sm:p-7 lg:p-8"
+      className="work-programme-card rounded-2xl border border-navy-900/10 p-5 shadow-[0_12px_36px_rgba(24,55,47,.045)] sm:p-7 lg:p-8"
     >
       <div className="wp-photo">
         <DynamicImage
           slotKey={photoSlot[p.slug]}
           alt={p.title}
           className="wp-img"
+          preferLocal
         />
         <span className="wp-badge work-index">{p.num}</span>
       </div>
 
-      <div className="grid gap-7 lg:grid-cols-[1.02fr_.98fr] lg:gap-9">
+      <div className="wp-content-panel grid gap-7 lg:grid-cols-[1.02fr_.98fr] lg:gap-9">
         <div className="wp-text py-1">
           <p className="mb-2 text-sm font-semibold tracking-wide text-orange-600">
             {p.num} <span className="text-navy-900/35">/ 06</span>
@@ -245,7 +251,7 @@ function ProgrammeCard({ p, index }: { p: Programme; index: number }) {
         </div>
 
         <aside
-          className="wp-aside rounded-xl border border-navy-900/10 bg-[#f8f7f2] p-5 sm:p-6"
+          className="wp-aside"
           aria-label={`${p.title} potential activities and intended audience`}
         >
           <h3 className="font-serif-heading text-xl font-semibold text-navy-950">

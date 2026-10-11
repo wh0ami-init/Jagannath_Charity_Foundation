@@ -6,7 +6,7 @@ import { useReducedMotion } from "motion/react";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-type RevealTag = "div" | "section" | "article" | "h3" | "h2" | "aside" | "nav" | "address" | "form" | "button" | "a";
+type RevealTag = "div" | "section" | "article" | "header" | "h3" | "h2" | "aside" | "nav" | "address" | "form" | "button" | "a";
 type RevealDirection = "up" | "down" | "left" | "right";
 type RevealProps = HTMLAttributes<any> & {
   as?: RevealTag;

@@ -57,10 +57,12 @@ export function DynamicImage({
   slotKey,
   alt,
   className,
+  preferLocal = false,
 }: {
   slotKey: string;
   alt?: string;
   className?: string;
+  preferLocal?: boolean;
 }) {
   const { images } = useImages();
   const slot = images[slotKey];
@@ -70,6 +72,11 @@ export function DynamicImage({
     "home-hero-health": "/images/hero-health.webp",
     "home-hero-livelihoods": "/images/hero-livelihoods.webp",
     "home-hero-solar": "/images/hero-solar.webp",
+    "home-hero-community": "/images/community/village-hero.webp",
+    "community-hero-education": "/images/community/education.webp",
+    "community-hero-health": "/images/community/health.webp",
+    "community-hero-livelihoods": "/images/community/womens-livelihoods.webp",
+    "community-hero-solar": "/images/community/solar-energy.webp",
     "gallery-cover": "/images/gallery-cover.webp",
     "work-education": "/images/hero-education.webp",
     "work-health": "/images/hero-health.webp",
@@ -77,6 +84,12 @@ export function DynamicImage({
     "work-livelihoods": "/images/hero-livelihoods.webp",
     "work-environment": "/images/hero-solar.webp",
     "work-solar": "/images/hero-solar.webp",
+    "community-work-education": "/images/community/education.webp",
+    "community-work-health": "/images/community/health.webp",
+    "community-work-youth": "/images/community/skills-training.webp",
+    "community-work-livelihoods": "/images/community/womens-livelihoods.webp",
+    "community-work-environment": "/images/community/environment.webp",
+    "community-work-solar": "/images/community/solar-household.webp",
     "about-founder-photo": "/images/founder-jagannath.webp",
     "team-jagannath-patnaik": "/images/founder-jagannath.webp",
     "team-shrabani-patnaik": "/images/team-shrabani-patnaik.webp",
@@ -103,7 +116,13 @@ export function DynamicImage({
 
   return (
     <img
-      src={slot ? `${API_URL}${slot.url}` : fallbackSrc}
+      src={
+        preferLocal && fallbackSrc
+          ? fallbackSrc
+          : slot
+            ? `${API_URL}${slot.url}`
+            : fallbackSrc
+      }
       alt={alt ?? slot?.alt_text ?? ""}
       className={className}
       loading={

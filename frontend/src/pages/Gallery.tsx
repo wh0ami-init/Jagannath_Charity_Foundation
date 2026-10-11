@@ -468,6 +468,7 @@ export default function Gallery() {
       ),
     [allItems, activeFilter, search],
   );
+
   const categoryCounts = useMemo(() => {
     const counts = Object.fromEntries(
       filters.map(({ id }) => [id, 0]),
