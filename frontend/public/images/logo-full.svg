@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Jagannath Charity Foundation logo">
+  <defs><clipPath id="inner"><circle cx="256" cy="256" r="178"/></clipPath>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f5c479"/><stop offset="1" stop-color="#c87932"/>
+    </linearGradient>
+    <radialGradient id="disc" cx="50%" cy="40%" r="70%">
+      <stop offset="0" stop-color="#294b3e"/><stop offset="1" stop-color="#102c25"/>
+    </radialGradient>
+    <path id="top" d="M 58,256 A 198,198 0 0 1 454,256"/>
+    <path id="bot" d="M 32,256 A 224,224 0 0 0 480,256"/>
+  </defs>
+  <circle cx="256" cy="256" r="252" fill="#18372f"/>
+  <circle cx="256" cy="256" r="244" fill="none" stroke="url(#gold)" stroke-width="3"/>
+  <circle cx="256" cy="256" r="182" fill="none" stroke="url(#gold)" stroke-width="2.5"/>
+  <circle cx="256" cy="256" r="178" fill="url(#disc)"/>
+  <g font-family="'Cormorant Garamond', Georgia, 'Times New Roman', serif" font-weight="700" fill="#f6f5ef" text-anchor="middle">
+    <text font-size="24" letter-spacing="1.5"><textPath href="#top" startOffset="50%">JAGANNATH CHARITY FOUNDATION</textPath></text>
+    <text font-size="27" letter-spacing="6" fill="#f5c479"><textPath href="#bot" startOffset="50%">DONATE • SERVE • CARE</textPath></text>
+  </g>
+  <g fill="url(#gold)">
+    <path d="M 22,256 l 7,-7 l 7,7 l -7,7 z"/>
+    <path d="M 476,256 l 7,-7 l 7,7 l -7,7 z"/>
+  </g>
+  
+  <g>
+    <circle cx="256" cy="120" r="15" fill="url(#gold)"/>
+    <circle cx="256" cy="120" r="9.5" fill="none" stroke="#18372f" stroke-width="2"/>
+    <path d="M256 115 v10 M251 120 h10" stroke="#18372f" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M256 142 v12 M246 139 v8 M266 139 v8" stroke="#f5c479" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+  </g>
+  <g transform="translate(256 0) scale(.92) translate(-256 -14)">
+    <path d="M256 340 C166 276 142 214 180 182 C212 156 245 170 256 198 C267 170 300 156 332 182 C370 214 346 276 256 340 Z" fill="url(#gold)"/>
+    <path d="M200 205 C212 192 232 194 242 208" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="5" stroke-linecap="round"/>
+  </g><g clip-path="url(#inner)">
+    <g id="h" transform="translate(10 -44) rotate(-24 226 430)">
+      <g stroke-linecap="round" fill="none">
+        <g stroke="#102c25" stroke-width="22"><path d="M176 372 V334"/><path d="M193 372 V312"/><path d="M210 372 V298"/><path d="M227 372 V308"/><path d="M238 398 L259 362"/></g>
+        <g stroke="#f6f5ef" stroke-width="16"><path d="M176 372 V334"/><path d="M193 372 V312"/><path d="M210 372 V298"/><path d="M227 372 V308"/><path d="M238 398 L259 362"/></g>
+      </g>
+      <rect x="168" y="366" width="76" height="110" rx="20" fill="#f6f5ef"/>
+      
+    </g>
+    <g transform="translate(512 0) scale(-1 1)"><use href="#h"/></g>
+  </g>
+</svg>

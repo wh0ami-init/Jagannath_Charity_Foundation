@@ -67,7 +67,8 @@ export function DynamicImage({
   const { images } = useImages();
   const slot = images[slotKey];
   const fallbackAssets: Record<string, string> = {
-    "site-logo": "/images/logo-mark.png",
+    "site-logo": "/images/logo-small.svg",
+    "site-logo-full": "/images/logo-full.svg",
     "home-hero-education": "/images/hero-education.webp",
     "home-hero-health": "/images/hero-health.webp",
     "home-hero-livelihoods": "/images/hero-livelihoods.webp",
@@ -104,6 +105,10 @@ export function DynamicImage({
   const fallbackSrc =
     fallbackAssets[slotKey] ||
     (slotKey.startsWith("gallery-") ? `/images/${slotKey}.webp` : undefined);
+  const useLocalLogo =
+    slotKey === "site-logo" &&
+    slot?.url.endsWith("/uploads/site-logo.png");
+  const useFallback = Boolean(fallbackSrc && (preferLocal || useLocalLogo));
 
   if (!slot && !fallbackSrc) {
     return (
@@ -117,7 +122,7 @@ export function DynamicImage({
   return (
     <img
       src={
-        preferLocal && fallbackSrc
+        useFallback
           ? fallbackSrc
           : slot
             ? `${API_URL}${slot.url}`

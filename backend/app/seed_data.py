@@ -16,7 +16,7 @@ IMAGE_SLOTS = [
     ("home-gallery-kovind", "Homepage gallery: Shri Ram Nath Kovind", "Home", "Courtesy meeting with Shri Ram Nath Kovind", "meeting-president-kovind.webp"),
     ("home-gallery-murmu", "Homepage gallery: Smt. Droupadi Murmu", "Home", "Courtesy meeting with Smt. Droupadi Murmu", "meeting-president-murmu.webp"),
     ("home-gallery-pm", "Homepage gallery: Prime Minister", "Home", "Courtesy meeting with the Prime Minister", "meeting-pm.webp"),
-    ("site-logo", "Site logo (header & footer)", "Global", "Jagannath Foundation logo", "logo-mark.png"),
+    ("site-logo", "Site logo (header & footer)", "Global", "Jagannath Foundation logo", "logo-small.svg"),
     ("about-founder-photo", "Founder photo (About page)", "About", "Dr Jagannath Patnaik", "jp.webp"),
     ("team-jagannath-patnaik", "Dr Jagannath Patnaik", "Team", "Dr Jagannath Patnaik", "jp.webp"),
     ("team-shrabani-patnaik", "Dr Shrabani Patnaik", "Team", "Dr Shrabani Patnaik", "sp.webp"),

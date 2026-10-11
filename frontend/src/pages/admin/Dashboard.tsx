@@ -49,9 +49,47 @@ const GALLERY_CATEGORIES: { value: GalleryCategory; label: string }[] = [
 function galleryCategory(slot: ImageSlot): GalleryCategory {
   if (slot.category) return slot.category;
   const key = slot.slot_key;
-  if (["gallery-kalam", "gallery-patil", "gallery-mukherjee", "gallery-kovind", "gallery-murmu", "gallery-pm-modi", "gallery-manmohan-singh"].includes(key) || /^gallery-extra-president-(kovind|mukherjee|murmu)-/.test(key)) return "national";
-  if (["gallery-vp-dhankhar", "gallery-amit-shah", "gallery-rajnath-singh", "gallery-om-birla", "gallery-jp-nadda", "gallery-dharmendra-pradhan", "gallery-anna-hazare", "gallery-hemant-soren", "gallery-venkaiah-naidu"].includes(key) || /^gallery-extra-(arjun-ram-meghwal|baba-ramdev-2|dharmendra-pradhan-2|hemant-soren-2|jitendra-singh|jp-nadda-2|law-minister|manohar-lal|rajnath-2|union-minister-greet)$/.test(key)) return "public";
-  if (["gallery-cm-sikkim", "gallery-governor-icfai", "gallery-bhutan-official"].includes(key) || /^gallery-extra-(bhutan-flag|chhattisgarh-assembly|cm-|embassy-thimphu|goa-rajbhavan|governor-|international-guest|lok-bhavan-odisha|nepal-dignitary|odisha)/.test(key)) return "regional";
+  if (
+    [
+      "gallery-kalam",
+      "gallery-patil",
+      "gallery-mukherjee",
+      "gallery-kovind",
+      "gallery-murmu",
+      "gallery-pm-modi",
+      "gallery-manmohan-singh",
+    ].includes(key) ||
+    /^gallery-extra-president-(kovind|mukherjee|murmu)-/.test(key)
+  )
+    return "national";
+  if (
+    [
+      "gallery-vp-dhankhar",
+      "gallery-amit-shah",
+      "gallery-rajnath-singh",
+      "gallery-om-birla",
+      "gallery-jp-nadda",
+      "gallery-dharmendra-pradhan",
+      "gallery-anna-hazare",
+      "gallery-hemant-soren",
+      "gallery-venkaiah-naidu",
+    ].includes(key) ||
+    /^gallery-extra-(arjun-ram-meghwal|baba-ramdev-2|dharmendra-pradhan-2|hemant-soren-2|jitendra-singh|jp-nadda-2|law-minister|manohar-lal|rajnath-2|union-minister-greet)$/.test(
+      key,
+    )
+  )
+    return "public";
+  if (
+    [
+      "gallery-cm-sikkim",
+      "gallery-governor-icfai",
+      "gallery-bhutan-official",
+    ].includes(key) ||
+    /^gallery-extra-(bhutan-flag|chhattisgarh-assembly|cm-|embassy-thimphu|goa-rajbhavan|governor-|international-guest|lok-bhavan-odisha|nepal-dignitary|odisha)/.test(
+      key,
+    )
+  )
+    return "regional";
   return "culture";
 }
 
@@ -450,8 +488,16 @@ function PhotosView({
   images: Record<string, ImageSlot>;
   freshKey: string | null;
   onPick: (slot: ImageSlot, file: File) => void;
-  onAddGallery: (input: { label: string; alt_text: string; category: GalleryCategory; file: File }) => void;
-  onUpdateGallery: (slot: ImageSlot, input: { label: string; alt_text: string; category: GalleryCategory }) => void;
+  onAddGallery: (input: {
+    label: string;
+    alt_text: string;
+    category: GalleryCategory;
+    file: File;
+  }) => void;
+  onUpdateGallery: (
+    slot: ImageSlot,
+    input: { label: string; alt_text: string; category: GalleryCategory },
+  ) => void;
   onDeleteGallery: (slot: ImageSlot) => void;
 }) {
   const groups = useMemo(() => {
@@ -493,14 +539,74 @@ function PhotosView({
         onto a picture.
       </p>
 
-      {active === "Gallery" && <form className="ac-gallery-add ac-reveal" onSubmit={(e) => { e.preventDefault(); if (!newFile || !newLabel.trim()) return; onAddGallery({ label: newLabel.trim(), alt_text: newAlt.trim(), category: newCategory, file: newFile }); setNewLabel(""); setNewAlt(""); setNewFile(null); const input = e.currentTarget.elements.namedItem("gallery-file") as HTMLInputElement; input.value = ""; }}>
-        <div><h3>Add a gallery photo</h3><p>Add a photo and its details to the public gallery.</p></div>
-        <input aria-label="Photo title" placeholder="Photo title" value={newLabel} onChange={(e) => setNewLabel(e.target.value)} required maxLength={200} />
-        <input aria-label="Image description" placeholder="Image description (optional)" value={newAlt} onChange={(e) => setNewAlt(e.target.value)} maxLength={300} />
-        <select aria-label="Gallery category" value={newCategory} onChange={(e) => setNewCategory(e.target.value as GalleryCategory)}>{GALLERY_CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}</select>
-        <input name="gallery-file" aria-label="Choose photo" type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={(e) => setNewFile(e.target.files?.[0] ?? null)} required />
-        <button className="ac-btn ac-btn--primary" type="submit" disabled={!newFile || !newLabel.trim()}><Icon name="upload" size={18} /> Add to gallery</button>
-      </form>}
+      {active === "Gallery" && (
+        <form
+          className="ac-gallery-add ac-reveal"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!newFile || !newLabel.trim()) return;
+            onAddGallery({
+              label: newLabel.trim(),
+              alt_text: newAlt.trim(),
+              category: newCategory,
+              file: newFile,
+            });
+            setNewLabel("");
+            setNewAlt("");
+            setNewFile(null);
+            const input = e.currentTarget.elements.namedItem(
+              "gallery-file",
+            ) as HTMLInputElement;
+            input.value = "";
+          }}
+        >
+          <div>
+            <h3>Add a gallery photo</h3>
+            <p>Add a photo and its details to the public gallery.</p>
+          </div>
+          <input
+            aria-label="Photo title"
+            placeholder="Photo title"
+            value={newLabel}
+            onChange={(e) => setNewLabel(e.target.value)}
+            required
+            maxLength={200}
+          />
+          <input
+            aria-label="Image description"
+            placeholder="Image description (optional)"
+            value={newAlt}
+            onChange={(e) => setNewAlt(e.target.value)}
+            maxLength={300}
+          />
+          <select
+            aria-label="Gallery category"
+            value={newCategory}
+            onChange={(e) => setNewCategory(e.target.value as GalleryCategory)}
+          >
+            {GALLERY_CATEGORIES.map((c) => (
+              <option key={c.value} value={c.value}>
+                {c.label}
+              </option>
+            ))}
+          </select>
+          <input
+            name="gallery-file"
+            aria-label="Choose photo"
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            onChange={(e) => setNewFile(e.target.files?.[0] ?? null)}
+            required
+          />
+          <button
+            className="ac-btn ac-btn--primary"
+            type="submit"
+            disabled={!newFile || !newLabel.trim()}
+          >
+            <Icon name="upload" size={18} /> Add to gallery
+          </button>
+        </form>
+      )}
 
       <div className="ac-chips" role="group" aria-label="Choose a page">
         {pages.map((p) => (
@@ -574,7 +680,14 @@ function PhotosView({
                   <Icon name="upload" size={18} />{" "}
                   {isEmptyPhoto(slot) ? "Add a photo" : "Change this photo"}
                 </button>
-                {slot.page === "Gallery" && slot.slot_key !== "gallery-cover" && <GalleryPhotoDetails slot={slot} onSave={onUpdateGallery} onDelete={onDeleteGallery} />}
+                {slot.page === "Gallery" &&
+                  slot.slot_key !== "gallery-cover" && (
+                    <GalleryPhotoDetails
+                      slot={slot}
+                      onSave={onUpdateGallery}
+                      onDelete={onDeleteGallery}
+                    />
+                  )}
               </div>
             </article>
           ))}
@@ -584,22 +697,85 @@ function PhotosView({
   );
 }
 
-function GalleryPhotoDetails({ slot, onSave, onDelete }: { slot: ImageSlot; onSave: PhotosViewProps["onUpdateGallery"]; onDelete: (slot: ImageSlot) => void }) {
+function GalleryPhotoDetails({
+  slot,
+  onSave,
+  onDelete,
+}: {
+  slot: ImageSlot;
+  onSave: PhotosViewProps["onUpdateGallery"];
+  onDelete: (slot: ImageSlot) => void;
+}) {
   const [label, setLabel] = useState(slot.label);
   const [alt, setAlt] = useState(slot.alt_text);
   const savedCategory = galleryCategory(slot);
   const [category, setCategory] = useState<GalleryCategory>(savedCategory);
-  useEffect(() => { setLabel(slot.label); setAlt(slot.alt_text); setCategory(galleryCategory(slot)); }, [slot.label, slot.alt_text, slot.category]);
-  return <div className="ac-gallery-details">
-    <label>Title<input value={label} onChange={(e) => setLabel(e.target.value)} maxLength={200} /></label>
-    <label>Description<input value={alt} onChange={(e) => setAlt(e.target.value)} maxLength={300} /></label>
-    <label>Category<select value={category} onChange={(e) => setCategory(e.target.value as GalleryCategory)}>{GALLERY_CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}</select></label>
-    <button className="ac-btn ac-btn--primary ac-btn--block" disabled={!label.trim() || (label === slot.label && alt === slot.alt_text && category === savedCategory)} onClick={() => onSave(slot, { label: label.trim(), alt_text: alt.trim(), category })}>Save details</button>
-    <button className="ac-btn ac-btn--danger ac-btn--block" onClick={() => onDelete(slot)}><Icon name="trash" size={17} /> Delete from gallery</button>
-  </div>;
+  useEffect(() => {
+    setLabel(slot.label);
+    setAlt(slot.alt_text);
+    setCategory(galleryCategory(slot));
+  }, [slot.label, slot.alt_text, slot.category]);
+  return (
+    <div className="ac-gallery-details">
+      <label>
+        Title
+        <input
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
+          maxLength={200}
+        />
+      </label>
+      <label>
+        Description
+        <input
+          value={alt}
+          onChange={(e) => setAlt(e.target.value)}
+          maxLength={300}
+        />
+      </label>
+      <label>
+        Category
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value as GalleryCategory)}
+        >
+          {GALLERY_CATEGORIES.map((c) => (
+            <option key={c.value} value={c.value}>
+              {c.label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <button
+        className="ac-btn ac-btn--primary ac-btn--block"
+        disabled={
+          !label.trim() ||
+          (label === slot.label &&
+            alt === slot.alt_text &&
+            category === savedCategory)
+        }
+        onClick={() =>
+          onSave(slot, { label: label.trim(), alt_text: alt.trim(), category })
+        }
+      >
+        Save details
+      </button>
+      <button
+        className="ac-btn ac-btn--danger ac-btn--block"
+        onClick={() => onDelete(slot)}
+      >
+        <Icon name="trash" size={17} /> Delete from gallery
+      </button>
+    </div>
+  );
 }
 
-type PhotosViewProps = { onUpdateGallery: (slot: ImageSlot, input: { label: string; alt_text: string; category: GalleryCategory }) => void };
+type PhotosViewProps = {
+  onUpdateGallery: (
+    slot: ImageSlot,
+    input: { label: string; alt_text: string; category: GalleryCategory },
+  ) => void;
+};
 
 /* ------------------------------------------------------------------ */
 /* Words                                                               */
@@ -1109,24 +1285,67 @@ export default function AdminDashboard() {
     }
   }
 
-  async function createGalleryPhoto(input: { label: string; alt_text: string; category: GalleryCategory; file: File }) {
-    if (!ALLOWED_TYPES.includes(input.file.type)) return say("bad", "Please choose a JPG, PNG, WEBP or GIF photo.");
-    if (input.file.size > MAX_SIZE) return say("bad", "That photo is bigger than 8 MB. Please choose a smaller one.");
+  async function createGalleryPhoto(input: {
+    label: string;
+    alt_text: string;
+    category: GalleryCategory;
+    file: File;
+  }) {
+    if (!ALLOWED_TYPES.includes(input.file.type))
+      return say("bad", "Please choose a JPG, PNG, WEBP or GIF photo.");
+    if (input.file.size > MAX_SIZE)
+      return say(
+        "bad",
+        "That photo is bigger than 8 MB. Please choose a smaller one.",
+      );
     setUploading(true);
-    try { await addGalleryImage(input); await refresh(); say("ok", "Photo added to the public gallery."); }
-    catch (err) { say("bad", err instanceof Error ? err.message : "Could not add this photo."); }
-    finally { setUploading(false); }
+    try {
+      await addGalleryImage(input);
+      await refresh();
+      say("ok", "Photo added to the public gallery.");
+    } catch (err) {
+      say(
+        "bad",
+        err instanceof Error ? err.message : "Could not add this photo.",
+      );
+    } finally {
+      setUploading(false);
+    }
   }
 
-  async function saveGalleryPhoto(slot: ImageSlot, input: { label: string; alt_text: string; category: GalleryCategory }) {
-    try { await updateGalleryImage(slot.slot_key, input); await refresh(); say("ok", "Gallery photo details saved."); }
-    catch (err) { say("bad", err instanceof Error ? err.message : "Could not save photo details."); }
+  async function saveGalleryPhoto(
+    slot: ImageSlot,
+    input: { label: string; alt_text: string; category: GalleryCategory },
+  ) {
+    try {
+      await updateGalleryImage(slot.slot_key, input);
+      await refresh();
+      say("ok", "Gallery photo details saved.");
+    } catch (err) {
+      say(
+        "bad",
+        err instanceof Error ? err.message : "Could not save photo details.",
+      );
+    }
   }
 
   async function removeGalleryPhoto(slot: ImageSlot) {
-    if (!window.confirm(`Delete “${slot.label}” from the gallery? This also removes its uploaded image.`)) return;
-    try { await deleteGalleryImage(slot.slot_key); await refresh(); say("ok", "Photo deleted from the gallery."); }
-    catch (err) { say("bad", err instanceof Error ? err.message : "Could not delete this photo."); }
+    if (
+      !window.confirm(
+        `Delete “${slot.label}” from the gallery? This also removes its uploaded image.`,
+      )
+    )
+      return;
+    try {
+      await deleteGalleryImage(slot.slot_key);
+      await refresh();
+      say("ok", "Photo deleted from the gallery.");
+    } catch (err) {
+      say(
+        "bad",
+        err instanceof Error ? err.message : "Could not delete this photo.",
+      );
+    }
   }
 
   async function saveText(key: string) {
@@ -1205,7 +1424,7 @@ export default function AdminDashboard() {
     return (
       <div className="ac-boot">
         <div className="ac-boot-logo">
-          <img src="/images/logo-mark.png" alt="" />
+          <img src="/images/logo-small.svg" alt="" />
         </div>
         <p>Opening your console…</p>
       </div>
@@ -1216,7 +1435,7 @@ export default function AdminDashboard() {
     return (
       <div className="ac-boot">
         <div className="ac-boot-logo">
-          <img src="/images/logo-mark.png" alt="" />
+          <img src="/images/logo-small.svg" alt="" />
         </div>
         <p>
           We could not load your information. Please check the internet and try
@@ -1268,7 +1487,7 @@ export default function AdminDashboard() {
     <div className="ac" ref={rootRef}>
       <aside className="ac-side">
         <div className="ac-brand">
-          <img src="/images/logo-mark.png" alt="" />
+          <img src="/images/logo-small.svg" alt="" />
           <div>
             <strong>Jagannath Foundation</strong>
             <span>Admin console</span>
@@ -1301,7 +1520,7 @@ export default function AdminDashboard() {
       <div className="ac-main">
         <header className="ac-topbar">
           <div className="ac-brand">
-            <img src="/images/logo-mark.png" alt="" />
+            <img src="/images/logo-small.svg" alt="" />
             <div>
               <strong>Jagannath Foundation</strong>
               <span>Admin console</span>
@@ -1340,7 +1559,9 @@ export default function AdminDashboard() {
               freshKey={freshKey}
               onPick={chooseNewPhoto}
               onAddGallery={(input) => void createGalleryPhoto(input)}
-              onUpdateGallery={(slot, input) => void saveGalleryPhoto(slot, input)}
+              onUpdateGallery={(slot, input) =>
+                void saveGalleryPhoto(slot, input)
+              }
               onDeleteGallery={(slot) => void removeGalleryPhoto(slot)}
             />
           )}

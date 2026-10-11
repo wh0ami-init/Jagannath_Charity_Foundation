@@ -3,7 +3,6 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useReducedMotion } from "motion/react";
 import { useLocation } from "wouter";
-import { DynamicImage } from "../lib/ImagesContext";
 import "./WelcomeScreen.css";
 
 gsap.registerPlugin(useGSAP);
@@ -329,9 +328,9 @@ export default function WelcomeScreen({
         <div className="welcome-content">
           <div className="welcome-top">
             <div className="welcome-emblem">
-              <DynamicImage
-                slotKey="site-logo"
-                alt="Jagannath Foundation emblem"
+              <img
+                src="/images/logo-full.svg"
+                alt="Jagannath Foundation full logo"
               />
             </div>
             <p className="welcome-kicker">A charitable trust · Odisha, India</p>
