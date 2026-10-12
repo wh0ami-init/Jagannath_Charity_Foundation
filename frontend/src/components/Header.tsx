@@ -9,7 +9,7 @@ import { useReducedMotion } from "motion/react";
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const primaryLinks = [
-  { href: "/about", label: "Our story" },
+  { href: "/about", label: "Our story"},
   { href: "/programmes", label: "Programmes" },
   { href: "/projects", label: "Projects" },
   { href: "/impact", label: "Our impact" },
@@ -17,22 +17,10 @@ const primaryLinks = [
 
 const exploreLinks = [
   { href: "/team", label: "People", note: "Trustees, leadership and advisors" },
-  {
-    href: "/partners",
-    label: "Partners",
-    note: "The organisations alongside us",
-  },
+  { href: "/partners", label: "Partners", note: "The organisations alongside us" },
   { href: "/gallery", label: "Gallery", note: "Moments from the Foundation" },
-  {
-    href: "/volunteer",
-    label: "Volunteer",
-    note: "Offer your time and experience",
-  },
-  {
-    href: "/services",
-    label: "Community portal",
-    note: "Membership, opportunities and requests",
-  },
+  { href: "/volunteer", label: "Volunteer", note: "Offer your time and experience" },
+  { href: "/services", label: "Community portal", note: "Membership, opportunities and requests" },
   { href: "/contact", label: "Contact", note: "Reach the Foundation team" },
 ];
 
@@ -45,20 +33,21 @@ export default function Header() {
   const headerRef = useRef<HTMLElement>(null);
   const menuToggleRef = useRef<HTMLButtonElement>(null);
   const exploreToggleRef = useRef<HTMLButtonElement>(null);
-
   const reducedMotion = useReducedMotion();
   const menuLocked = useRef(false);
+
   menuLocked.current = open || exploreOpen;
 
-  // 1) Header hides when you scroll down and comes back when you scroll up
+  // On-Scroll Header Hide --Section
   useGSAP(
     () => {
       const header = headerRef.current;
       if (!header || reducedMotion) return;
 
       let hidden = false;
+
       const show = () => {
-        if (!hidden) return;
+         if (!hidden) return;
         hidden = false;
         gsap.to(header, {
           yPercent: 0,
@@ -245,7 +234,14 @@ export default function Header() {
                 }}
               />
             ))}
-            <NavLink href="/certificates" label="Certificates" onNavigate={() => { setOpen(false); setExploreOpen(false); }} />
+            <NavLink
+              href="/certificates"
+              label="Certificates"
+              onNavigate={() => {
+                setOpen(false);
+                setExploreOpen(false);
+              }}
+            />
             <div
               className={`nav-explore${exploreOpen ? " is-open" : ""}`}
               onPointerEnter={(event) => {

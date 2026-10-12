@@ -146,8 +146,8 @@ export default function Services() {
         id="request-form"
         className="wrap scroll-mt-24 pb-16"
       >
-        <div className="grid gap-10 rounded-2xl border border-navy-900/10 bg-white/45 p-6 sm:p-9 lg:grid-cols-[.8fr_1.2fr]">
-          <div>
+        <div className="grid items-start gap-10 rounded-2xl border border-navy-900/10 bg-white/45 p-6 sm:p-9 lg:grid-cols-[.78fr_1.22fr]">
+          <div className="min-w-0">
             <p className="eyebrow">
               <span />
               Service desk
@@ -182,7 +182,7 @@ export default function Services() {
           <Stagger
             as="form"
             onSubmit={handleSubmit}
-            className="space-y-4"
+            className="min-w-0 space-y-4"
             gap={0.07}
             distance={16}
           >
