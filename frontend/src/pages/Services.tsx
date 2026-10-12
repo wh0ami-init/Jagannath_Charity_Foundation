@@ -146,8 +146,8 @@ export default function Services() {
         id="request-form"
         className="wrap scroll-mt-24 pb-16"
       >
-        <div className="grid items-start gap-10 rounded-2xl border border-navy-900/10 bg-white/45 p-6 sm:p-9 lg:grid-cols-[.78fr_1.22fr]">
-          <div className="min-w-0">
+        <div className="grid gap-10 rounded-2xl border border-navy-900/10 bg-white/45 p-6 sm:p-9 lg:grid-cols-[.78fr_1.22fr]">
+          <div className="flex min-w-0 flex-col">
             <p className="eyebrow">
               <span />
               Service desk
@@ -177,12 +177,30 @@ export default function Services() {
               </a>{" "}
               directly.
             </p>
+
+            <aside className="service-guidance mt-8 rounded-2xl p-5 sm:p-6 lg:mt-auto lg:pt-8" aria-labelledby="service-guidance-title">
+              <p className="eyebrow relative z-[1]">
+                <span />
+                A helpful note
+              </p>
+              <h3
+                id="service-guidance-title"
+                className="relative z-[1] mt-3 font-serif-heading text-2xl font-bold text-navy-950"
+              >
+                Before you send
+              </h3>
+              <ul className="service-guidance-list relative z-[1] mt-4 space-y-3 text-sm leading-6 text-navy-900/75">
+                <li>Choose the service that best matches your question.</li>
+                <li>Include the details the team needs to follow up with you.</li>
+                <li>Please leave out passwords, payment details and other sensitive information.</li>
+              </ul>
+            </aside>
           </div>
 
           <Stagger
             as="form"
             onSubmit={handleSubmit}
-            className="min-w-0 space-y-4"
+            className="min-w-0 space-y-4 rounded-2xl border border-navy-900/10 bg-white/55 p-5 sm:p-7"
             gap={0.07}
             distance={16}
           >

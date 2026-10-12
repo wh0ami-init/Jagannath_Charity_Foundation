@@ -8047,3 +8047,62 @@ h3,
     font-size: 14px;
   }
 }
+/* Soft, slow-moving colour gives the service guidance card a little life. */
+.service-guidance {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid rgba(35, 75, 60, .14);
+  background: linear-gradient(125deg, #f7f4e9 0%, #e7efe5 38%, #f5e7d6 72%, #e3eee5 100%);
+  background-size: 220% 220%;
+  box-shadow: 0 12px 30px rgba(24, 55, 47, .08), inset 0 1px rgba(255, 255, 255, .8);
+  animation: service-guidance-wash 18s ease-in-out infinite alternate;
+}
+
+.service-guidance::after {
+  position: absolute;
+  z-index: -1;
+  top: -42%;
+  right: -24%;
+  width: 72%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(218, 132, 60, .17), rgba(218, 132, 60, 0) 70%);
+  content: "";
+  animation: service-guidance-glow 13s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+.service-guidance-list li {
+  position: relative;
+  padding-left: 1.1rem;
+}
+
+.service-guidance-list li::before {
+  position: absolute;
+  top: .68rem;
+  left: .1rem;
+  width: .38rem;
+  height: .38rem;
+  border-radius: 50%;
+  background: #c97632;
+  box-shadow: 0 0 0 3px rgba(201, 118, 50, .12);
+  content: "";
+}
+
+@keyframes service-guidance-wash {
+  from { background-position: 0% 45%; }
+  to { background-position: 100% 55%; }
+}
+
+@keyframes service-guidance-glow {
+  from { transform: translate3d(-8%, 4%, 0) scale(.9); }
+  to { transform: translate3d(8%, -5%, 0) scale(1.08); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .service-guidance,
+  .service-guidance::after {
+    animation: none;
+  }
+}
