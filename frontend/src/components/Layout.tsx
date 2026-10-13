@@ -1,3 +1,5 @@
+import { tr as t, localize } from "../i18n";
+import { useTranslation } from "react-i18next";
 import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -17,6 +19,7 @@ export default function Layout({
   children: ReactNode;
   hideNewsletter?: boolean;
 }) {
+  useTranslation();
   const progressRef = useRef<HTMLDivElement>(null);
   const [showTop, setShowTop] = useState(false);
   const [location] = useLocation();
@@ -73,18 +76,17 @@ export default function Layout({
     <div className="site-shell min-h-screen flex flex-col">
       <div className="scroll-progress" ref={progressRef} aria-hidden="true" />
       <a className="skip-link" href="#main-content">
-        Skip to main content
-      </a>
+        {t("Skip to main content")}</a>
       <Header />
       <main id="main-content" className="flex-1">
-        {children}
+        {localize(children)}
       </main>
-      {!hideNewsletter && <Newsletter />}
+      {localize(!hideNewsletter && <Newsletter />)}
       <Footer />
       <button
         type="button"
         className={`back-to-top${showTop ? " is-visible" : ""}`}
-        aria-label="Back to top"
+        aria-label={t("Back to top")}
         tabIndex={showTop ? 0 : -1}
         onClick={() =>
           window.scrollTo({

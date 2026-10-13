@@ -1,3 +1,5 @@
+import { tr as t, localize } from "../i18n";
+import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Link } from "wouter";
@@ -80,6 +82,7 @@ const principles = [
 ];
 
 export default function Home() {
+  useTranslation();
   const content = useSiteContent();
   const [slide, setSlide] = useState(0);
   const [heroTextVisible, setHeroTextVisible] = useState(true);
@@ -111,7 +114,7 @@ export default function Home() {
     };
   }, []);
   const text = (key: string, fallback: string) =>
-    content[key]?.value || fallback;
+    t(content[key]?.value || fallback);
   const heroTitle = text(
     "home_title",
     "Building stronger communities, one lasting opportunity at a time.",
@@ -126,19 +129,19 @@ export default function Home() {
     <Layout>
       <section className="home-hero">
         <div className="hero-scene" aria-hidden="true">
-          {heroImages.map(([slot, alt], index) => (
+          {localize(heroImages.map(([slot, alt], index) => (
             <DynamicImage
               key={slot}
               slotKey={slot}
-              alt={alt}
+              alt={localize(alt)}
               className={`hero-scene-image ${index === slide ? "active" : ""}`}
             />
-          ))}
+          )))}
           <div className="hero-shade" />
         </div>
         <div className="hero-copy wrap">
           <AnimatePresence mode="wait" initial={false}>
-            {heroTextVisible && (
+            {localize(heroTextVisible && (
               <motion.div
                 key={slide}
                 className="hero-copy-message"
@@ -160,13 +163,13 @@ export default function Home() {
               >
                 <p className="eyebrow eyebrow-light">
                   <span />
-                  {text(
+                  {localize(text(
                     "home_eyebrow",
                     "A public charitable trust · Across India",
-                  )}
+                  ))}
                 </p>
-                <h1 aria-label={heroTitle}>
-                  {heroTitle.split(/(\s+)/).map((part, index) => {
+                <h1 aria-label={localize(heroTitle)}>
+                  {localize(heroTitle.split(/(\s+)/).map((part, index) => {
                     if (!part.trim()) return part;
                     const wordIndex = titleWord++;
                     return (
@@ -181,95 +184,90 @@ export default function Home() {
                           ease: [0.22, 0.7, 0.2, 1],
                         }}
                       >
-                        {part}
+                        {localize(part)}
                       </motion.span>
                     );
-                  })}
+                  }))}
                 </h1>
                 <p className="hero-lede">
-                  {text(
+                  {localize(text(
                     "home_intro",
                     "We work alongside communities through education, healthcare, livelihoods and clean energy, supporting opportunities people can carry forward.",
-                  )}
+                  ))}
                 </p>
               </motion.div>
-            )}
+            ))}
           </AnimatePresence>
         </div>
         <div className="hero-actions">
           <Link
             href="/programmes"
             className="hero-action hero-action-primary"
-            aria-label="Explore our programmes"
-            title="Explore our programmes"
+            aria-label={t("Explore our programmes")}
+            title={t("Explore our programmes")}
           >
             <span className="hero-action-arrow" aria-hidden="true">
               →
             </span>
             <span className="hero-action-tooltip" aria-hidden="true">
-              Programmes
-            </span>
+              {t("Programmes")}</span>
           </Link>
           <Link
             href="/about"
             className="hero-action hero-action-secondary"
-            aria-label="Our story"
-            title="Our story"
+            aria-label={t("Our story")}
+            title={t("Our story")}
           >
             <span className="hero-action-arrow" aria-hidden="true">
               →
             </span>
             <span className="hero-action-tooltip" aria-hidden="true">
-              Our story
-            </span>
+              {t("Our story")}</span>
           </Link>
         </div>
         <div className="hero-bottom">
-          <span>JAGANNATH FOUNDATION</span>
-          <span>PEOPLE · DIGNITY · POSSIBILITY</span>
-          <span>0{slide + 1} / 04</span>
+          <span>{t("JAGANNATH FOUNDATION")}</span>
+          <span>{t("PEOPLE · DIGNITY · POSSIBILITY")}</span>
+          <span>0{localize(slide + 1)} / 04</span>
           <div
             className="hero-controls"
             role="group"
-            aria-label="Choose a featured image"
+            aria-label={t("Choose a featured image")}
           >
-            {heroImages.map(([slot, label], index) => (
+            {localize(heroImages.map(([slot, label], index) => (
               <button
                 key={slot}
                 type="button"
                 className={`hero-dot ${index === slide ? "is-active" : ""}`}
-                aria-label={`Show ${label}`}
+                aria-label={t("Show {{label}}", { label: t(label) })}
                 aria-pressed={index === slide}
                 onClick={() => setSlide(index)}
               />
-            ))}
+            )))}
           </div>
         </div>
         <div className="hero-seal" aria-hidden="true">
-          <span>MANAV SEVA</span>
+          <span>{t("MANAV SEVA")}</span>
           <b>सेवा</b>
-          <span>ISHWAR SEVA</span>
+          <span>{t("ISHWAR SEVA")}</span>
         </div>
       </section>
 
-      <section className="home-facts" aria-label="About the Foundation">
+      <section className="home-facts" aria-label={t("About the Foundation")}>
         <div className="wrap facts-inner">
           <Reveal className="facts-heading" direction="left">
             <p className="eyebrow">
-              <span />A clear beginning
-            </p>
+              <span />{t("A clear beginning")}</p>
             <p className="facts-note">
-              A public trust working across six connected areas, with progress
-              shared as programmes take shape.
-            </p>
+              {t("A public trust working across six connected areas, with progress shared as programmes take shape.")}</p>
           </Reveal>
           <Stagger className="facts-list" gap={0.1} distance={24}>
-            {foundationFacts.map((fact) => (
+            {localize(foundationFacts.map((fact) => (
               <article className="fact-item" key={fact.value}>
-                <strong>{fact.value}</strong>
-                <span>{fact.label}</span>
+                <strong>{localize(fact.value)}</strong>
+                <span>{localize(fact.label)}</span>
               </article>
-            ))}
+            )))}
           </Stagger>
         </div>
       </section>
@@ -304,7 +302,7 @@ export default function Home() {
               >
                 <DynamicImage
                   slotKey="about-founder-photo"
-                  alt="Dr Jagannath Patnaik, founder of Jagannath Foundation"
+                  alt={t("Dr Jagannath Patnaik, founder of Jagannath Foundation")}
                   className="founder-image"
                 />
               </motion.div>
@@ -334,28 +332,26 @@ export default function Home() {
               </motion.svg>
             </motion.div>
             <div className="story-photo-caption">
-              Dr Jagannath Patnaik
-              <i>Founder, Settlor &amp; Managing Trustee</i>
+              {t("Dr Jagannath Patnaik")}<i>{t("Founder, Settlor & Managing Trustee")}</i>
             </div>
           </Reveal>
           <Reveal className="story-copy" direction="right" duration={1.1}>
             <p className="eyebrow">
               <span />
-              The Foundation
-            </p>
-            <h2>{storyTitle}</h2>
+              {t("The Foundation")}</p>
+            <h2>{localize(storyTitle)}</h2>
             <p className="body-large">
-              {text(
+              {localize(text(
                 "home_about_body",
                 "We support education, family wellbeing and livelihoods so communities can shape stronger futures for themselves.",
-              )}
+              ))}
             </p>
             <blockquote className="story-mantra">
-              <span>“Manav seva is Ishwar seva”</span>
-              <small>Service to people is at the heart of our work.</small>
+              <span>{t("“Manav seva is Ishwar seva”")}</span>
+              <small>{t("Service to people is at the heart of our work.")}</small>
             </blockquote>
             <Link href="/about" className="text-link">
-              Read our story <span>↗</span>
+              {t("Read our story")}{" "}<span>↗</span>
             </Link>
           </Reveal>
         </div>
@@ -367,21 +363,16 @@ export default function Home() {
             <div>
               <p className="eyebrow">
                 <span />
-                Six connected areas
-              </p>
+                {t("Six connected areas")}</p>
               <h2>
-                Everyday needs.
-                <br />
-                Lasting possibility.
-              </h2>
+                {t("Everyday needs.")}<br />
+                {t("Lasting possibility.")}</h2>
             </div>
             <p>
-              Six connected areas of work, shaped around the everyday needs of
-              people and families.
-            </p>
+              {t("Six connected areas of work, shaped around the everyday needs of people and families.")}</p>
           </Reveal>
           <Stagger className="work-grid" gap={0.12} distance={34}>
-            {workAreas.map((area, index) => (
+            {localize(workAreas.map((area, index) => (
               <div
                 key={area.title}
                 className={`work-feature-reveal work-feature-reveal-${index + 1}`}
@@ -393,27 +384,26 @@ export default function Home() {
                   <div className="work-photo">
                     <DynamicImage
                       slotKey={area.slot}
-                      alt={area.label}
+                      alt={localize(area.label)}
                       className="work-image"
                     />
-                    <span className="work-index">0{index + 1}</span>
+                    <span className="work-index">0{localize(index + 1)}</span>
                   </div>
                   <div className="work-text">
-                    <span>{area.label}</span>
-                    <h3>{area.title}</h3>
-                    <p>{area.body}</p>
+                    <span>{localize(area.label)}</span>
+                    <h3>{localize(area.title)}</h3>
+                    <p>{localize(area.body)}</p>
                     <b aria-hidden="true">↗</b>
                   </div>
                 </Link>
               </div>
-            ))}
+            )))}
           </Stagger>
           <Reveal className="work-footer" direction="up">
             <span className="work-count">
-              <strong>4 / 6</strong> programme areas featured
-            </span>
+              <strong>4 / 6</strong> {" "}{t("programme areas featured")}</span>
             <Link href="/programmes" className="text-link">
-              Explore all our programmes <span>↗</span>
+              {t("Explore all our programmes")}{" "}<span>↗</span>
             </Link>
           </Reveal>
         </div>
@@ -424,28 +414,25 @@ export default function Home() {
           <Reveal className="principles-intro" direction="left">
             <p className="eyebrow eyebrow-light">
               <span />
-              How we work
-            </p>
-            <h2>Good intentions need good practice.</h2>
+              {t("How we work")}</p>
+            <h2>{t("Good intentions need good practice.")}</h2>
             <p>
-              We listen first, work with local partners and focus on what can
-              last.
-            </p>
+              {t("We listen first, work with local partners and focus on what can last.")}</p>
             <Link href="/impact" className="text-link">
-              Our approach to impact <span>↗</span>
+              {t("Our approach to impact")}{" "}<span>↗</span>
             </Link>
           </Reveal>
           <Stagger className="principles-list" gap={0.1} distance={26}>
-            {principles.map((item) => (
+            {localize(principles.map((item) => (
               <article key={item.number}>
-                <span>{item.number}</span>
+                <span>{localize(item.number)}</span>
                 <div>
-                  <h3>{item.title}</h3>
-                  <p>{item.body}</p>
+                  <h3>{localize(item.title)}</h3>
+                  <p>{localize(item.body)}</p>
                 </div>
                 <b aria-hidden="true">↗</b>
               </article>
-            ))}
+            )))}
           </Stagger>
         </div>
       </section>
@@ -455,24 +442,23 @@ export default function Home() {
           <div>
             <p className="eyebrow">
               <span />
-              People and partnerships
-            </p>
+              {t("People and partnerships")}</p>
             <h2>
-              {text("home_gallery_title", "Partnerships built on respect.")}
+              {localize(text("home_gallery_title", "Partnerships built on respect."))}
             </h2>
             <p>
-              {text(
+              {localize(text(
                 "home_gallery_body",
                 "A few moments with leaders and partners who share a commitment to public service.",
-              )}
+              ))}
             </p>
           </div>
           <Link href="/gallery" className="text-link">
-            View the gallery <span>↗</span>
+            {t("View the gallery")}{" "}<span>↗</span>
           </Link>
         </Reveal>
         <div className="gallery-ribbon">
-          {galleryHome.map((photo, i) => (
+          {localize(galleryHome.map((photo, i) => (
             <Reveal
               key={photo.slot}
               className={`gallery-reveal gallery-reveal-${i + 1}`}
@@ -491,14 +477,14 @@ export default function Home() {
                   />
                   <DynamicImage
                     slotKey={photo.slot}
-                    alt={photo.caption}
+                    alt={localize(photo.caption)}
                     className="gallery-image gallery-image-foreground"
                   />
                 </div>
-                <span>{photo.caption}</span>
+                <span>{localize(photo.caption)}</span>
               </Link>
             </Reveal>
-          ))}
+          )))}
         </div>
       </section>
 
@@ -508,23 +494,18 @@ export default function Home() {
         </div>
         <p className="eyebrow eyebrow-light">
           <span />
-          Stand alongside communities
-        </p>
+          {t("Stand alongside communities")}</p>
         <h2>
-          There is room for
-          <br />
-          more good work.
-        </h2>
+          {t("There is room for")}<br />
+          {t("more good work.")}</h2>
         <p>
-          Bring your time, your experience or your support. Together, we can
-          help create the conditions for people to thrive.
-        </p>
+          {t("Bring your time, your experience or your support. Together, we can help create the conditions for people to thrive.")}</p>
         <div>
           <Link href="/volunteer" className="button button-paper">
-            Join as a volunteer <span>↗</span>
+            {t("Join as a volunteer")}{" "}<span>↗</span>
           </Link>
           <Link href="/contact" className="button button-line">
-            Talk with us <span>→</span>
+            {t("Talk with us")}{" "}<span>→</span>
           </Link>
         </div>
       </Reveal>

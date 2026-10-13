@@ -1,3 +1,5 @@
+import { tr as t, localize } from "../i18n";
+import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useGSAP } from "@gsap/react";
@@ -195,6 +197,7 @@ function TypewriterText({
   text: string;
   reducedMotion: boolean;
 }) {
+  useTranslation();
   const [visibleText, setVisibleText] = useState(reducedMotion ? text : "");
 
   useEffect(() => {
@@ -216,18 +219,19 @@ function TypewriterText({
 
   return (
     <p className="founder-dream-text">
-      <span className="sr-only">{text}</span>
+      <span className="sr-only">{localize(text)}</span>
       <span aria-hidden="true">
-        {visibleText}
-        {!reducedMotion && visibleText.length < text.length && (
+        {localize(visibleText)}
+        {localize(!reducedMotion && visibleText.length < text.length && (
           <span className="typewriter-caret">▍</span>
-        )}
+        ))}
       </span>
     </p>
   );
 }
 
 export default function About() {
+  useTranslation();
   const siteContent = useSiteContent();
   const [active, setActive] = useState("vision");
   const current = tabs.find((t) => t.id === active)!;
@@ -343,14 +347,14 @@ export default function About() {
       <PageHero
         theme="about"
         motif="origin"
-        eyebrow="About the Foundation"
+        eyebrow={t("About the Foundation")}
         title={
-          siteContent.about_heading?.value ||
-          "A trust held for the public good."
+          localize(siteContent.about_heading?.value ||
+          "A trust held for the public good.")
         }
         description={
-          siteContent.about_intro?.value ||
-          "Jagannath Foundation is an irrevocable public charitable trust. Its income and property are applied only to its charitable objects, without private profit."
+          localize(siteContent.about_intro?.value ||
+          "Jagannath Foundation is an irrevocable public charitable trust. Its income and property are applied only to its charitable objects, without private profit.")
         }
       />
 
@@ -364,27 +368,15 @@ export default function About() {
           direction="left"
           duration={1.35}
         >
-          <p className="eyebrow">The organisation</p>
+          <p className="eyebrow">{t("The organisation")}</p>
           <h2 id="about-organisation-title">
-            Civic work across the country, with a wider partnership behind it.
-          </h2>
+            {t("Civic work across the country, with a wider partnership behind it.")}</h2>
           <p>
-            The Foundation was established by the settlor, Dr Jagannath Patnaik,
-            with an initial corpus, and founder trustees invited to hold the
-            property for public benefit. Its objects cover education,
-            healthcare, relief of poverty, women’s and children’s welfare,
-            environment, and community development.
-          </p>
+            {t("The Foundation was established by the settlor, Dr Jagannath Patnaik, with an initial corpus, and founder trustees invited to hold the property for public benefit. Its objects cover education, healthcare, relief of poverty, women’s and children’s welfare, environment, and community development.")}</p>
           <p>
-            We work directly with communities across India — cities, towns and
-            villages — because a trust that only serves one district has no
-            business announcing a nation.
-          </p>
+            {t("We work directly with communities across India — cities, towns and villages — because a trust that only serves one district has no business announcing a nation.")}</p>
           <p>
-            The work is secular. Programmes are open to every community. We do
-            not ask anyone to belong to a tradition in order to sit in a
-            classroom, a camp or a self-help group.
-          </p>
+            {t("The work is secular. Programmes are open to every community. We do not ask anyone to belong to a tradition in order to sit in a classroom, a camp or a self-help group.")}</p>
         </Reveal>
         <Reveal
           as="aside"
@@ -393,9 +385,9 @@ export default function About() {
           duration={1.35}
           delay={0.16}
         >
-          <h3>At a glance</h3>
+          <h3>{t("At a glance")}</h3>
           <dl>
-            {organisationFacts.map(([label, value], index) => (
+            {localize(organisationFacts.map(([label, value], index) => (
               <motion.div
                 key={label}
                 className="about-organisation-fact"
@@ -418,11 +410,11 @@ export default function About() {
                     ease: [0.22, 0.7, 0.2, 1],
                   }}
                 >
-                  {label}
+                  {localize(label)}
                 </motion.dt>
-                <dd>{value}</dd>
+                <dd>{localize(value)}</dd>
               </motion.div>
-            ))}
+            )))}
           </dl>
         </Reveal>
       </section>
@@ -430,34 +422,24 @@ export default function About() {
       <Reveal as="section" className="wrap py-12">
         <div className="max-w-4xl">
           <h2 className="text-3xl font-serif-heading font-bold text-navy-950 mb-3">
-            Statutory registrations
-          </h2>
+            {t("Statutory registrations")}</h2>
           <p className="text-sm text-navy-900/70 mb-6">
-            The Foundation is a public charitable trust, recorded on NITI Aayog
-            DARPAN, provisionally registered for tax exemption, and approved by
-            the Ministry of Corporate Affairs to undertake CSR activities.
-          </p>
+            {t("The Foundation is a public charitable trust, recorded on NITI Aayog DARPAN, provisionally registered for tax exemption, and approved by the Ministry of Corporate Affairs to undertake CSR activities.")}</p>
           <dl className="grid sm:grid-cols-[minmax(12rem,1fr)_2fr] gap-x-6 gap-y-3 text-sm border border-navy-900/10 rounded-xl p-5">
-            <dt className="text-navy-900/60">PAN</dt>
-            <dd className="font-medium text-navy-950">AAFTJ8006Q</dd>
-            <dt className="text-navy-900/60">DARPAN (NITI Aayog)</dt>
+            <dt className="text-navy-900/60">{t("PAN")}</dt>
+            <dd className="font-medium text-navy-950">{t("AAFTJ8006Q")}</dd>
+            <dt className="text-navy-900/60">{t("DARPAN (NITI Aayog)")}</dt>
             <dd className="font-medium text-navy-950">
-              OR/2026/1196699 · registered 02-09-2026
-            </dd>
+              {t("OR/2026/1196699 · registered 02-09-2026")}</dd>
             <dt className="text-navy-900/60">
-              Provisional registration u/s 12A
-            </dt>
-            <dd className="font-medium text-navy-950">URN AAFTJ8006QE20261</dd>
-            <dt className="text-navy-900/60">Provisional approval u/s 80G</dt>
+              {t("Provisional registration u/s 12A")}</dt>
+            <dd className="font-medium text-navy-950">{t("URN AAFTJ8006QE20261")}</dd>
+            <dt className="text-navy-900/60">{t("Provisional approval u/s 80G")}</dt>
             <dd className="font-medium text-navy-950">
-              URN AAFTJ8006QF20261 · Form 10G dated 07-09-2026 · valid TY
-              2026-27 to TY 2028-29
-            </dd>
-            <dt className="text-navy-900/60">MCA CSR registration</dt>
+              {t("URN AAFTJ8006QF20261 · Form 10G dated 07-09-2026 · valid TY 2026-27 to TY 2028-29")}</dd>
+            <dt className="text-navy-900/60">{t("MCA CSR registration")}</dt>
             <dd className="font-medium text-navy-950">
-              CSR00118119 · Form CSR-1 dated 21-09-2026 · SRN AC6085516 · ROC
-              Delhi
-            </dd>
+              {t("CSR00118119 · Form CSR-1 dated 21-09-2026 · SRN AC6085516 · ROC Delhi")}</dd>
           </dl>
         </div>
       </Reveal>
@@ -469,19 +451,17 @@ export default function About() {
       >
         <div className="about-focus-heading">
           <div>
-            <p className="eyebrow">Where we work</p>
-            <h2 id="about-focus-heading">Six connected areas of service</h2>
+            <p className="eyebrow">{t("Where we work")}</p>
+            <h2 id="about-focus-heading">{t("Six connected areas of service")}</h2>
           </div>
           <p>
-            Our charitable objects take shape through practical programmes that
-            support people, households and the communities around them.
-          </p>
+            {t("Our charitable objects take shape through practical programmes that support people, households and the communities around them.")}</p>
         </div>
         <div className="about-focus-grid">
-          {focusAreas.map((area, index) => (
+          {localize(focusAreas.map((area, index) => (
             <motion.a
               href={`/programmes#programme-${area.slug}`}
-              aria-label={`Explore ${area.title} programme`}
+              aria-label={t("Explore {{name}} programme", { name: t(area.title) })}
               key={area.number}
               className="about-focus-card"
               initial={reducedMotion ? false : { opacity: 0, y: 20 }}
@@ -493,12 +473,12 @@ export default function About() {
                 ease: [0.22, 0.7, 0.2, 1],
               }}
             >
-              <span>{area.number}</span>
-              <h3>{area.title}</h3>
-              <p>{area.detail}</p>
+              <span>{localize(area.number)}</span>
+              <h3>{localize(area.title)}</h3>
+              <p>{localize(area.detail)}</p>
               <b aria-hidden="true">↗</b>
             </motion.a>
-          ))}
+          )))}
         </div>
       </Reveal>
 
@@ -507,33 +487,23 @@ export default function About() {
         aria-labelledby="about-principles-title"
       >
         <header className="about-principles-heading">
-          <p className="eyebrow">Our commitments</p>
+          <p className="eyebrow">{t("Our commitments")}</p>
           <h2 id="about-principles-title">
-            Built for lasting change, guided by public trust.
-          </h2>
+            {t("Built for lasting change, guided by public trust.")}</h2>
           <p>
-            The way we work in communities and the way we govern the Foundation
-            are rooted in the same promise: lasting public benefit.
-          </p>
+            {t("The way we work in communities and the way we govern the Foundation are rooted in the same promise: lasting public benefit.")}</p>
         </header>
         <div className="about-principles-grid">
           <Reveal as="article" className="about-principle" direction="left">
             <span className="about-principle-number" aria-hidden="true">
               01
             </span>
-            <p className="eyebrow">Work philosophy</p>
-            <h3>Lasting household assets, not one-time assistance.</h3>
+            <p className="eyebrow">{t("Work philosophy")}</p>
+            <h3>{t("Lasting household assets, not one-time assistance.")}</h3>
             <p>
-              Lasting change can mean a child staying in school, care arriving
-              before a crisis, a skill creating income, or a household energy
-              asset reducing monthly costs. We build on the institutions people
-              already rely on: schools, clinics, self-help groups and
-              panchayats.
-            </p>
+              {t("Lasting change can mean a child staying in school, care arriving before a crisis, a skill creating income, or a household energy asset reducing monthly costs. We build on the institutions people already rely on: schools, clinics, self-help groups and panchayats.")}</p>
             <p className="about-principle-note">
-              Our strategic partnership with UNACCC will support our climate and
-              household-energy objectives.
-            </p>
+              {t("Our strategic partnership with UNACCC will support our climate and household-energy objectives.")}</p>
           </Reveal>
           <Reveal
             as="article"
@@ -544,20 +514,15 @@ export default function About() {
             <span className="about-principle-number" aria-hidden="true">
               02
             </span>
-            <p className="eyebrow">Governance</p>
-            <h3>Accountable leadership. Open participation.</h3>
+            <p className="eyebrow">{t("Governance")}</p>
+            <h3>{t("Accountable leadership. Open participation.")}</h3>
             <p>
-              Founder trustees hold the trust for public benefit. A management
-              body leads programmes, while general members can strengthen
-              fieldwork, fundraising and our district presence.
-            </p>
+              {t("Founder trustees hold the trust for public benefit. A management body leads programmes, while general members can strengthen fieldwork, fundraising and our district presence.")}</p>
             <div className="about-membership-callout">
               <p>
-                Membership is open by application and supports the Foundation’s
-                charitable work.
-              </p>
+                {t("Membership is open by application and supports the Foundation’s charitable work.")}</p>
               <a className="about-membership-link" href="/contact">
-                Apply to take part <span aria-hidden="true">↗</span>
+                {t("Apply to take part")}{" "}<span aria-hidden="true">↗</span>
               </a>
             </div>
           </Reveal>
@@ -585,7 +550,7 @@ export default function About() {
               >
                 <DynamicImage
                   slotKey="about-founder-photo"
-                  alt="Dr Jagannath Patnaik, founder of Jagannath Foundation"
+                  alt={t("Dr Jagannath Patnaik, founder of Jagannath Foundation")}
                   className="about-founder-image"
                 />
                 <svg
@@ -605,7 +570,7 @@ export default function About() {
                   />
                 </svg>
                 <AnimatePresence>
-                  {flyEnabled && landed && active === "dream" && (
+                  {localize(flyEnabled && landed && active === "dream" && (
                     <motion.div
                       className="founder-dream-overlay"
                       key="founder-dream-overlay"
@@ -615,15 +580,14 @@ export default function About() {
                       transition={{ duration: 0.78, ease: [0.22, 0.7, 0.2, 1] }}
                     >
                       <p className="founder-dream-kicker">
-                        The founder's dream
-                      </p>
-                      <h3>{dreamTab.title}</h3>
+                        {t("The founder's dream")}</p>
+                      <h3>{localize(dreamTab.title)}</h3>
                       <TypewriterText
-                        text={dreamTab.body}
+                        text={localize(dreamTab.body)}
                         reducedMotion={Boolean(reducedMotion)}
                       />
                     </motion.div>
-                  )}
+                  ))}
                 </AnimatePresence>
               </motion.div>
             </div>
@@ -631,38 +595,28 @@ export default function About() {
         </div>
 
         <Reveal as="div" className="founder-intro-copy" direction="right">
-          <p className="eyebrow">Founder &amp; Managing Trustee</p>
-          <h2 id="founder-intro-title">Dr Jagannath Patnaik</h2>
+          <p className="eyebrow">{t("Founder & Managing Trustee")}</p>
+          <h2 id="founder-intro-title">{t("Dr Jagannath Patnaik")}</h2>
           <blockquote className="founder-quote">
-            “Service is not a performance. It is the daily work of making
-            education reachable, health understandable, and young people
-            employable.”
-          </blockquote>
+            {t("“Service is not a performance. It is the daily work of making education reachable, health understandable, and young people employable.”")}</blockquote>
           <p>
-            Dr Patnaik is a teacher of positive living and purposeful leadership
-            — a practical discipline of calm, work and service. He founded the
-            trust to turn that teaching into classrooms, health awareness, youth
-            skills, women’s agency and care for the living environment across
-            the country, without private profit. The picture he could not put
-            down — a child in school, a bill that no longer ate the month — is
-            the duty the Foundation now holds.
-          </p>
+            {t("Dr Patnaik is a teacher of positive living and purposeful leadership — a practical discipline of calm, work and service. He founded the trust to turn that teaching into classrooms, health awareness, youth skills, women’s agency and care for the living environment across the country, without private profit. The picture he could not put down — a child in school, a bill that no longer ate the month — is the duty the Foundation now holds.")}</p>
 
           <button
             type="button"
             className="founder-dream-button"
             onClick={goToDream}
           >
-            Know Founder's Dream <span aria-hidden="true">↓</span>
+            {t("Know Founder's Dream")}{" "}<span aria-hidden="true">↓</span>
           </button>
 
           <div className="founder-credentials">
             <div
               className="founder-cred-tabs"
               role="tablist"
-              aria-label="Founder background"
+              aria-label={t("Founder background")}
             >
-              {credentialTabs.map((t) => (
+              {localize(credentialTabs.map((t) => (
                 <button
                   key={t.id}
                   type="button"
@@ -671,9 +625,9 @@ export default function About() {
                   aria-controls="founder-cred-panel"
                   onClick={() => setCredTab(t.id)}
                   className="founder-cred-tab"
-                  title={t.label}
+                  title={localize(t.label)}
                 >
-                  {credTab === t.id && (
+                  {localize(credTab === t.id && (
                     <motion.span
                       className="tab-shape"
                       aria-hidden="true"
@@ -681,10 +635,10 @@ export default function About() {
                       animate={{ opacity: 1 }}
                       transition={{ duration: reducedMotion ? 0 : 0.22 }}
                     />
-                  )}
-                  <span className="tab-label">{t.label}</span>
+                  ))}
+                  <span className="tab-label">{localize(t.label)}</span>
                 </button>
-              ))}
+              )))}
             </div>
             <motion.div
               className="founder-cred-panel"
@@ -698,79 +652,53 @@ export default function About() {
                 ease: [0.22, 0.7, 0.2, 1],
               }}
             >
-              {credTab === "educationist" && (
+              {localize(credTab === "educationist" && (
                 <>
                   <p>
-                    Dr Patnaik is a teacher of positive living and purposeful
-                    leadership, a distinguished academician, author and
-                    education administrator. His career has been spent building
-                    and running universities, institutes and skill programmes in
-                    India and overseas — medical, dentistry, engineering,
-                    management and public schooling — from concept to
-                    commissioning.
-                  </p>
+                    {t("Dr Patnaik is a teacher of positive living and purposeful leadership, a distinguished academician, author and education administrator. His career has been spent building and running universities, institutes and skill programmes in India and overseas — medical, dentistry, engineering, management and public schooling — from concept to commissioning.")}</p>
                   <p>
-                    He is currently Vice Chancellor of ICFAI University. Earlier
-                    appointments include Vice Chancellor of Kalinga University,
-                    Raipur; Pro Chancellor of Singhania University; Secretary
-                    General of the Confederation of Indian Universities;
-                    Director and Vice President of the Manipal Academy of Higher
-                    Education and the Manipal Education and Medical Group;
-                    Registrar and Director of Distance Education at Sikkim
-                    Manipal University; and Academic Registrar of the
-                    International Medical and Technological University, Dar es
-                    Salaam. He also serves as Global Chairman of UNACCC — a
-                    strategic partnership that will enhance the Foundation’s
-                    climate and household-energy objectives.
-                  </p>
+                    {t("He is currently Vice Chancellor of ICFAI University. Earlier appointments include Vice Chancellor of Kalinga University, Raipur; Pro Chancellor of Singhania University; Secretary General of the Confederation of Indian Universities; Director and Vice President of the Manipal Academy of Higher Education and the Manipal Education and Medical Group; Registrar and Director of Distance Education at Sikkim Manipal University; and Academic Registrar of the International Medical and Technological University, Dar es Salaam. He also serves as Global Chairman of UNACCC — a strategic partnership that will enhance the Foundation’s climate and household-energy objectives.")}</p>
                   <p>
-                    He has advised institutions including the British Medical
-                    Journal, the Pharmaceutical Advisory Forum of the Government
-                    of India, Aptech Computer Education, the Society of Business
-                    Practitioners (England), ICFAI University projects, and the
-                    International Management Centre, Australia. His public work
-                    has long sat at the junction of education, youth
-                    livelihoods, women’s agency and human rights.
-                  </p>
+                    {t("He has advised institutions including the British Medical Journal, the Pharmaceutical Advisory Forum of the Government of India, Aptech Computer Education, the Society of Business Practitioners (England), ICFAI University projects, and the International Management Centre, Australia. His public work has long sat at the junction of education, youth livelihoods, women’s agency and human rights.")}</p>
                 </>
-              )}
-              {credTab === "appointments" && (
+              ))}
+              {localize(credTab === "appointments" && (
                 <div className="cred-table-wrap">
                   <table className="cred-table">
                     <thead>
                       <tr>
-                        <th>Position</th>
-                        <th>Institution / Organization</th>
+                        <th>{t("Position")}</th>
+                        <th>{t("Institution / Organization")}</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {appointments.map((a) => (
+                      {localize(appointments.map((a) => (
                         <tr key={a.position + a.org}>
-                          <th scope="row">{a.position}</th>
-                          <td>{a.org}</td>
+                          <th scope="row">{localize(a.position)}</th>
+                          <td>{localize(a.org)}</td>
                         </tr>
-                      ))}
+                      )))}
                     </tbody>
                   </table>
                 </div>
-              )}
-              {credTab === "books" &&
+              ))}
+              {localize(credTab === "books" &&
                 (books.length ? (
                   <ul>
-                    {books.map((b) => (
-                      <li key={b}>{b}</li>
-                    ))}
+                    {localize(books.map((b) => (
+                      <li key={b}>{localize(b)}</li>
+                    )))}
                   </ul>
                 ) : (
-                  <p>Publication details will be added soon.</p>
-                ))}
-              {credTab === "recognitions" && (
+                  <p>{t("Publication details will be added soon.")}</p>
+                )))}
+              {localize(credTab === "recognitions" && (
                 <ul>
-                  {recognitions.map((r) => (
-                    <li key={r}>{r}</li>
-                  ))}
+                  {localize(recognitions.map((r) => (
+                    <li key={r}>{localize(r)}</li>
+                  )))}
                 </ul>
-              )}
+              ))}
             </motion.div>
           </div>
         </Reveal>
@@ -785,9 +713,9 @@ export default function About() {
           <div
             className="about-tabs flex flex-wrap gap-2 mb-6"
             role="tablist"
-            aria-label="About the Foundation"
+            aria-label={t("About the Foundation")}
           >
-            {tabs.map((t) => (
+            {localize(tabs.map((t) => (
               <button
                 key={t.id}
                 type="button"
@@ -801,9 +729,9 @@ export default function About() {
                     : "border-navy-900/20 text-navy-900/70 hover:border-orange-500"
                 }`}
               >
-                {t.label}
+                {localize(t.label)}
               </button>
-            ))}
+            )))}
           </div>
           <motion.div
             className="about-tab-panel"
@@ -819,11 +747,11 @@ export default function About() {
             }}
           >
             <h3>
-              {current.id === "dream" ? "A lifelong conviction" : current.title}
+              {localize(current.id === "dream" ? "A lifelong conviction" : current.title)}
             </h3>
-            {current.id === "approach" ? (
+            {localize(current.id === "approach" ? (
               <div className="discipline-grid">
-                {disciplines.map((discipline, index) => (
+                {localize(disciplines.map((discipline, index) => (
                   <motion.article
                     key={discipline.title}
                     initial={reducedMotion ? false : { opacity: 0, y: 12 }}
@@ -833,37 +761,36 @@ export default function About() {
                       delay: reducedMotion ? 0 : 0.18 + index * 0.16,
                     }}
                   >
-                    <span>{String(index + 1).padStart(2, "0")}</span>
-                    <h4>{discipline.title}</h4>
-                    <p>{discipline.body}</p>
+                    <span>{localize(String(index + 1).padStart(2, "0"))}</span>
+                    <h4>{localize(discipline.title)}</h4>
+                    <p>{localize(discipline.body)}</p>
                   </motion.article>
-                ))}
+                )))}
               </div>
             ) : (
               <p>
-                {current.id === "dream"
+                {localize(current.id === "dream"
                   ? flyEnabled
                     ? "The founder's early experience of standing alongside people shaped a belief that service to people is service to God—and the purpose behind this Foundation."
                     : dreamTab.body
-                  : current.body}
+                  : current.body)}
               </p>
-            )}
+            ))}
           </motion.div>
         </div>
         <aside className="about-founder-column">
-          {flyEnabled && (
+          {localize(flyEnabled && (
             <div
               ref={rightSlotRef}
               className="founder-slot founder-slot--right"
               aria-hidden="true"
             />
-          )}
+          ))}
           <a
             href="/assets/organization-profile.pdf"
             className="about-profile-download"
           >
-            Download Organisation Profile (PDF)
-          </a>
+            {t("Download Organisation Profile (PDF)")}</a>
         </aside>
       </section>
     </Layout>

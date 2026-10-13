@@ -1,3 +1,5 @@
+import { tr as t, localize } from "../i18n";
+import { useTranslation } from "react-i18next";
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -21,6 +23,7 @@ export default function FieldRecordCard({
   description,
   photos,
 }: FieldRecordCardProps) {
+  useTranslation();
   const root = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion();
 
@@ -108,7 +111,7 @@ export default function FieldRecordCard({
     >
       <div className="flex items-center gap-4">
         <span className="fr-number text-xs font-semibold uppercase tracking-[.19em] text-orange-600">
-          Record {String(index + 1).padStart(2, "0")}
+          {t("Record")}{" "}{localize(String(index + 1).padStart(2, "0"))}
         </span>
         <span
           className="fr-line h-px flex-1 bg-navy-900/15"
@@ -117,14 +120,14 @@ export default function FieldRecordCard({
       </div>
 
       <h3 className="fr-title mt-4 font-serif-heading text-xl font-bold text-navy-950 sm:text-2xl">
-        {title}
+        {localize(title)}
       </h3>
       <p className="fr-desc mt-3 max-w-4xl leading-7 text-navy-900/70">
-        {description}
+        {localize(description)}
       </p>
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {photos.map(([image, alt, caption]) => (
+        {localize(photos.map(([image, alt, caption]) => (
           <figure
             key={image}
             className="fr-photo group overflow-hidden rounded-xl border border-navy-900/10 bg-[#f8f7f2]"
@@ -133,17 +136,17 @@ export default function FieldRecordCard({
               <div className="fr-zoom h-full w-full">
                 <img
                   src={`/images/activities/${image}.jpg`}
-                  alt={alt}
+                  alt={localize(alt)}
                   loading="lazy"
                   className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                 />
               </div>
             </div>
             <figcaption className="fr-caption px-4 py-3 text-sm leading-6 text-navy-900/70">
-              {caption}
+              {localize(caption)}
             </figcaption>
           </figure>
-        ))}
+        )))}
       </div>
     </article>
   );

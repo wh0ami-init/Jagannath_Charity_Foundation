@@ -1,3 +1,6 @@
+import LanguageDocument from "./components/LanguageDocument";
+import { tr as t } from "./i18n";
+import { useTranslation } from "react-i18next";
 import { lazy, Suspense, useCallback, useState } from "react";
 import { Redirect, Route, Switch, useLocation } from "wouter";
 import { ImagesProvider } from "./lib/ImagesContext";
@@ -23,6 +26,7 @@ const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 const welcomeScreenEnabled = import.meta.env.VITE_ENABLE_WELCOME_SCREEN === "true";
 
 export default function App() {
+  useTranslation();
   const [location] = useLocation();
   const [welcomeVisible, setWelcomeVisible] = useState(() =>
     welcomeScreenEnabled && location === "/",
@@ -33,9 +37,10 @@ export default function App() {
 
   return (
     <ImagesProvider>
+      <LanguageDocument />
       <SiteContentProvider>
         <div className={`welcome-portal${welcomeVisible && !portalRevealStarted ? " is-covered" : ""}${portalRevealStarted ? " is-revealing" : ""}`}>
-          <Suspense fallback={<div className="min-h-screen grid place-items-center text-navy-900/60">Loading page…</div>}>
+          <Suspense fallback={<div className="min-h-screen grid place-items-center text-navy-900/60">{location.startsWith("/admin") ? "Loading page..." : t("Loading page...")}</div>}>
             <Switch>
               <Route path="/" component={Home} />
               <Route path="/about" component={About} />
@@ -57,7 +62,7 @@ export default function App() {
               <Route path="/admin" component={AdminDashboard} />
               <Route>
                 <div className="min-h-screen flex items-center justify-center text-navy-900/50">
-                  Page not found
+                  {t("Page not found")}
                 </div>
               </Route>
             </Switch>

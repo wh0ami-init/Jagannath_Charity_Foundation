@@ -1,3 +1,5 @@
+import { tr as t, localize } from "../i18n";
+import { useTranslation } from "react-i18next";
 import Layout from "../components/Layout";
 import PageHero from "../components/PageHero";
 import Reveal from "../components/Reveal";
@@ -130,14 +132,15 @@ const fieldRecords = [
 ] as const;
 
 export default function Impact() {
+  useTranslation();
   return (
     <Layout>
       <PageHero
         theme="impact"
         motif="measure"
-        eyebrow="Impact"
-        title="We measure what a household still has next year."
-        description="The Foundation is young. We will not invent a wall of beneficiaries. We will name the problem in the country plainly, and the philosophy we work by."
+        eyebrow={t("Impact")}
+        title={t("We measure what a household still has next year.")}
+        description={t("The Foundation is young. We will not invent a wall of beneficiaries. We will name the problem in the country plainly, and the philosophy we work by.")}
       />
 
       <Reveal as="section" className="wrap py-16">
@@ -145,18 +148,13 @@ export default function Impact() {
           as="h2"
           className="text-2xl font-serif-heading font-bold text-navy-950 max-w-2xl"
         >
-          India's PVTG challenge is large and geographically complex.
-        </SplitHeading>
+          {t("India's PVTG challenge is large and geographically complex.")}</SplitHeading>
 
         <p className="mt-4 max-w-2xl text-navy-900/70 leading-relaxed">
-          Odisha has 13 particularly vulnerable tribal groups — the highest of
-          any Indian state — spread across 20 Micro Project Agencies in 14
-          districts. PM-JANMAN habitation data identifies 1,759 PVTG habitations
-          and over 3.1 lakh PVTG persons across 54 blocks.
-        </p>
+          {t("Odisha has 13 particularly vulnerable tribal groups — the highest of any Indian state — spread across 20 Micro Project Agencies in 14 districts. PM-JANMAN habitation data identifies 1,759 PVTG habitations and over 3.1 lakh PVTG persons across 54 blocks.")}</p>
 
         <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((s) => (
+          {localize(stats.map((s) => (
             <Reveal
               as="article"
               key={s.label}
@@ -165,12 +163,12 @@ export default function Impact() {
               className="rounded-xl border border-navy-900/10 p-6 text-center"
             >
               <CountUp
-                value={s.value}
+                value={t(s.value)}
                 className="text-3xl font-serif-heading font-bold text-orange-500 tabular-nums"
               />
-              <p className="mt-2 text-sm text-navy-900/70">{s.label}</p>
+              <p className="mt-2 text-sm text-navy-900/70">{localize(s.label)}</p>
             </Reveal>
-          ))}
+          )))}
         </div>
       </Reveal>
 
@@ -181,28 +179,22 @@ export default function Impact() {
         <div className="wrap">
           <Reveal as="div" className="mb-10 max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-[.19em] text-orange-600">
-              Field record
-            </p>
+              {t("Field record")}</p>
             <SplitHeading
               as="h2"
               id="impact-field-record-title"
               className="mt-3 font-serif-heading text-3xl font-bold text-navy-950 sm:text-4xl"
             >
-              The work already done.
-            </SplitHeading>
+              {t("The work already done.")}</SplitHeading>
 
             <p className="mt-4 leading-7 text-navy-900/70">
-              The Foundation is young. Large beneficiary numbers would be
-              dishonest at this stage. What we can show is the work itself: a
-              blood donation camp, a visit of care to a children’s home,
-              community presence, and POSH awareness held with FICCI FLO.
-            </p>
+              {t("The Foundation is young. Large beneficiary numbers would be dishonest at this stage. What we can show is the work itself: a blood donation camp, a visit of care to a children’s home, community presence, and POSH awareness held with FICCI FLO.")}</p>
           </Reveal>
 
           <div className="space-y-8">
-            {fieldRecords.map((record, index) => (
+            {localize(fieldRecords.map((record, index) => (
               <FieldRecordCard key={record.title} index={index} {...record} />
-            ))}
+            )))}
           </div>
         </div>
       </section>
@@ -213,13 +205,9 @@ export default function Impact() {
             as="h2"
             className="font-serif-heading text-2xl font-bold text-navy-950 sm:text-3xl"
           >
-            A public record should stand up to scrutiny.
-          </SplitHeading>
+            {t("A public record should stand up to scrutiny.")}</SplitHeading>
           <p className="mt-4 text-base leading-7 text-navy-900/70 md:mt-0 md:text-lg">
-            We will not publish invented beneficiary walls, unfinished
-            installation counts, or photographs that outrun the work. When a
-            number is ready to stand a year later, it will be named here.
-          </p>
+            {t("We will not publish invented beneficiary walls, unfinished installation counts, or photographs that outrun the work. When a number is ready to stand a year later, it will be named here.")}</p>
         </div>
       </Reveal>
     </Layout>

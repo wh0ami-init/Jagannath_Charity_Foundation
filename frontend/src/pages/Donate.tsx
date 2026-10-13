@@ -1,3 +1,5 @@
+import { tr as t, localize, trError } from "../i18n";
+import { useTranslation } from "react-i18next";
 import { useState, FormEvent } from "react";
 import Layout from "../components/Layout";
 import PageHero from "../components/PageHero";
@@ -17,6 +19,7 @@ const causes = [
 ];
 
 export default function Donate() {
+  useTranslation();
   const [consent, setConsent] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
@@ -45,23 +48,19 @@ export default function Donate() {
       <PageHero
         theme="donate"
         motif="giving"
-        eyebrow="Donate"
-        title="Give to a named cause, not a vague fund."
-        description="Transfer to the Foundation's Yes Bank savings account, or record a pledge. Income can be applied only to the objects of the trust."
+        eyebrow={t("Donate")}
+        title={t("Give to a named cause, not a vague fund.")}
+        description={t("Transfer to the Foundation's Yes Bank savings account, or record a pledge. Income can be applied only to the objects of the trust.")}
       />
 
       <Reveal as="section" className="wrap py-16 grid lg:grid-cols-2 gap-12">
         <div>
           <h2 className="text-xl font-serif-heading font-bold text-navy-950 mb-3">
-            Transfer directly
-          </h2>
+            {t("Transfer directly")}</h2>
           <p className="text-sm text-navy-900/70 mb-5">
-            Use these details for NEFT, RTGS or IMPS. Please email the office
-            after you transfer so a receipt can be issued against the named
-            cause.
-          </p>
+            {t("Use these details for NEFT, RTGS or IMPS. Please email the office after you transfer so a receipt can be issued against the named cause.")}</p>
           <dl className="space-y-3 text-sm border border-navy-900/10 rounded-xl p-5">
-            {[
+            {localize([
               ["Account name", "Jagannath Foundation"],
               ["Bank", "Yes Bank · Savings account"],
               ["Account number", "121494600000139"],
@@ -77,16 +76,13 @@ export default function Donate() {
                 key={k}
                 className="flex flex-col sm:flex-row sm:justify-between gap-1"
               >
-                <dt className="text-navy-900/50">{k}</dt>
-                <dd className="font-medium text-navy-950 sm:text-right">{v}</dd>
+                <dt className="text-navy-900/50">{localize(k)}</dt>
+                <dd className="font-medium text-navy-950 sm:text-right">{k === "Account name" ? v : localize(v)}</dd>
               </div>
-            ))}
+            )))}
           </dl>
           <p className="text-xs text-navy-900/50 mt-4">
-            Write to chairman@jagannathfoundation.charity or
-            secretariatjagannathfoundation@gmail.com after you transfer so the
-            gift can be receipted.
-          </p>
+            {t("Write to chairman@jagannathfoundation.charity or secretariatjagannathfoundation@gmail.com after you transfer so the gift can be receipted.")}</p>
         </div>
 
         <Stagger
@@ -97,49 +93,43 @@ export default function Donate() {
           distance={16}
         >
           <h2 className="text-xl font-serif-heading font-bold text-navy-950">
-            Record my pledge
-          </h2>
+            {t("Record my pledge")}</h2>
           <p className="text-xs text-navy-900/50">
-            This records an expression of interest only. No payment or PAN
-            details are collected here.
-          </p>
-          {submitted ? (
+            {t("This records an expression of interest only. No payment or PAN details are collected here.")}</p>
+          {localize(submitted ? (
             <p className="form-success text-sm text-navy-900" role="status">
-              Your pledge note is recorded. No payment was made; the Foundation
-              can follow up using your contact details.
-            </p>
+              {t("Your pledge note is recorded. No payment was made; the Foundation can follow up using your contact details.")}</p>
           ) : (
             <>
-              {error && (
+              {localize(error && (
                 <p className="form-error" role="alert">
-                  {error}
+                  {trError(error)}
                 </p>
-              )}
-              <Field name="name" label="Full name" required />
-              <Field name="email" label="Email" type="email" required />
-              <Field name="phone" label="Phone" type="tel" />
-              <Field name="amount" label="Pledge amount (INR)" type="number" />
+              ))}
+              <Field name="name" label={t("Full name")} required />
+              <Field name="email" label={t("Email")} type="email" required />
+              <Field name="phone" label={t("Phone")} type="tel" />
+              <Field name="amount" label={t("Pledge amount (INR)")} type="number" />
               <div>
                 <label
                   htmlFor="pledge-cause"
                   className="text-sm font-medium block mb-1"
                 >
-                  Named cause
-                </label>
+                  {t("Named cause")}</label>
                 <select
                   id="pledge-cause"
                   name="cause"
                   className="w-full border border-navy-900/20 rounded-lg px-3 py-2 text-sm"
                 >
-                  {causes.map((c) => (
+                  {localize(causes.map((c) => (
                     <option key={c} value={c}>
-                      {c}
+                      {localize(c)}
                     </option>
-                  ))}
+                  )))}
                 </select>
               </div>
               <div className="form-honeypot" aria-hidden="true">
-                <label htmlFor="pledge-website">Leave this field blank</label>
+                <label htmlFor="pledge-website">{t("Leave this field blank")}</label>
                 <input
                   id="pledge-website"
                   name="website"
@@ -157,21 +147,17 @@ export default function Donate() {
                   className="mt-0.5"
                 />
                 <span>
-                  I have read and understood the Data Collection &amp; Consent
-                  Notice (DPDP Act, 2023) and give my specific and informed
-                  consent to Jagannath Foundation to process my personal data
-                  for the stated purposes.
-                </span>
+                  {t("I have read and understood the Data Collection & Consent Notice (DPDP Act, 2023) and give my specific and informed consent to Jagannath Foundation to process my personal data for the stated purposes.")}</span>
               </label>
               <button
                 type="submit"
                 disabled={sending}
                 className="bg-orange-500 hover:bg-orange-400 disabled:opacity-60 text-white px-5 py-2 rounded-full text-sm font-semibold"
               >
-                {sending ? "Saving…" : "Record my pledge"}
+                {localize(sending ? "Saving…" : "Record my pledge")}
               </button>
             </>
-          )}
+          ))}
         </Stagger>
       </Reveal>
       <RazorpayTestButton />
@@ -190,13 +176,14 @@ function Field({
   type?: string;
   required?: boolean;
 }) {
+  useTranslation();
   return (
     <div>
       <label
         htmlFor={`pledge-${name}`}
         className="text-sm font-medium block mb-1"
       >
-        {label}
+        {localize(label)}
       </label>
       <input
         id={`pledge-${name}`}

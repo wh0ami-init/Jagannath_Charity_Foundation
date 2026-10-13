@@ -1,3 +1,5 @@
+import { tr as t, localize } from "../i18n";
+import { useTranslation } from "react-i18next";
 import { useEffect, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -139,6 +141,7 @@ const programmes = [
 type Programme = (typeof programmes)[number];
 
 function ProgrammeCard({ p, index }: { p: Programme; index: number }) {
+  useTranslation();
   const card = useRef<HTMLElement>(null);
   const fromRight = index % 2 === 1;
 
@@ -220,58 +223,57 @@ function ProgrammeCard({ p, index }: { p: Programme; index: number }) {
       <div className="wp-photo">
         <DynamicImage
           slotKey={photoSlot[p.slug]}
-          alt={p.title}
+          alt={localize(p.title)}
           className="wp-img"
         />
-        <span className="wp-badge work-index">{p.num}</span>
+        <span className="wp-badge work-index">{localize(p.num)}</span>
       </div>
 
       <div className="grid gap-7 lg:grid-cols-[1.02fr_.98fr] lg:gap-9">
         <div className="wp-text py-1">
           <p className="mb-2 text-sm font-semibold tracking-wide text-orange-600">
-            {p.num} <span className="text-navy-900/35">/ 06</span>
+            {localize(p.num)} <span className="text-navy-900/35">/ 06</span>
           </p>
           <h2 className="font-serif-heading text-2xl font-bold text-navy-950 sm:text-3xl">
-            {p.title}
+            {localize(p.title)}
           </h2>
           <p className="mt-4 text-lg font-semibold leading-7 text-navy-950">
-            {p.lead}
+            {localize(p.lead)}
           </p>
           <div className="mt-4 space-y-4 text-sm leading-7 text-navy-900/70 sm:text-base">
-            {p.paragraphs.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
+            {localize(p.paragraphs.map((paragraph) => (
+              <p key={paragraph}>{localize(paragraph)}</p>
+            )))}
           </div>
         </div>
 
         <aside
           className="wp-aside rounded-xl border border-navy-900/10 bg-[#f8f7f2] p-5 sm:p-6"
-          aria-label={`${p.title} potential activities and intended audience`}
+          aria-label={t("{{name}} potential activities and intended audience", { name: t(p.title) })}
         >
           <h3 className="font-serif-heading text-xl font-semibold text-navy-950">
-            Potential areas of work
-          </h3>
+            {t("Potential areas of work")}</h3>
           <ul className="mt-3 divide-y divide-navy-900/10">
-            {p.activities.map((activity) => (
+            {localize(p.activities.map((activity) => (
               <li
                 key={activity}
                 className="py-3 text-sm leading-6 text-navy-900/75"
               >
-                {activity}
+                {localize(activity)}
               </li>
-            ))}
+            )))}
           </ul>
           <p className="mt-4 text-sm leading-6 text-navy-900/75">
             <strong className="font-semibold text-navy-950">
-              Intended focus.{" "}
+              {t("Intended focus.")}{localize(" ")}
             </strong>
-            {p.audience}
+            {localize(p.audience)}
           </p>
           <a
             href="/contact"
             className="programme-contact-button group mt-5 inline-flex min-h-11 items-center rounded-full border border-navy-900/40 px-5 text-sm font-medium text-navy-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-700"
           >
-            Ask about this programme{" "}
+            {t("Ask about this programme")}{localize(" ")}
             <span
               className="programme-contact-arrow ml-2 inline-block"
               aria-hidden="true"
@@ -286,6 +288,7 @@ function ProgrammeCard({ p, index }: { p: Programme; index: number }) {
 }
 
 export default function Programmes() {
+  useTranslation();
   useEffect(() => {
     const targetId = decodeURIComponent(window.location.hash.slice(1));
     if (!targetId.startsWith("programme-")) return;
@@ -323,32 +326,29 @@ export default function Programmes() {
       <PageHero
         theme="work"
         motif="programmes"
-        eyebrow="Focus areas"
-        title="Six programme areas, planned with care."
-        description="These six areas guide the Foundation’s programme planning. Specific activities, locations and delivery partners will be published as they are confirmed."
+        eyebrow={t("Focus areas")}
+        title={t("Six programme areas, planned with care.")}
+        description={t("These six areas guide the Foundation’s programme planning. Specific activities, locations and delivery partners will be published as they are confirmed.")}
       />
 
-      <Reveal as="section" className="wrap pt-10" aria-label="Programme status">
+      <Reveal as="section" className="wrap pt-10" aria-label={t("Programme status")}>
         <p className="max-w-3xl border-l-2 border-orange-500 pl-4 text-sm leading-6 text-navy-900/65">
-          Programme areas describe the Foundation’s intended focus; they are not
-          a count of completed projects or beneficiaries. See{" "}
+          {t("Programme areas describe the Foundation’s intended focus; they are not a count of completed projects or beneficiaries. See")}{localize(" ")}
           <a
             className="font-semibold text-navy-950 underline underline-offset-4"
             href="/projects"
           >
-            Projects
-          </a>{" "}
-          for named initiatives and their current status.
-        </p>
+            {t("Projects")}</a>{localize(" ")}
+          {t("for named initiatives and their current status.")}</p>
       </Reveal>
 
       <section
         className="wrap space-y-7 py-16 md:space-y-9 md:py-20"
-        aria-label="Programme areas"
+        aria-label={t("Programme areas")}
       >
-        {programmes.map((p, i) => (
+        {localize(programmes.map((p, i) => (
           <ProgrammeCard key={p.num} p={p} index={i} />
-        ))}
+        )))}
       </section>
     </Layout>
   );

@@ -1,3 +1,5 @@
+import { tr as t, localize, trError } from "../i18n";
+import { useTranslation } from "react-i18next";
 import { useState, FormEvent } from "react";
 import Layout from "../components/Layout";
 import PageHero from "../components/PageHero";
@@ -6,6 +8,7 @@ import { submissionPayload, submitForm } from "../lib/api";
 import Stagger from "../components/Stagger";
 
 export default function Volunteer() {
+  useTranslation();
   const [consent, setConsent] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
@@ -34,32 +37,24 @@ export default function Volunteer() {
       <PageHero
         theme="volunteer"
         motif="volunteers"
-        eyebrow="Get involved"
-        title="If you will return, there is a place for you."
-        description="We need people who can sit in a classroom, keep a register, plant a line of trees, or brief a household on a solar roof — and come back the following month."
+        eyebrow={t("Get involved")}
+        title={t("If you will return, there is a place for you.")}
+        description={t("We need people who can sit in a classroom, keep a register, plant a line of trees, or brief a household on a solar roof — and come back the following month.")}
       />
 
       <Reveal as="section" className="wrap py-16 grid lg:grid-cols-2 gap-12">
         <div className="space-y-8">
           <div>
             <h3 className="font-serif-heading font-bold text-navy-950 mb-1">
-              Be a serious voice
-            </h3>
+              {t("Be a serious voice")}</h3>
             <p className="text-sm text-navy-900/70">
-              Help carry facts about education, health, energy and tribal
-              households — not slogans — into rooms that still have not heard
-              them.
-            </p>
+              {t("Help carry facts about education, health, energy and tribal households — not slogans — into rooms that still have not heard them.")}</p>
           </div>
           <div>
             <h3 className="font-serif-heading font-bold text-navy-950 mb-1">
-              Work with a community
-            </h3>
+              {t("Work with a community")}</h3>
             <p className="text-sm text-navy-900/70">
-              Join field days, literacy classes, planting and camps. The
-              Foundation prefers people who will return, not people who will
-              post.
-            </p>
+              {t("Join field days, literacy classes, planting and camps. The Foundation prefers people who will return, not people who will post.")}</p>
           </div>
         </div>
 
@@ -71,32 +66,28 @@ export default function Volunteer() {
           distance={16}
         >
           <h2 className="text-xl font-serif-heading font-bold text-navy-950">
-            Offer your time
-          </h2>
-          {submitted ? (
+            {t("Offer your time")}</h2>
+          {localize(submitted ? (
             <p className="form-success text-sm text-navy-900" role="status">
-              Your volunteer interest is recorded. The Foundation can follow up
-              using your contact details.
-            </p>
+              {t("Your volunteer interest is recorded. The Foundation can follow up using your contact details.")}</p>
           ) : (
             <>
-              {error && (
+              {localize(error && (
                 <p className="form-error" role="alert">
-                  {error}
+                  {trError(error)}
                 </p>
-              )}
-              <Field name="name" label="Full name" required />
-              <Field name="email" label="Email" type="email" required />
-              <Field name="phone" label="Phone" type="tel" />
-              <Field name="district" label="District you can reach" />
-              <Field name="skill" label="Skill you actually have" />
+              ))}
+              <Field name="name" label={t("Full name")} required />
+              <Field name="email" label={t("Email")} type="email" required />
+              <Field name="phone" label={t("Phone")} type="tel" />
+              <Field name="district" label={t("District you can reach")} />
+              <Field name="skill" label={t("Skill you actually have")} />
               <div>
                 <label
                   htmlFor="volunteer-message"
                   className="text-sm font-medium block mb-1"
                 >
-                  Note
-                </label>
+                  {t("Note")}</label>
                 <textarea
                   id="volunteer-message"
                   name="message"
@@ -107,8 +98,7 @@ export default function Volunteer() {
               </div>
               <div className="form-honeypot" aria-hidden="true">
                 <label htmlFor="volunteer-website">
-                  Leave this field blank
-                </label>
+                  {t("Leave this field blank")}</label>
                 <input
                   id="volunteer-website"
                   name="website"
@@ -126,21 +116,17 @@ export default function Volunteer() {
                   className="mt-0.5"
                 />
                 <span>
-                  I have read and understood the Data Collection &amp; Consent
-                  Notice (DPDP Act, 2023) and give my specific and informed
-                  consent to Jagannath Foundation to process my personal data
-                  for the stated purposes.
-                </span>
+                  {t("I have read and understood the Data Collection & Consent Notice (DPDP Act, 2023) and give my specific and informed consent to Jagannath Foundation to process my personal data for the stated purposes.")}</span>
               </label>
               <button
                 type="submit"
                 disabled={sending}
                 className="bg-orange-500 hover:bg-orange-400 disabled:opacity-60 text-white px-5 py-2 rounded-full text-sm font-semibold"
               >
-                {sending ? "Sending…" : "Submit application"}
+                {localize(sending ? "Sending…" : "Submit application")}
               </button>
             </>
-          )}
+          ))}
         </Stagger>
       </Reveal>
     </Layout>
@@ -158,13 +144,14 @@ function Field({
   type?: string;
   required?: boolean;
 }) {
+  useTranslation();
   return (
     <div>
       <label
         htmlFor={`volunteer-${name}`}
         className="text-sm font-medium block mb-1"
       >
-        {label}
+        {localize(label)}
       </label>
       <input
         id={`volunteer-${name}`}

@@ -1,3 +1,5 @@
+import { tr as t, localize } from "../i18n";
+import { useTranslation } from "react-i18next";
 import Layout from "../components/Layout";
 import PageHero from "../components/PageHero";
 import Reveal from "../components/Reveal";
@@ -104,15 +106,16 @@ const partnerGroups: {
 ];
 
 export default function Partners() {
+  useTranslation();
   return (
     <Layout>
       <div className="partners-page">
         <PageHero
           theme="work"
           motif="partners"
-          eyebrow="Work & partners"
-          title="Partner / Sponsor Index"
-          description="A public list of organisations that walk with the Foundation — as programme partners or as sponsors of a project. Names are added when an agreement is signed, not when a conversation begins."
+          eyebrow={t("Work & partners")}
+          title={t("Partner / Sponsor Index")}
+          description={t("A public list of organisations that walk with the Foundation — as programme partners or as sponsors of a project. Names are added when an agreement is signed, not when a conversation begins.")}
         />
 
         <section
@@ -128,69 +131,53 @@ export default function Partners() {
           >
             <div>
               <p className="text-xs font-semibold uppercase tracking-[.19em] text-orange-600">
-                A clear public record
-              </p>
+                {t("A clear public record")}</p>
               <h2
                 id="partner-index-policy"
                 className="mt-3 max-w-sm font-serif-heading text-3xl font-bold text-navy-950 sm:text-4xl"
               >
-                How a name enters this index
-              </h2>
+                {t("How a name enters this index")}</h2>
             </div>
             <div>
               <p className="partner-copy">
-                Partners help the work hold after the camp comes down. Sponsors
-                underwrite a defined project — a classroom line, a health camp,
-                household solar, or the upcoming Senior Citizens Home at
-                Khuntuni — without turning the Foundation into a billboard.
-              </p>
+                {t("Partners help the work hold after the camp comes down. Sponsors underwrite a defined project — a classroom line, a health camp, household solar, or the upcoming Senior Citizens Home at Khuntuni — without turning the Foundation into a billboard.")}</p>
               <p className="partner-copy mt-4">
-                The Trust does not sell its name. Listing here means a current
-                understanding: what is being done, where, and what the household
-                should still have a year later.
-              </p>
+                {t("The Trust does not sell its name. Listing here means a current understanding: what is being done, where, and what the household should still have a year later.")}</p>
             </div>
             <div className="partner-index-principles mt-8 lg:col-span-2">
               <div>
                 <span>01</span>
-                <h3>Agreement signed</h3>
-                <p>A name is added after a formal agreement is in place.</p>
+                <h3>{t("Agreement signed")}</h3>
+                <p>{t("A name is added after a formal agreement is in place.")}</p>
               </div>
               <div>
                 <span>02</span>
-                <h3>Commitment defined</h3>
-                <p>The work, place and commitment are clearly understood.</p>
+                <h3>{t("Commitment defined")}</h3>
+                <p>{t("The work, place and commitment are clearly understood.")}</p>
               </div>
               <div>
                 <span>03</span>
-                <h3>Publicly listed</h3>
+                <h3>{t("Publicly listed")}</h3>
                 <p>
-                  The index records who is involved and what the work is meant
-                  to leave behind.
-                </p>
+                  {t("The index records who is involved and what the work is meant to leave behind.")}</p>
               </div>
             </div>
             <div className="partner-registration mt-7 lg:col-span-2">
               <p>
-                <strong>CSR registration.</strong> Jagannath Foundation is
-                registered with the Ministry of Corporate Affairs to undertake
-                CSR activities. Registration number <strong>CSR00118119</strong>{" "}
-                (Form CSR-1 approved 21 September 2026, SRN AC6085516).
-              </p>
+                <strong>{t("CSR registration.")}</strong> {" "}{t("Jagannath Foundation is registered with the Ministry of Corporate Affairs to undertake CSR activities. Registration number")}{" "}<strong>{t("CSR00118119")}</strong>{localize(" ")}
+                {t("(Form CSR-1 approved 21 September 2026, SRN AC6085516).")}</p>
               <p className="mt-2">
-                Companies may use this number when routing funds under Section
-                135 of the Companies Act.
-              </p>
+                {t("Companies may use this number when routing funds under Section 135 of the Companies Act.")}</p>
             </div>
           </Reveal>
         </section>
 
         <section
           className="partner-index-section py-8 md:py-12"
-          aria-label="Partner and sponsor categories"
+          aria-label={t("Partner and sponsor categories")}
         >
           <div className="wrap">
-            {partnerGroups.map((group, groupIndex) => (
+            {localize(partnerGroups.map((group, groupIndex) => (
               <Reveal
                 as="article"
                 duration={1.9}
@@ -204,13 +191,12 @@ export default function Partners() {
                 <header className="partner-index-heading grid gap-3 lg:grid-cols-[.72fr_1.28fr] lg:gap-16">
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-[.18em] text-orange-600">
-                      {group.number} · Partnership category
-                    </p>
+                      {localize(group.number)} {" "}{t("· Partnership category")}</p>
                     <h2 className="mt-3 max-w-md font-serif-heading text-2xl font-bold text-navy-950 sm:text-3xl">
-                      {group.title}
+                      {localize(group.title)}
                     </h2>
                   </div>
-                  <p className="partner-copy max-w-3xl">{group.intro}</p>
+                  <p className="partner-copy max-w-3xl">{localize(group.intro)}</p>
                 </header>
                 <Stagger
                   className="partner-index-table mt-5"
@@ -218,42 +204,41 @@ export default function Partners() {
                   gap={0.08}
                   distance={14}
                 >
-                  {group.entries.map((entry) => (
+                  {localize(group.entries.map((entry) => (
                     <div
                       className={`partner-index-row${entry.status === "Inviting" ? " is-open" : ""}`}
                       role="listitem"
                       key={entry.name}
                     >
                       <div className="partner-index-identity">
-                        <strong>{entry.name}</strong>
-                        {entry.href?.startsWith("https://") && (
+                        <strong>{localize(entry.name)}</strong>
+                        {localize(entry.href?.startsWith("https://") && (
                           <a
                             href={entry.href}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="partner-external-link"
                           >
-                            Visit UNACCC ↗
-                          </a>
-                        )}
+                            {t("Visit UNACCC ↗")}</a>
+                        ))}
                       </div>
                       <span className="partner-index-detail">
-                        {entry.href === "/projects#senior-citizens-home" ? (
+                        {localize(entry.href === "/projects#senior-citizens-home" ? (
                           <>
-                            <a href={entry.href}>{entry.detail}</a>
+                            <a href={entry.href}>{localize(entry.detail)}</a>
                           </>
                         ) : (
                           entry.detail
-                        )}
+                        ))}
                       </span>
                       <span className="partner-index-status">
-                        {entry.status}
+                        {localize(entry.status)}
                       </span>
                     </div>
-                  ))}
+                  )))}
                 </Stagger>
               </Reveal>
-            ))}
+            )))}
           </div>
         </section>
 
@@ -270,36 +255,27 @@ export default function Partners() {
               className="partner-invitation max-w-5xl py-2 text-white"
             >
               <p className="text-xs font-semibold uppercase tracking-[.19em] text-orange-300">
-                Build with us
-              </p>
+                {t("Build with us")}</p>
               <h2
                 id="partner-invitation-title"
                 className="mt-3 font-serif-heading text-3xl font-bold text-white sm:text-4xl"
               >
-                Write if you wish to be listed.
-              </h2>
+                {t("Write if you wish to be listed.")}</h2>
               <p className="partner-invitation-copy mt-5 max-w-3xl">
-                Send the organisation name, the project or programme you wish to
-                stand with, and what you can commit for twelve months. The
-                secretariat will reply with the objects of the trust and the
-                terms on which a name is published here.
-              </p>
+                {t("Send the organisation name, the project or programme you wish to stand with, and what you can commit for twelve months. The secretariat will reply with the objects of the trust and the terms on which a name is published here.")}</p>
               <div className="partner-actions mt-8 flex flex-wrap gap-3">
                 <a className="partner-action" href="/contact">
-                  Write to the Foundation
-                </a>
+                  {t("Write to the Foundation")}</a>
                 <a
                   className="partner-action partner-action-secondary"
                   href="/projects#senior-citizens-home"
                 >
-                  See the Senior Citizens Home
-                </a>
+                  {t("See the Senior Citizens Home")}</a>
                 <a
                   className="partner-action partner-action-secondary"
                   href="/donate"
                 >
-                  Donate
-                </a>
+                  {t("Donate")}</a>
               </div>
             </Reveal>
           </div>

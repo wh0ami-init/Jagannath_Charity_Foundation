@@ -45,7 +45,7 @@ export default function SplitHeading({
           }),
       });
     },
-    { scope: ref, dependencies: [reducedMotion, delay, start] },
+    { scope: ref, dependencies: [reducedMotion, delay, start, children], revertOnUpdate: true },
   );
 
   return createElement(as, { ...props, ref }, children);

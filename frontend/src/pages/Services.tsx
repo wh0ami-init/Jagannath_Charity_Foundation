@@ -1,3 +1,5 @@
+import { tr as t, localize, trError } from "../i18n";
+import { useTranslation } from "react-i18next";
 import { FormEvent, useState } from "react";
 import { Link } from "wouter";
 import Layout from "../components/Layout";
@@ -51,6 +53,7 @@ const services = [
 ];
 
 export default function Services() {
+  useTranslation();
   const [service, setService] = useState(services[0].title);
   const [consent, setConsent] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -82,47 +85,43 @@ export default function Services() {
       <PageHero
         theme="volunteer"
         motif="services"
-        eyebrow="Community portal"
-        title="One place to reach the Foundation."
-        description="Membership, programme support, opportunities, donor questions and records requests all come to the Foundation’s service desk."
+        eyebrow={t("Community portal")}
+        title={t("One place to reach the Foundation.")}
+        description={t("Membership, programme support, opportunities, donor questions and records requests all come to the Foundation’s service desk.")}
       />
 
       <section className="wrap py-14" aria-labelledby="service-list-title">
         <div className="mb-8 max-w-2xl">
           <p className="eyebrow">
             <span />
-            Services
-          </p>
+            {t("Services")}</p>
           <SplitHeading
             as="h2"
             id="service-list-title"
             className="mt-3 font-serif-heading text-4xl font-bold text-navy-950"
           >
-            What can we help with?
-          </SplitHeading>
+            {t("What can we help with?")}</SplitHeading>
           <p className="mt-3 text-sm leading-7 text-navy-900/70">
-            Choose a service to start a request. The Foundation team will follow
-            up using the contact details you provide.
-          </p>
+            {t("Choose a service to start a request. The Foundation team will follow up using the contact details you provide.")}</p>
         </div>
         <Stagger
           className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
           gap={0.09}
           distance={26}
         >
-          {services.map((item) => (
+          {localize(services.map((item) => (
             <article
               key={item.title}
               className="flex min-h-52 flex-col rounded-xl border border-navy-900/10 bg-white/55 p-5"
             >
               <p className="text-[10px] font-bold uppercase tracking-[.16em] text-orange-600">
-                {item.group}
+                {localize(item.group)}
               </p>
               <h3 className="mt-3 font-serif-heading text-2xl font-bold text-navy-950">
-                {item.title}
+                {localize(item.title)}
               </h3>
               <p className="mt-2 flex-1 text-sm leading-6 text-navy-900/65">
-                {item.text}
+                {localize(item.text)}
               </p>
               <button
                 type="button"
@@ -134,10 +133,9 @@ export default function Services() {
                 }}
                 className="mt-4 self-start text-sm font-semibold text-navy-800 underline decoration-orange-400 underline-offset-4"
               >
-                Make a request ↗
-              </button>
+                {t("Make a request ↗")}</button>
             </article>
-          ))}
+          )))}
         </Stagger>
       </section>
 
@@ -150,33 +148,26 @@ export default function Services() {
           <div>
             <p className="eyebrow">
               <span />
-              Service desk
-            </p>
+              {t("Service desk")}</p>
             <SplitHeading
               as="h2"
               className="mt-3 font-serif-heading text-4xl font-bold text-navy-950"
             >
-              Send a request.
-            </SplitHeading>
+              {t("Send a request.")}</SplitHeading>
             <p className="mt-4 text-sm leading-7 text-navy-900/70">
-              This form records a request for the Foundation team. It does not
-              create an account, issue a certificate, verify a record or process
-              a payment. For donations, use the Foundation’s existing{" "}
+              {t("This form records a request for the Foundation team. It does not create an account, issue a certificate, verify a record or process a payment. For donations, use the Foundation’s existing")}{localize(" ")}
               <Link className="font-semibold underline" href="/donate">
-                donation information
-              </Link>
+                {t("donation information")}</Link>
               .
             </p>
             <p className="mt-4 text-sm text-navy-900/70">
-              For urgent or sensitive matters, contact{" "}
+              {t("For urgent or sensitive matters, contact")}{localize(" ")}
               <a
                 className="font-semibold underline"
                 href="mailto:secretariatjagannathfoundation@gmail.com"
               >
-                the secretariat
-              </a>{" "}
-              directly.
-            </p>
+                {t("the secretariat")}</a>{localize(" ")}
+              {t("directly.")}</p>
           </div>
 
           <Stagger
@@ -187,51 +178,46 @@ export default function Services() {
             distance={16}
           >
             <h3 className="font-serif-heading text-2xl font-bold text-navy-950">
-              Request details
-            </h3>
-            {submitted ? (
+              {t("Request details")}</h3>
+            {localize(submitted ? (
               <p className="form-success text-sm" role="status">
-                Your {service.toLowerCase()} request has been recorded. The
-                Foundation can follow up using your contact details.
-              </p>
+                {t("Your")}{" "}{localize(service)} {" "}{t("request has been recorded. The Foundation can follow up using your contact details.")}</p>
             ) : (
               <>
-                {error && (
+                {localize(error && (
                   <p className="form-error" role="alert">
-                    {error}
+                    {trError(error)}
                   </p>
-                )}
+                ))}
                 <div>
                   <label
                     htmlFor="service-type"
                     className="mb-1 block text-sm font-medium"
                   >
-                    Service
-                  </label>
+                    {t("Service")}</label>
                   <select
                     id="service-type"
                     value={service}
                     onChange={(event) => setService(event.target.value)}
                     className="w-full rounded-lg border border-navy-900/20 bg-white px-3 py-2 text-sm"
                   >
-                    {services.map((item) => (
-                      <option key={item.title}>{item.title}</option>
-                    ))}
+                    {localize(services.map((item) => (
+                      <option key={item.title} value={item.title}>{localize(item.title)}</option>
+                    )))}
                   </select>
                 </div>
-                <Field name="name" label="Full name" required />
+                <Field name="name" label={t("Full name")} required />
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <Field name="email" label="Email" type="email" required />
-                  <Field name="phone" label="Phone" type="tel" />
+                  <Field name="email" label={t("Email")} type="email" required />
+                  <Field name="phone" label={t("Phone")} type="tel" />
                 </div>
-                <Field name="district" label="District / city" />
+                <Field name="district" label={t("District / city")} />
                 <div>
                   <label
                     htmlFor="service-message"
                     className="mb-1 block text-sm font-medium"
                   >
-                    How can we help?
-                  </label>
+                    {t("How can we help?")}</label>
                   <textarea
                     id="service-message"
                     name="message"
@@ -243,8 +229,7 @@ export default function Services() {
                 </div>
                 <div className="form-honeypot" aria-hidden="true">
                   <label htmlFor="service-website">
-                    Leave this field blank
-                  </label>
+                    {t("Leave this field blank")}</label>
                   <input
                     id="service-website"
                     name="website"
@@ -262,11 +247,9 @@ export default function Services() {
                     className="mt-1"
                   />
                   <span>
-                    I consent to the Foundation using these details to respond
-                    to this request. See the{" "}
+                    {t("I consent to the Foundation using these details to respond to this request. See the")}{localize(" ")}
                     <Link className="underline" href="/privacy-policy">
-                      privacy policy
-                    </Link>
+                      {t("privacy policy")}</Link>
                     .
                   </span>
                 </label>
@@ -275,10 +258,10 @@ export default function Services() {
                   disabled={sending}
                   className="rounded-full bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-orange-400 disabled:opacity-60"
                 >
-                  {sending ? "Sending…" : "Send request"}
+                  {localize(sending ? "Sending…" : "Send request")}
                 </button>
               </>
-            )}
+            ))}
           </Stagger>
         </div>
       </Reveal>
@@ -297,13 +280,14 @@ function Field({
   type?: string;
   required?: boolean;
 }) {
+  useTranslation();
   return (
     <div>
       <label
         htmlFor={`service-${name}`}
         className="mb-1 block text-sm font-medium"
       >
-        {label}
+        {localize(label)}
       </label>
       <input
         id={`service-${name}`}

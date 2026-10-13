@@ -1,3 +1,5 @@
+import { tr as t, localize } from "../i18n";
+import { useTranslation } from "react-i18next";
 import { useCallback, useEffect, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -41,6 +43,7 @@ export default function WelcomeScreen({
   onExitStart: () => void;
   onComplete: () => void;
 }) {
+  useTranslation();
   const scope = useRef<HTMLElement | null>(null);
   const isClosing = useRef(false);
   const reducedMotion = useReducedMotion();
@@ -393,12 +396,12 @@ export default function WelcomeScreen({
                 />
               </svg>
               <span className="welcome-burst" />
-              {Array.from({ length: SEEDS }).map((_, i) => (
+              {localize(Array.from({ length: SEEDS }).map((_, i) => (
                 <span key={i} className="welcome-seed" />
-              ))}
-              {Array.from({ length: SPARKS }).map((_, i) => (
+              )))}
+              {localize(Array.from({ length: SPARKS }).map((_, i) => (
                 <span key={i} className="welcome-spark" />
-              ))}
+              )))}
               <div className="welcome-heart-wrap">
                 <svg viewBox="0 0 300 300" className="welcome-heart">
                   <defs>
@@ -435,7 +438,7 @@ export default function WelcomeScreen({
                   />
                 </svg>
               </div>
-              <p className="welcome-thanks">Thank you for giving</p>
+              <p className="welcome-thanks">{t("Thank you for giving")}</p>
             </div>
           </div>
         </div>
@@ -445,22 +448,19 @@ export default function WelcomeScreen({
             <div className="welcome-emblem">
               <DynamicImage
                 slotKey="site-logo"
-                alt="Jagannath Foundation emblem"
+                alt={t("Jagannath Foundation emblem")}
               />
             </div>
-            <p className="welcome-kicker">A charitable trust · Odisha, India</p>
+            <p className="welcome-kicker">{t("A charitable trust · Odisha, India")}</p>
           </div>
           <h1 id="welcome-heading">
-            <span className="welcome-heading-line">Welcome to</span>
+            <span className="welcome-heading-line">{t("Welcome to")}</span>
             <span className="welcome-heading-line welcome-foundation-name">
-              Jagannath Foundation
-            </span>
+              {t("Jagannath Foundation")}</span>
           </h1>
           <p className="welcome-intro-copy">
-            Helping hands. Positive living.
-            <br />
-            Every gift, big or small, plants a seed of dignity.
-          </p>
+            {t("Helping hands. Positive living.")}<br />
+            {t("Every gift, big or small, plants a seed of dignity.")}</p>
 
           <div className="welcome-actions">
             <button
@@ -468,35 +468,33 @@ export default function WelcomeScreen({
               type="button"
               onClick={() => dismiss("/donate")}
             >
-              <span aria-hidden="true">♥</span> Donate Now
-            </button>
+              <span aria-hidden="true">♥</span> {" "}{t("Donate Now")}</button>
             <button
               className="welcome-enter"
               type="button"
               onClick={() => dismiss()}
               autoFocus
             >
-              Enter the website <span aria-hidden="true">→</span>
+              {t("Enter the website")}{" "}<span aria-hidden="true">→</span>
             </button>
           </div>
 
           <div className="welcome-stats">
-            <p className="welcome-stats-title">Why your gift matters</p>
+            <p className="welcome-stats-title">{t("Why your gift matters")}</p>
             <div className="welcome-stats-row">
-              {stats.map((s, i) => (
+              {localize(stats.map((s, i) => (
                 <div key={s.label} className="welcome-stat">
                   <strong data-stat={i}>
-                    {format(s.value, s.decimals) + s.suffix}
+                    {localize(format(s.value, s.decimals) + s.suffix)}
                   </strong>
-                  <span>{s.label}</span>
+                  <span>{localize(s.label)}</span>
                 </div>
-              ))}
+              )))}
             </div>
           </div>
 
           <p className="welcome-trust">
-            Provisional registration u/s 12A &amp; 80G · Odisha, India
-          </p>
+            {t("Provisional registration u/s 12A & 80G · Odisha, India")}</p>
         </div>
       </div>
 

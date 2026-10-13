@@ -1,3 +1,6 @@
+import { tr as t, localize } from "../i18n";
+import LanguageSwitcher from "./LanguageSwitcher";
+import { useTranslation } from "react-i18next"
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useRoute } from "wouter";
 import { DynamicImage } from "../lib/ImagesContext";
@@ -37,6 +40,8 @@ const exploreLinks = [
 ];
 
 export default function Header() {
+
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [exploreOpen, setExploreOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -201,19 +206,19 @@ export default function Header() {
               />
             </span>
             <span className="brand-name">
-              <strong>Jagannath Foundation</strong>
-              <small>Serving with dignity · Since 2026</small>
+              <strong>{t("Jagannath Foundation")}</strong>
+              <small>{t("Serving with dignity · Since 2026")}</small>
             </span>
           </Link>
           <button
             ref={menuToggleRef}
             className="menu-toggle"
-            aria-label={open ? "Close navigation" : "Open navigation"}
+            aria-label={localize(open ? "Close navigation" : "Open navigation")}
             aria-controls="site-navigation"
             aria-expanded={open}
             onClick={() => setOpen((value) => !value)}
           >
-            <span>{open ? "Close" : "Menu"}</span>
+            <span>{localize(open ? "Close" : "Menu")}</span>
             <i aria-hidden="true" className={open ? "is-open" : ""}>
               <span />
               <span />
@@ -222,8 +227,9 @@ export default function Header() {
           <nav
             id="site-navigation"
             className={`main-nav ${open ? "is-open" : ""}`}
-            aria-label="Main navigation"
+            aria-label={t("Main navigation")}
           >
+            <LanguageSwitcher />
             <Link
               href="/"
               onClick={() => {
@@ -233,9 +239,9 @@ export default function Header() {
               className={`home-link${homeActive ? " active" : ""}`}
               aria-current={homeActive ? "page" : undefined}
             >
-              Home
+              {t("Home")}
             </Link>
-            {primaryLinks.map((link) => (
+            {localize(primaryLinks.map((link) => (
               <NavLink
                 key={link.href}
                 {...link}
@@ -244,7 +250,7 @@ export default function Header() {
                   setExploreOpen(false);
                 }}
               />
-            ))}
+            )))}
             <div
               className={`nav-explore${exploreOpen ? " is-open" : ""}`}
               onPointerEnter={(event) => {
@@ -272,16 +278,16 @@ export default function Header() {
                   }
                 }}
               >
-                Explore <span aria-hidden="true">⌄</span>
+                {t("Explore")} <span aria-hidden="true">⌄</span>
               </button>
               <div
                 id="nav-explore-panel"
                 className="nav-explore-panel"
                 aria-hidden={!exploreOpen}
               >
-                <p className="nav-explore-heading">More from the Foundation</p>
+                <p className="nav-explore-heading">{t("More from the Foundation")}</p>
                 <div className="nav-explore-grid">
-                  {exploreLinks.map((link) => (
+                  {localize(exploreLinks.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
@@ -293,12 +299,12 @@ export default function Header() {
                       className="nav-explore-link"
                     >
                       <span>
-                        {link.label}
+                        {localize(link.label)}
                         <i aria-hidden="true">↗</i>
                       </span>
-                      <small>{link.note}</small>
+                      <small>{localize(link.note)}</small>
                     </Link>
-                  ))}
+                  )))}
                 </div>
               </div>
             </div>
@@ -310,7 +316,7 @@ export default function Header() {
                 setExploreOpen(false);
               }}
             >
-              Make a difference <span>↗</span>
+              {t("Make a difference")}{" "}<span>↗</span>
             </Link>
           </nav>
         </div>
@@ -328,10 +334,11 @@ function NavLink({
   label: string;
   onNavigate: () => void;
 }) {
+  const { t }  = useTranslation();
   const [active] = useRoute(`${href}/*?`);
   return (
     <Link href={href} onClick={onNavigate} className={active ? "active" : ""}>
-      {label}
+      {t(label)}
     </Link>
   );
 }

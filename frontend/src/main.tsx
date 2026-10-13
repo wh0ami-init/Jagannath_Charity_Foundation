@@ -1,10 +1,14 @@
-import { StrictMode } from "react";
+import "./i18n"
+import { StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    <Suspense fallback={<div role="status" className="min-h-screen grid place-items-center">Loading...</div>}>
+      <App />
+    </Suspense>
   </StrictMode>
 );

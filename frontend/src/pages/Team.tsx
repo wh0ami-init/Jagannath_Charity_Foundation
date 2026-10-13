@@ -1,3 +1,5 @@
+import { tr as t, localize } from "../i18n";
+import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import Layout from "../components/Layout";
@@ -209,6 +211,7 @@ function PersonCard({
   index: number;
   onSelect: (person: Person) => void;
 }) {
+  useTranslation();
   const { images } = useImages();
   const { slot, role, name, body } = person;
   const imageSlot = images[slot];
@@ -217,27 +220,27 @@ function PersonCard({
     : slot.startsWith("team-");
   return (
     <article className="team-card team-profile-card rounded-xl border border-navy-900/10 overflow-hidden">
-      {showImage ? (
+      {localize(showImage ? (
         <div className="team-portrait-frame">
-          <DynamicImage slotKey={slot} alt={name} className="team-portrait" />
+          <DynamicImage slotKey={slot} alt={localize(name)} className="team-portrait" />
         </div>
       ) : (
         <div
           className="team-portrait-frame person-portrait-pending"
-          aria-label={`Portrait for ${name} has not been added`}
+          aria-label={t("Portrait for {{name}} has not been added", { name: t(name) })}
         >
-          <span>{initials(name)}</span>
+          <span>{localize(initials(name))}</span>
         </div>
-      )}
+      ))}
       <div className="team-profile-copy">
-        <p className="team-profile-role">{role}</p>
-        <h3>{name}</h3>
+        <p className="team-profile-role">{localize(role)}</p>
+        <h3>{localize(name)}</h3>
         <button
           type="button"
           className="team-view-more"
           onClick={() => onSelect(person)}
         >
-          View more <span aria-hidden="true">→</span>
+          {t("View more")}{" "}<span aria-hidden="true">→</span>
         </button>
       </div>
     </article>
@@ -245,6 +248,7 @@ function PersonCard({
 }
 
 export default function Team() {
+  useTranslation();
   const { images } = useImages();
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -295,48 +299,48 @@ export default function Team() {
       <PageHero
         theme="team"
         motif="leadership"
-        eyebrow="Key leadership"
-        title="Who holds the trust, and who tests the work."
-        description="The settlor and managing trustee, the founder trustees, the Board of Management and the Board of Advisors govern the Foundation with clear policy and strategic planning."
+        eyebrow={t("Key leadership")}
+        title={t("Who holds the trust, and who tests the work.")}
+        description={t("The settlor and managing trustee, the founder trustees, the Board of Management and the Board of Advisors govern the Foundation with clear policy and strategic planning.")}
       />
 
       <Reveal as="section" className="wrap py-16">
-        <h2 className="team-section-heading">Board of Trustees</h2>
+        <h2 className="team-section-heading">{t("Board of Trustees")}</h2>
         <Stagger
           className="team-profile-grid team-profile-grid-trust"
           gap={0.1}
           distance={28}
         >
-          {renderPeople(trustBoard)}
+          {localize(renderPeople(trustBoard))}
         </Stagger>
       </Reveal>
 
       <Reveal as="section" className="wrap pb-16">
-        <h2 className="team-section-heading">Board of Management</h2>
+        <h2 className="team-section-heading">{t("Board of Management")}</h2>
         <Stagger
           className="team-profile-grid team-profile-grid-management"
           gap={0.1}
           distance={28}
         >
-          {renderPeople(boardOfManagement)}
+          {localize(renderPeople(boardOfManagement))}
         </Stagger>
       </Reveal>
 
       <Reveal as="section" className="wrap pb-16">
-        <h2 className="team-section-heading">Board of Advisors</h2>
+        <h2 className="team-section-heading">{t("Board of Advisors")}</h2>
         <Stagger
           className="team-profile-grid team-profile-grid-advisors"
           gap={0.1}
           distance={28}
         >
-          {renderPeople(
+          {localize(renderPeople(
             advisors.map((advisor) => ({ ...advisor, body: advisor.note })),
-          )}
+          ))}
         </Stagger>
       </Reveal>
 
       <AnimatePresence>
-        {selectedPerson && (
+        {localize(selectedPerson && (
           <motion.div
             className="team-profile-backdrop"
             role="presentation"
@@ -365,25 +369,25 @@ export default function Team() {
                 ref={closeButtonRef}
                 type="button"
                 className="team-profile-close"
-                aria-label="Close profile"
+                aria-label={t("Close profile")}
                 onClick={() => setSelectedPerson(null)}
               >
                 ×
               </button>
               <div className="team-profile-background">
-                {showSelectedPhoto ? (
+                {localize(showSelectedPhoto ? (
                   <DynamicImage
                     slotKey={selectedPerson.slot}
-                    alt={selectedPerson.name}
+                    alt={localize(selectedPerson.name)}
                   />
                 ) : (
                   <div
                     className="team-profile-placeholder"
-                    aria-label={`Portrait for ${selectedPerson.name} has not been added`}
+                    aria-label={t("Portrait for {{name}} has not been added", { name: t(selectedPerson.name) })}
                   >
-                    <span>{initials(selectedPerson.name)}</span>
+                    <span>{localize(initials(selectedPerson.name))}</span>
                   </div>
-                )}
+                ))}
                 <div className="team-profile-image-shade" />
                 <motion.div
                   className="team-profile-panel-copy"
@@ -399,16 +403,16 @@ export default function Team() {
                 >
                   <p className="eyebrow">
                     <span />
-                    {selectedPerson.role}
+                    {localize(selectedPerson.role)}
                   </p>
-                  <h2 id="team-profile-name">{selectedPerson.name}</h2>
+                  <h2 id="team-profile-name">{localize(selectedPerson.name)}</h2>
                   <div className="team-profile-rule" />
-                  <p>{selectedPerson.body}</p>
+                  <p>{localize(selectedPerson.body)}</p>
                 </motion.div>
               </div>
             </motion.aside>
           </motion.div>
-        )}
+        ))}
       </AnimatePresence>
     </Layout>
   );

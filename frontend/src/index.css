@@ -6581,3 +6581,20 @@ h3,
     transform: none !important;
   }
 }
+
+/* Public Hindi typography and language switch. */
+html[lang="hi"] { --font-sans: "Noto Sans Devanagari", sans-serif; --font-serif: "Noto Sans Devanagari", sans-serif; }
+html[lang="hi"] .home-hero h1 { line-height: 1.35; }
+html[lang="hi"] h2, html[lang="hi"] h3 { line-height: 1.5; letter-spacing: normal; }
+.language-switcher { display:flex; gap:4px; align-items:center; flex-shrink:0; }
+.language-switcher button { padding:7px 9px; border:1px solid currentColor; border-radius:6px; font-size:12px; cursor:pointer; line-height:1.5; }
+.language-switcher button[aria-pressed="true"] { background:#18372f; color:white; border-color:#18372f; }
+.language-switcher button:focus-visible { outline:3px solid #c87932; outline-offset:3px; }
+@media(max-width:600px) { .header-main { flex-wrap:wrap; gap:10px; } .language-switcher { margin-left:auto; } .brand-name strong { font-size:14px; } .brand-name small { font-size:9px; } }
+
+.main-nav .language-switcher { margin: 0; padding: 6px 0; color: #18372f; }
+@media(min-width:1241px) { .header-main { gap:14px; } .main-nav { gap:14px; } .language-switcher button { background:#f6f5ef; } .language-switcher button[aria-pressed="true"] { background:#18372f; } }
+
+.language-switcher { position: relative; }
+.language-switcher button:disabled { opacity: .65; cursor: wait; }
+.language-switcher-error { position: absolute; top: 100%; right: 0; z-index: 60; width: min(280px, 80vw); padding: 12px; border: 1px solid #c87932; border-radius: 6px; background: #fff; color: #18372f; font-size: 13px; line-height: 1.5; }

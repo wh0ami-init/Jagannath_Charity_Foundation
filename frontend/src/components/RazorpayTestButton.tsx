@@ -1,3 +1,5 @@
+import { tr as t, localize, trError } from "../i18n";
+import { useTranslation } from "react-i18next";
 import { useRef, useState } from "react";
 import { apiUrl } from "../lib/api";
 
@@ -76,6 +78,7 @@ async function paymentRequest(path: string, body: unknown) {
 }
 
 export default function RazorpayTestButton() {
+  useTranslation();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -163,21 +166,19 @@ export default function RazorpayTestButton() {
     <section className="wrap pb-16" aria-labelledby="razorpay-test-heading">
       <div className="border border-navy-900/10 rounded-xl p-6 space-y-4">
         <h2 id="razorpay-test-heading" className="text-xl font-serif-heading font-bold text-navy-950">
-          Try an online donation
-        </h2>
-        <p className="text-sm text-navy-900/70">Test Mode: try a INR 100 donation. No real money is collected.</p>
+          {t("Try an online donation")}</h2>
+        <p className="text-sm text-navy-900/70">{t("Test Mode: try a INR 100 donation. No real money is collected.")}</p>
         <button type="button" disabled={busy || !!pendingResponse || completed} onClick={openPayment}
           className="bg-orange-500 hover:bg-orange-400 disabled:opacity-60 text-white px-5 py-2 rounded-full text-sm font-semibold">
-          {completed ? "Test donation confirmed" : busy ? "Payment in progress..." : "Donate with Razorpay"}
+          {localize(completed ? "Test donation confirmed" : busy ? "Payment in progress..." : "Donate with Razorpay")}
         </button>
-        {pendingResponse && !busy && (
+        {localize(pendingResponse && !busy && (
           <button type="button" onClick={() => void verifyPayment(pendingResponse)}
             className="ml-3 border border-navy-900/20 rounded-full px-5 py-2 text-sm font-semibold">
-            Check payment status again
-          </button>
-        )}
-        {error && <p className="form-error" role="alert">{error}</p>}
-        {message && <p className="text-sm text-navy-900" role="status">{message}</p>}
+            {t("Check payment status again")}</button>
+        ))}
+        {localize(error && <p className="form-error" role="alert">{trError(error)}</p>)}
+        {localize(message && <p className="text-sm text-navy-900" role="status">{localize(message)}</p>)}
       </div>
     </section>
   );
