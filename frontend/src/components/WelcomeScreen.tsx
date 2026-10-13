@@ -329,8 +329,8 @@ export default function WelcomeScreen({
           <div className="welcome-top">
             <div className="welcome-emblem">
               <img
-                src="/images/logo-full.svg"
-                alt="Jagannath Foundation full logo"
+                src="/images/logo-mark.png"
+                alt="Jagannath Foundation logo"
               />
             </div>
             <p className="welcome-kicker">A charitable trust · Odisha, India</p>

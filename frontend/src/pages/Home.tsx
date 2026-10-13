@@ -441,9 +441,10 @@ export default function Home({
                 }}
               >
                 <DynamicImage
-                  slotKey="about-founder-photo"
+                  slotKey="home-founder-photo"
                   alt="Dr Jagannath Patnaik, founder of Jagannath Foundation"
                   className="founder-image"
+                  preferLocal
                 />
               </motion.div>
               <motion.svg

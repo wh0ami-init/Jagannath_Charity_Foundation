@@ -289,25 +289,57 @@
     }
 
     .pagehero-content {
-        padding-block: 58px 170px;
+        width: calc(100% - 36px);
+        max-width: 540px;
+        min-width: 0;
+        margin-inline: auto;
+        padding-block: 58px 88px;
     }
 
     .pagehero h1 {
-        max-width: 100%;
+        width: min(100%, 14ch);
+        max-width: 14ch;
+        min-width: 0;
+        white-space: normal;
+        overflow-wrap: anywhere;
     }
 
     .pagehero-lede {
+        display: block;
+        width: 100%;
+        max-width: 300px;
+        min-width: 0;
         font-size: 16px;
+        white-space: normal;
+        overflow-wrap: anywhere;
     }
 
     .pagehero-facts dl {
+        width: min(540px, calc(100% - 36px));
         grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 12px;
     }
 
     .pagehero-facts dl>div,
     .pagehero-facts dl>div+div {
-        padding: 14px 12px 14px 0;
+        min-width: 0;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+        padding: 14px 8px 14px 0;
         border-left: 0;
+    }
+
+    .pagehero-facts dd {
+        max-width: 100%;
+        font-size: clamp(19px, 5vw, 24px);
+        line-height: 1.08;
+        text-wrap: balance;
+    }
+
+    .pagehero-facts dt {
+        font-size: 12px;
+        line-height: 1.35;
     }
 }
 

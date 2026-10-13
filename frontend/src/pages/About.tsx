@@ -590,6 +590,7 @@ export default function About() {
                   slotKey="about-founder-photo"
                   alt="Dr Jagannath Patnaik, founder of Jagannath Foundation"
                   className="about-founder-image"
+                  preferLocal
                 />
                 <svg
                   className="about-founder-frame"

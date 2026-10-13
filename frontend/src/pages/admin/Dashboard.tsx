@@ -1424,7 +1424,7 @@ export default function AdminDashboard() {
     return (
       <div className="ac-boot">
         <div className="ac-boot-logo">
-          <img src="/images/logo-small.svg" alt="" />
+          <img src="/images/logo-mark.png" alt="" />
         </div>
         <p>Opening your console…</p>
       </div>
@@ -1435,7 +1435,7 @@ export default function AdminDashboard() {
     return (
       <div className="ac-boot">
         <div className="ac-boot-logo">
-          <img src="/images/logo-small.svg" alt="" />
+          <img src="/images/logo-mark.png" alt="" />
         </div>
         <p>
           We could not load your information. Please check the internet and try
@@ -1487,7 +1487,7 @@ export default function AdminDashboard() {
     <div className="ac" ref={rootRef}>
       <aside className="ac-side">
         <div className="ac-brand">
-          <img src="/images/logo-small.svg" alt="" />
+          <img src="/images/logo-mark.png" alt="" />
           <div>
             <strong>Jagannath Foundation</strong>
             <span>Admin console</span>
@@ -1520,7 +1520,7 @@ export default function AdminDashboard() {
       <div className="ac-main">
         <header className="ac-topbar">
           <div className="ac-brand">
-            <img src="/images/logo-small.svg" alt="" />
+            <img src="/images/logo-mark.png" alt="" />
             <div>
               <strong>Jagannath Foundation</strong>
               <span>Admin console</span>

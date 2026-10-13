@@ -93,7 +93,7 @@ export default function AdminLogin() {
       >
         <img
           className="ac-login-logo"
-          src="/images/logo-small.svg"
+          src="/images/logo-mark.png"
           alt="Jagannath Foundation logo"
         />
         <h1>Welcome back</h1>

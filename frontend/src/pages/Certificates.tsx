@@ -10,15 +10,11 @@ type RecordItem = {
   title: string;
   detail: string;
   reference?: string;
-  image?: string;
-  imageAlt?: string;
 };
 
 const pendingRecognitionScan =
-  "Listed on the Foundation’s public certificates page. The supporting scan can be added when a verified copy is supplied.";
+  "Recognition listed on the Foundation’s public certificates page; the original document image is not shown here.";
 
-// Add a verified scan under /public/images/certificates and set its path here.
-// Keeping image paths in this list makes future document updates straightforward.
 const foundationRecords: RecordItem[] = [
   {
     label: "Trust instrument",
@@ -111,14 +107,14 @@ const founderRecognitions: RecordItem[] = [
     label: "Academic recognition · Honoris causa",
     title: "Doctor of Science",
     detail:
-      "A 2016 honorary doctorate listed on the Foundation’s public certificates page. The supporting scan can be added when a verified copy is supplied.",
+      "A 2016 honorary doctorate listed on the Foundation’s public certificates page; the original document image is not shown here.",
     reference: "2016",
   },
   {
     label: "Academic recognition · Honoris causa",
     title: "Doctor of Philosophy",
     detail:
-      "A 2016 honorary doctorate listed on the Foundation’s public certificates page. The supporting scan can be added when a verified copy is supplied.",
+      "A 2016 honorary doctorate listed on the Foundation’s public certificates page; the original document image is not shown here.",
     reference: "2016",
   },
   {
@@ -135,7 +131,7 @@ const founderRecognitions: RecordItem[] = [
     label: "International peace",
     title: "Ambassador of Peace",
     detail:
-      "An international recognition listed on the Foundation’s public certificates page. The supporting scan can be added when a verified copy is supplied.",
+      "An international recognition listed on the Foundation’s public certificates page; the original document image is not shown here.",
   },
   {
     label: "Human rights education",
@@ -192,15 +188,7 @@ const founderRecognitions: RecordItem[] = [
   },
 ];
 
-function RecordCard({
-  item,
-  index,
-  onPreview,
-}: {
-  item: RecordItem;
-  index: number;
-  onPreview: (item: RecordItem) => void;
-}) {
+function RecordCard({ item, index, onPreview }: { item: RecordItem; index: number; onPreview: (item: RecordItem) => void }) {
   return (
     <article className="certificate-card">
       <div className="certificate-card-topline">
@@ -208,26 +196,28 @@ function RecordCard({
         <span className="certificate-kind">{item.label}</span>
       </div>
 
-      {item.image ? (
-        <button
-          className="certificate-preview certificate-preview--image"
-          type="button"
-          onClick={() => onPreview(item)}
-          aria-label={`View ${item.title}`}
-        >
-          <img src={item.image} alt={item.imageAlt ?? item.title} loading="lazy" />
-          <span className="certificate-preview-hint">Open document <span aria-hidden="true">↗</span></span>
-        </button>
-      ) : (
-        <div className="certificate-preview" aria-label="Document image to be added">
-          <div className="certificate-placeholder-sheet" aria-hidden="true">
-            <span className="certificate-placeholder-seal">JF</span>
-            <i /><i /><i />
-            <span className="certificate-placeholder-caption">Verified image to be added</span>
-          </div>
-          <span className="certificate-preview-status"><span aria-hidden="true">＋</span> Image pending</span>
+      <button
+        className="certificate-preview certificate-preview--button"
+        type="button"
+        aria-label={`Open full designed summary for ${item.title}`}
+        onClick={() => onPreview(item)}
+      >
+        <div className="certificate-document">
+          <svg className="certificate-document-border" viewBox="0 0 1000 1000" aria-hidden="true" preserveAspectRatio="none">
+            <path className="certificate-document-border-outer" d="M 12 12 H 988 V 988 H 12 Z" pathLength="1000" />
+            <path className="certificate-document-border-inner" d="M 28 28 H 972 V 972 H 28 Z" pathLength="1000" />
+          </svg>
+          <span className="certificate-document-glint" aria-hidden="true" />
+          <span className="certificate-document-overline">Jagannath Foundation</span>
+          <span className="certificate-document-rule" aria-hidden="true" />
+          <span className="certificate-document-label">{item.label}</span>
+          <strong>{item.title}</strong>
+          <span className="certificate-document-description">{item.detail}</span>
+          {item.reference && <span className="certificate-document-reference">{item.reference}</span>}
+          <span className="certificate-document-footer">Designed record summary · Not an official document</span>
         </div>
-      )}
+        <span className="certificate-preview-hint">View larger <span aria-hidden="true">↗</span></span>
+      </button>
 
       <div className="certificate-card-copy">
         <h3>{item.title}</h3>
@@ -258,7 +248,7 @@ export default function Certificates() {
           motif="documents"
           eyebrow="The Foundation"
           title="Trust, records & recognition."
-          description="A public record of the Foundation’s registrations and the recognitions listed in its founder’s profile. Document images will be added as verified files are prepared."
+          description="A public record of the Foundation’s registrations and the recognitions listed in its founder’s profile, presented as designed summaries."
           facts={[
             { value: "Public charitable trust", label: "Legal form" },
             { value: "17 August 2026", label: "Established" },
@@ -271,7 +261,7 @@ export default function Certificates() {
             <p className="certificates-kicker">Open records · 01</p>
             <h2 id="certificates-intro-title">The documents behind the work.</h2>
             <p>
-              We publish the Foundation’s core identity and registration details here. Each card is prepared for its corresponding source image; scans will appear after the Foundation supplies and checks the files.
+              We publish the Foundation’s core identity and registration details here in an original, consistent visual format. Each panel summarizes the record in plain text.
             </p>
           </Reveal>
           <Reveal className="certificates-note" delay={0.12}>
@@ -290,11 +280,11 @@ export default function Certificates() {
                 <p className="certificates-kicker">01 onward · Foundation records</p>
                 <h2 id="foundation-records-heading">Identity & registrations</h2>
               </div>
-              <p>Public identifiers are shown as text while the source document images are being prepared.</p>
+              <p>Each designed panel summarizes the record; it is not a scan or replacement for an issued document.</p>
             </Reveal>
             <Stagger className="certificates-grid" gap={0.09} distance={20}>
               {foundationRecords.map((item, index) => (
-                <RecordCard key={item.title} item={item} index={index} onPreview={setSelected} />
+                <RecordCard key={`${item.title}-${index}`} item={item} index={index} onPreview={setSelected} />
               ))}
             </Stagger>
           </div>
@@ -307,11 +297,11 @@ export default function Certificates() {
                 <p className="certificates-kicker">09 onward · Founder profile</p>
                 <h2 id="recognitions-heading">Selected honours & academic recognition</h2>
               </div>
-              <p>These entries reflect recognitions already named in the Foundation’s public profile. Supporting images can be added individually.</p>
+              <p>These entries reflect recognitions named in the Foundation’s public profile. The panels are summaries, not award certificates.</p>
             </Reveal>
             <Stagger className="certificates-grid certificates-grid--honours" gap={0.09} distance={20}>
               {founderRecognitions.map((item, index) => (
-                <RecordCard key={item.title} item={item} index={index + foundationRecords.length} onPreview={setSelected} />
+                <RecordCard key={`${item.title}-${index}`} item={item} index={index + foundationRecords.length} onPreview={setSelected} />
               ))}
             </Stagger>
           </div>
@@ -323,7 +313,7 @@ export default function Certificates() {
             <p className="certificates-kicker">The originals</p>
             <h2 id="original-records-heading">A record should be easy to verify.</h2>
             <p>
-              For a certified copy or a question about a listed record, contact the Foundation office. New scans can be added here once the source documents are received and reviewed.
+              For a certified copy or a question about a listed record, contact the Foundation office.
             </p>
           </div>
           <a href="mailto:chairman@jagannathfoundation.charity" className="certificates-contact-link">
@@ -334,16 +324,38 @@ export default function Certificates() {
         <dialog
           ref={dialogRef}
           className="certificate-dialog"
-          aria-label={selected ? `Document preview: ${selected.title}` : "Document preview"}
+          aria-label={selected ? `Designed summary: ${selected.title}` : "Designed summary"}
           onClose={() => setSelected(null)}
           onClick={(event) => {
             if (event.target === dialogRef.current) setSelected(null);
           }}
         >
-          <button className="certificate-dialog-close" type="button" onClick={() => setSelected(null)} aria-label="Close document preview">×</button>
-          {selected?.image && <img src={selected.image} alt={selected.imageAlt ?? selected.title} />}
-          <p>{selected?.title}</p>
+          <button
+            className="certificate-dialog-close"
+            type="button"
+            aria-label="Close certificate summary"
+            onClick={() => setSelected(null)}
+          >
+            ×
+          </button>
+          {selected && (
+            <div className="certificate-document certificate-document--large">
+              <svg className="certificate-document-border" viewBox="0 0 1000 1000" aria-hidden="true" preserveAspectRatio="none">
+                <path className="certificate-document-border-outer" d="M 12 12 H 988 V 988 H 12 Z" pathLength="1000" />
+                <path className="certificate-document-border-inner" d="M 28 28 H 972 V 972 H 28 Z" pathLength="1000" />
+              </svg>
+              <span className="certificate-document-glint" aria-hidden="true" />
+              <span className="certificate-document-overline">Jagannath Foundation</span>
+              <span className="certificate-document-rule" aria-hidden="true" />
+              <span className="certificate-document-label">{selected.label}</span>
+              <strong>{selected.title}</strong>
+              <span className="certificate-document-description">{selected.detail}</span>
+              {selected.reference && <span className="certificate-document-reference">{selected.reference}</span>}
+              <span className="certificate-document-footer">Designed record summary · Not an official document</span>
+            </div>
+          )}
         </dialog>
+
       </div>
     </Layout>
   );

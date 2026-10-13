@@ -217,7 +217,12 @@ function PersonCard({
     <article className="team-card team-profile-card rounded-xl border border-navy-900/10 overflow-hidden">
       {showImage ? (
         <div className="team-portrait-frame">
-          <DynamicImage slotKey={slot} alt={name} className="team-portrait" />
+          <DynamicImage
+            slotKey={slot}
+            alt={name}
+            className="team-portrait"
+            preferLocal={slot === "team-jagannath-patnaik"}
+          />
         </div>
       ) : (
         <div
@@ -372,6 +377,9 @@ export default function Team() {
                   <DynamicImage
                     slotKey={selectedPerson.slot}
                     alt={selectedPerson.name}
+                    preferLocal={
+                      selectedPerson.slot === "team-jagannath-patnaik"
+                    }
                   />
                 ) : (
                   <div

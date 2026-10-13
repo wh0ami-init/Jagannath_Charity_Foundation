@@ -67,8 +67,8 @@ export function DynamicImage({
   const { images } = useImages();
   const slot = images[slotKey];
   const fallbackAssets: Record<string, string> = {
-    "site-logo": "/images/logo-small.svg",
-    "site-logo-full": "/images/logo-full.svg",
+    "site-logo": "/images/logo-mark.png",
+    "site-logo-full": "/images/logo-mark.png",
     "home-hero-education": "/images/hero-education.webp",
     "home-hero-health": "/images/hero-health.webp",
     "home-hero-livelihoods": "/images/hero-livelihoods.webp",
@@ -91,8 +91,9 @@ export function DynamicImage({
     "community-work-livelihoods": "/images/community/womens-livelihoods.webp",
     "community-work-environment": "/images/community/environment.webp",
     "community-work-solar": "/images/community/solar-household.webp",
-    "about-founder-photo": "/images/founder-jagannath.webp",
-    "team-jagannath-patnaik": "/images/founder-jagannath.webp",
+    "home-founder-photo": "/images/founder-home.jpg",
+    "about-founder-photo": "/images/founder-about.jpg",
+    "team-jagannath-patnaik": "/images/founder-team.jpg",
     "team-shrabani-patnaik": "/images/team-shrabani-patnaik.webp",
     "team-prakriti-patnaik": "/images/team-prakriti-patnaik.webp",
     "team-purushraj-patnaik": "/images/team-purushraj-patnaik.webp",
@@ -107,7 +108,8 @@ export function DynamicImage({
     (slotKey.startsWith("gallery-") ? `/images/${slotKey}.webp` : undefined);
   const useLocalLogo =
     slotKey === "site-logo" &&
-    slot?.url.endsWith("/uploads/site-logo.png");
+    (slot?.url.endsWith("/uploads/site-logo.png") ||
+      slot?.url.endsWith("/uploads/site-logo.svg"));
   const useFallback = Boolean(fallbackSrc && (preferLocal || useLocalLogo));
 
   if (!slot && !fallbackSrc) {

@@ -23,9 +23,10 @@ def ensure_image_slots(db: Session):
                 continue
             expected_filename = f"{slot_key}{seed_path.suffix.lower()}"
             current_upload = UPLOAD_DIR / existing.file_path
-            legacy_logo = (
-                slot_key == "site-logo" and existing.file_path == "site-logo.png"
-            )
+            legacy_logo = slot_key == "site-logo" and existing.file_path in {
+                "site-logo.png",
+                "site-logo.svg",
+            }
             is_seeded_slot = (
                 existing.file_path in {expected_filename, "placeholder.jpg"}
                 or legacy_logo
