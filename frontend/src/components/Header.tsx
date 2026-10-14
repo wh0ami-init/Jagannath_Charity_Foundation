@@ -17,7 +17,6 @@ const primaryLinks = [
   { href: "/impact", label: "Our impact" },
 ];
 
-// Dropdowns that sit in the first row (same look as Explore)
 const dropdownGroups: {
   id: string;
   label: string;
@@ -114,21 +113,17 @@ const exploreLinks: NavItem[] = [
   { href: "/contact", label: "Contact", note: "Reach the Foundation team" },
 ];
 
-// Tailwind: same font, size, weight and single-line text for every tab
 const navItemTw =
-  "!font-nav min-[1001px]:!whitespace-nowrap min-[1001px]:!text-[clamp(13px,0.95vw,15px)] min-[1001px]:!font-medium min-[1001px]:!leading-tight min-[1001px]:!py-2";
+  "!font-nav min-[1001px]:!whitespace-nowrap min-[1001px]:!text-[clamp(12.5px,0.9vw,14.5px)] min-[1001px]:!font-medium min-[1001px]:!leading-tight min-[1001px]:!py-2";
 
-// Tailwind: compact donate button on one line (desktop only)
 const donateTw =
-  "!font-nav min-[1001px]:!inline-flex min-[1001px]:!items-center min-[1001px]:!gap-2 min-[1001px]:!whitespace-nowrap min-[1001px]:!shrink-0 min-[1001px]:!h-auto min-[1001px]:!min-h-0 min-[1001px]:!px-5 min-[1001px]:!py-[11px] min-[1001px]:!text-[clamp(13px,0.95vw,15px)] min-[1001px]:!leading-tight";
+  "!font-nav min-[1001px]:!inline-flex min-[1001px]:!items-center min-[1001px]:!gap-2 min-[1001px]:!whitespace-nowrap min-[1001px]:!shrink-0 min-[1001px]:!h-auto min-[1001px]:!min-h-0 min-[1001px]:!px-5 min-[1001px]:!py-[11px] min-[1001px]:!text-[clamp(12.5px,0.9vw,14.5px)] min-[1001px]:!leading-tight";
 
-// Tailwind: narrow single-column panel for the small dropdowns (desktop only)
 const compactPanelTw = "min-[1001px]:!w-[300px] min-[1001px]:!min-w-0";
 const compactGridTw = "min-[1001px]:!grid-cols-1";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
-  // which dropdown is open: "explore" | "beneficiaries" | "internships" | "autopay" | null
   const [openId, setOpenId] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [location] = useLocation();
@@ -145,13 +140,13 @@ export default function Header() {
     setOpenId(null);
   };
 
-  // 1) Header hides when you scroll down and comes back when you scroll up
   useGSAP(
     () => {
       const header = headerRef.current;
       if (!header || reducedMotion) return;
 
       let hidden = false;
+
       const show = () => {
         if (!hidden) return;
         hidden = false;
@@ -164,10 +159,10 @@ export default function Header() {
           clearProps: "transform",
         });
       };
+
       const hide = () => {
         if (hidden) return;
         hidden = true;
-        // extra -40px so the soft shadow under the header is hidden too
         gsap.to(header, {
           yPercent: -100,
           y: -40,
@@ -181,11 +176,11 @@ export default function Header() {
         start: 0,
         end: "max",
         onUpdate: (self) => {
-          // never hide while a menu is open or while someone is tabbing through the header
           if (menuLocked.current || header.querySelector(":focus-visible")) {
             show();
             return;
           }
+
           if (self.direction === 1 && self.scroll() > 260) hide();
           else if (self.direction === -1) show();
         },
@@ -197,7 +192,6 @@ export default function Header() {
     { scope: headerRef, dependencies: [reducedMotion] },
   );
 
-  // 2) Menu items slide in one by one (phone menu + dropdown panels)
   useGSAP(
     () => {
       const header = headerRef.current;
@@ -214,8 +208,8 @@ export default function Header() {
           clearProps: "opacity,transform",
         });
       }
+
       if (openId) {
-        // opacity only: these links already have their own hover transform in CSS
         gsap.from(
           header.querySelectorAll(".nav-explore.is-open .nav-explore-link"),
           {
@@ -246,18 +240,18 @@ export default function Header() {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        // return focus to the toggle of the dropdown you were inside, else the menu button
         const group = (document.activeElement as HTMLElement | null)?.closest(
           ".nav-explore",
         );
-        const toggle = group?.querySelector<HTMLElement>(
-          ".nav-explore-toggle",
-        );
+        const toggle =
+          group?.querySelector<HTMLElement>(".nav-explore-toggle");
+
         setOpenId(null);
         setOpen(false);
         (toggle ?? menuToggleRef.current)?.focus();
       }
     };
+
     const onPointerDown = (event: PointerEvent) => {
       if (
         event.target instanceof Node &&
@@ -267,8 +261,10 @@ export default function Header() {
         setOpenId(null);
       }
     };
+
     document.addEventListener("keydown", onKeyDown);
     document.addEventListener("pointerdown", onPointerDown);
+
     return () => {
       document.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("pointerdown", onPointerDown);
@@ -282,7 +278,11 @@ export default function Header() {
         ref={headerRef}
       >
         <div className="wrap header-main min-[1001px]:!flex-nowrap min-[1001px]:!items-center min-[1001px]:!gap-[clamp(12px,1.6vw,28px)]">
-          <Link href="/" className="brand shrink-0" onClick={closeAll}>
+          <Link
+            href="/"
+            className="brand shrink-0 min-[1001px]:!mr-[clamp(24px,3vw,56px)]"
+            onClick={closeAll}
+          >
             <span className="brand-mark">
               <DynamicImage
                 slotKey="site-logo"
@@ -290,11 +290,13 @@ export default function Header() {
                 className="brand-image"
               />
             </span>
+
             <span className="brand-name">
               <strong>Jagannath Foundation</strong>
               <small>Serving with dignity · Since 2026</small>
             </span>
           </Link>
+
           <button
             ref={menuToggleRef}
             className="menu-toggle"
@@ -309,9 +311,10 @@ export default function Header() {
               <span />
             </i>
           </button>
+
           <nav
             id="site-navigation"
-            className={`main-nav ${open ? "is-open" : ""} min-[1001px]:!flex min-[1001px]:!flex-nowrap min-[1001px]:!items-center min-[1001px]:!ml-auto min-[1001px]:!whitespace-nowrap min-[1001px]:!gap-[clamp(14px,1.5vw,26px)]`}
+            className={`main-nav ${open ? "is-open" : ""} min-[1001px]:!flex min-[1001px]:!flex-nowrap min-[1001px]:!items-center min-[1001px]:!ml-auto min-[1001px]:!whitespace-nowrap min-[1001px]:!gap-[clamp(10px,1.1vw,22px)]`}
             aria-label="Main navigation"
           >
             <Link
@@ -322,6 +325,7 @@ export default function Header() {
             >
               Home
             </Link>
+
             {primaryLinks.map((link) => (
               <NavLink key={link.href} {...link} onNavigate={closeAll} />
             ))}
@@ -388,6 +392,7 @@ function NavDropdown({
   compact?: boolean;
 }) {
   const isOpen = openId === id;
+
   const isActive = items.some(
     (link) => location === link.href || location.startsWith(`${link.href}/`),
   );
@@ -399,8 +404,9 @@ function NavDropdown({
         if (event.pointerType === "mouse") setOpenId(id);
       }}
       onPointerLeave={(event) => {
-        if (event.pointerType === "mouse")
+        if (event.pointerType === "mouse") {
           setOpenId((current) => (current === id ? null : current));
+        }
       }}
     >
       <button
@@ -419,14 +425,22 @@ function NavDropdown({
           }
         }}
       >
-        {label} <span aria-hidden="true">⌄</span>
+        {label}
+        <span
+          aria-hidden="true"
+          className={`ml-2 inline-block h-0 w-0 border-x-[7px] border-t-[8px] border-x-transparent border-t-current align-middle transition-transform duration-200 ${
+            isOpen ? "rotate-180" : ""
+          }`}
+        />
       </button>
+
       <div
         id={`nav-${id}-panel`}
         className={`nav-explore-panel${compact ? ` ${compactPanelTw}` : ""}`}
         aria-hidden={!isOpen}
       >
         <p className="nav-explore-heading">{heading}</p>
+
         <div
           className={`nav-explore-grid${compact ? ` ${compactGridTw}` : ""}`}
         >
@@ -461,6 +475,7 @@ function NavLink({
   onNavigate: () => void;
 }) {
   const [active] = useRoute(`${href}/*?`);
+
   return (
     <Link
       href={href}
