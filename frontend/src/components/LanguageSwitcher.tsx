@@ -28,6 +28,11 @@ export default function LanguageSwitcher() {
 
     return (
         <div className="language-switcher" role="group" aria-busy={loading} aria-label="Language / भाषा">
+  <svg className="language-globe" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <circle cx="12" cy="12" r="9" />
+    <ellipse cx="12" cy="12" rx="4" ry="9" />
+    <path d="M3 12h18M5 7h14M5 17h14" />
+  </svg>
             <button
                 type="button"
                 lang="en"
@@ -38,6 +43,7 @@ export default function LanguageSwitcher() {
                 English    
             </button>
 
+            <span className="language-divider" aria-hidden="true">|</span>
             <button
                 type="button"
                 lang="hi"

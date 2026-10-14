@@ -189,6 +189,18 @@ export default function Header() {
         className={`site-header backdrop-blur-xl${homeActive ? " is-home" : ""}${homeActive && scrolled ? " is-scrolled" : ""}`}
         ref={headerRef}
       >
+        <div className="header-utility">
+          <div className="wrap header-utility-inner">
+            <span className="header-utility-name">{t("Jagannath Foundation")}</span>
+            <div className="header-utility-actions">
+              <div className="header-utility-links">
+                <Link href="/contact">{t("Contact")}</Link>
+                <Link href="/volunteer">{t("Volunteer")}</Link>
+              </div>
+              <LanguageSwitcher />
+            </div>
+          </div>
+        </div>
         <div className="wrap header-main">
           <Link
             href="/"
@@ -229,7 +241,6 @@ export default function Header() {
             className={`main-nav ${open ? "is-open" : ""}`}
             aria-label={t("Main navigation")}
           >
-            <LanguageSwitcher />
             <Link
               href="/"
               onClick={() => {
