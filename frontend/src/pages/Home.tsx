@@ -223,7 +223,7 @@ export default function Home() {
               Our story
             </span>
           </Link>
-        </div>
+        </div>git 
         <div className="hero-bottom">
           <span>JAGANNATH FOUNDATION</span>
           <span>PEOPLE · DIGNITY · POSSIBILITY</span>
