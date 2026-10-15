@@ -4,12 +4,13 @@ from sqlalchemy.orm import Session
 from app.auth import get_current_admin
 from app.database import get_db
 from app.models import FormSubmission
+from app.ratelimit import limit_form_submissions
 from app.schemas import SubmissionCreate, SubmissionOut
 
 router = APIRouter(prefix="/api/submissions", tags=["submissions"])
 
 
-@router.post("", status_code=201)
+@router.post("", status_code=201, dependencies=[Depends(limit_form_submissions)])
 def submit_form(payload: SubmissionCreate, db: Session = Depends(get_db)):
     if not payload.consent:
         raise HTTPException(status_code=400, detail="Consent is required to submit this form")

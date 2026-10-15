@@ -1,199 +1,244 @@
-import { tr as t, localize, trError } from "../i18n";
-import { useTranslation } from "react-i18next";
-import { useState, FormEvent } from "react";
+import { tr as translateText, localize as localizeText, trError as translateError } from "../i18n";
+import { useTranslation as usePageTranslation } from "react-i18next";
+import { useEffect, useRef, useState, FormEvent } from "react";
+import gsap from "gsap";
+import { Link } from "wouter";
 import Layout from "../components/Layout";
 import PageHero from "../components/PageHero";
 import Reveal from "../components/Reveal";
 import { submissionPayload, submitForm } from "../lib/api";
 import Stagger from "../components/Stagger";
 import RazorpayTestButton from "../components/RazorpayTestButton";
-
+import MonthlyAutoPay from "../components/MonthlyAutoPay";
+import { useDonateMotion } from "../lib/useDonateMotion";
+import "./donate.css";
 const causes = [
-  "Education & literacy",
-  "Health & family welfare",
-  "Youth skills & sport",
-  "Women's livelihoods",
-  "Environment & land",
-  "Solar housing & clean energy",
-  "Where most needed",
+    "Education & literacy",
+    "Health & family welfare",
+    "Youth skills & sport",
+    "Women's livelihoods",
+    "Environment & land",
+    "Solar housing & clean energy",
+    "Where most needed",
 ];
-
+const bankRows: [
+    string,
+    string,
+    boolean?
+][] = [
+    ["Account name", "Jagannath Foundation", true],
+    ["Bank", "Yes Bank · Savings account"],
+    ["Account number", "121494600000139", true],
+    ["IFSC", "YESB0001214", true],
+    ["PAN", "AAFTJ8006Q", true],
+    ["Provisional registration u/s 12A", "URN AAFTJ8006QE20261"],
+    [
+        "Provisional approval u/s 80G",
+        "URN AAFTJ8006QF20261 · Form 10G dated 07-09-2026 · valid TY 2026-27 to TY 2028-29",
+    ],
+];
 export default function Donate() {
-  useTranslation();
-  const [consent, setConsent] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [sending, setSending] = useState(false);
-  const [error, setError] = useState("");
-
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setError("");
-    setSending(true);
-    try {
-      await submitForm(submissionPayload(e.currentTarget, "pledge"));
-      setSubmitted(true);
-    } catch (problem) {
-      setError(
-        problem instanceof Error
-          ? problem.message
-          : "Your pledge could not be saved.",
-      );
-    } finally {
-      setSending(false);
+    usePageTranslation();
+    const page = useRef<HTMLDivElement>(null);
+    useDonateMotion(page);
+    const [consent, setConsent] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+    const [sending, setSending] = useState(false);
+    const [error, setError] = useState("");
+    useEffect(() => {
+        if (!submitted || !page.current)
+            return;
+        const note = page.current.querySelector(".form-success");
+        if (!note || window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+            return;
+        gsap.fromTo(note, { autoAlpha: 0, y: 14, scale: 0.97 }, {
+            autoAlpha: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.7,
+            ease: "back.out(1.6)",
+            clearProps: "all",
+        });
+    }, [submitted]);
+    async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        setError("");
+        setSending(true);
+        try {
+            await submitForm(submissionPayload(e.currentTarget, "pledge"));
+            setSubmitted(true);
+        }
+        catch (problem) {
+            setError(problem instanceof Error
+                ? problem.message
+                : "Your pledge could not be saved.");
+        }
+        finally {
+            setSending(false);
+        }
     }
-  }
+    return (<Layout hideNewsletter>
+      <PageHero theme="donate" motif="giving" eyebrow={translateText("Donate")} title={translateText("Choose how you\u2019d like to support the Foundation.")} description={translateText("Make a one-time contribution, arrange a bank transfer, record a pledge or set up an optional monthly AutoPay mandate. All income is applied only to the objects of the trust.")}/>
 
-  return (
-    <Layout hideNewsletter>
-      <PageHero
-        theme="donate"
-        motif="giving"
-        eyebrow={t("Donate")}
-        title={t("Give to a named cause, not a vague fund.")}
-        description={t("Transfer to the Foundation's Yes Bank savings account, or record a pledge. Income can be applied only to the objects of the trust.")}
-      />
+      <div ref={page}>
+        <section className="donation-choice-section wrap" aria-labelledby="donation-choice-title">
+          <Reveal className="donation-choice-heading" delay={0.02}>
+            <p className="donation-section-eyebrow">{translateText("Ways to support")}</p>
+            <h2 id="donation-choice-title">{translateText("Choose how you\u2019d like to contribute.")}</h2>
+            <p>{translateText("Choose a one-time gift or authorize an optional monthly UPI or card mandate through Razorpay.")}</p>
+          </Reveal>
+          <Stagger className="donation-choice-grid" gap={0.12} distance={24}>
+            <a className="donation-choice-card donation-choice-card--once" href="#one-time">
+              <span className="donation-choice-icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" fill="none">
+                  <path d="M16 3.5 19.8 12l8.7 1-6.5 6 1.8 8.5L16 23l-7.8 4.5L10 19l-6.5-6 8.7-1L16 3.5Z"/>
+                </svg>
+              </span>
+              <span className="donation-choice-label">{translateText("One-time contribution")}</span>
+              <h3>{translateText("Give once")}</h3>
+              <p>{translateText("Use bank transfer, secure one-time checkout or record a pledge. The checkout amount follows the active Razorpay mode.")}</p>
+              <span className="donation-choice-link">{translateText("Explore one-time giving")}<span aria-hidden="true">→</span>
+              </span>
+            </a>
+            <a className="donation-choice-card donation-choice-card--monthly" href="#monthly-autopay">
+              <span className="donation-choice-icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" fill="none">
+                  <rect x="4.5" y="7" width="23" height="21" rx="3"/>
+                  <path d="M10 3.5v7M22 3.5v7M5 13h22M11 19h4m-4 4h10"/>
+                </svg>
+              </span>
+              <span className="donation-choice-label">{translateText("Recurring contribution")}</span>
+              <h3>{translateText("Give monthly with AutoPay")}</h3>
+              <p>{translateText("Set up an optional monthly UPI or card mandate through Razorpay. A one-time contribution never starts recurring payments.")}</p>
+              <span className="donation-choice-link">{translateText("Explore monthly giving")}<span aria-hidden="true">→</span>
+              </span>
+            </a>
+          </Stagger>
+        </section>
 
-      <Reveal as="section" className="wrap py-16 grid lg:grid-cols-2 gap-12">
-        <div>
-          <h2 className="text-xl font-serif-heading font-bold text-navy-950 mb-3">
-            {t("Transfer directly")}</h2>
-          <p className="text-sm text-navy-900/70 mb-5">
-            {t("Use these details for NEFT, RTGS or IMPS. Please email the office after you transfer so a receipt can be issued against the named cause.")}</p>
-          <dl className="space-y-3 text-sm border border-navy-900/10 rounded-xl p-5">
-            {localize([
-              ["Account name", "Jagannath Foundation"],
-              ["Bank", "Yes Bank · Savings account"],
-              ["Account number", "121494600000139"],
-              ["IFSC", "YESB0001214"],
-              ["PAN", "AAFTJ8006Q"],
-              ["Provisional registration u/s 12A", "URN AAFTJ8006QE20261"],
-              [
-                "Provisional approval u/s 80G",
-                "URN AAFTJ8006QF20261 · Form 10G dated 07-09-2026 · valid TY 2026-27 to TY 2028-29",
-              ],
-            ].map(([k, v]) => (
-              <div
-                key={k}
-                className="flex flex-col sm:flex-row sm:justify-between gap-1"
-              >
-                <dt className="text-navy-900/50">{localize(k)}</dt>
-                <dd className="font-medium text-navy-950 sm:text-right">{k === "Account name" ? v : localize(v)}</dd>
-              </div>
-            )))}
-          </dl>
-          <p className="text-xs text-navy-900/50 mt-4">
-            {t("Write to chairman@jagannathfoundation.charity or secretariatjagannathfoundation@gmail.com after you transfer so the gift can be receipted.")}</p>
-        </div>
+        <section id="one-time" className="donation-flow-section" aria-labelledby="one-time-title">
+          <header className="donation-section-heading wrap">
+            <p className="donation-section-eyebrow">{translateText("One-time contribution")}</p>
+            <h2 id="one-time-title">{translateText("Give once, in the way that suits you.")}</h2>
+            <p>{translateText("Use a bank transfer or Razorpay checkout for a contribution. The pledge form records interest only; it does not collect payment.")}</p>
+          </header>
+          <RazorpayTestButton />
+          <Reveal as="div" className="wrap py-16 grid lg:grid-cols-2 gap-12">
+            <div>
+              <h2 className="text-xl font-serif-heading font-bold text-navy-950 mb-3">{translateText("Transfer directly")}</h2>
+              <p className="text-sm text-navy-900/70 mb-5">{translateText("Use these details for NEFT, RTGS or IMPS. Please email the office after you transfer so a receipt can be issued against the named cause.")}</p>
+              <dl className="bank-details space-y-3 text-sm border border-navy-900/10 rounded-xl p-5">
+                {localizeText(bankRows.map(([k, v, copyable]) => (<div key={k} className="bank-row flex flex-col sm:flex-row sm:justify-between gap-1">
+                    <dt className="text-navy-900/50">{localizeText(k)}</dt>
+                    <dd className="font-medium text-navy-950 sm:text-right flex flex-wrap items-center gap-y-1 sm:justify-end">
+                      <span className="break-all">{localizeText(v)}</span>
+                      {localizeText(copyable && <CopyValue value={v} label={k}/>)}
+                    </dd>
+                  </div>)))}
+              </dl>
+              <p className="text-xs text-navy-900/50 mt-4">{translateText("Write to chairman@jagannathfoundation.charity or secretariatjagannathfoundation@gmail.com after you transfer so the gift can be receipted.")}</p>
+            </div>
 
-        <Stagger
-          as="form"
-          onSubmit={handleSubmit}
-          className="border border-navy-900/10 rounded-xl p-6 space-y-4"
-          gap={0.07}
-          distance={16}
-        >
-          <h2 className="text-xl font-serif-heading font-bold text-navy-950">
-            {t("Record my pledge")}</h2>
-          <p className="text-xs text-navy-900/50">
-            {t("This records an expression of interest only. No payment or PAN details are collected here.")}</p>
-          {localize(submitted ? (
-            <p className="form-success text-sm text-navy-900" role="status">
-              {t("Your pledge note is recorded. No payment was made; the Foundation can follow up using your contact details.")}</p>
-          ) : (
-            <>
-              {localize(error && (
-                <p className="form-error" role="alert">
-                  {trError(error)}
-                </p>
-              ))}
-              <Field name="name" label={t("Full name")} required />
-              <Field name="email" label={t("Email")} type="email" required />
-              <Field name="phone" label={t("Phone")} type="tel" />
-              <Field name="amount" label={t("Pledge amount (INR)")} type="number" />
-              <div>
-                <label
-                  htmlFor="pledge-cause"
-                  className="text-sm font-medium block mb-1"
-                >
-                  {t("Named cause")}</label>
-                <select
-                  id="pledge-cause"
-                  name="cause"
-                  className="w-full border border-navy-900/20 rounded-lg px-3 py-2 text-sm"
-                >
-                  {localize(causes.map((c) => (
-                    <option key={c} value={c}>
-                      {localize(c)}
-                    </option>
-                  )))}
-                </select>
-              </div>
-              <div className="form-honeypot" aria-hidden="true">
-                <label htmlFor="pledge-website">{t("Leave this field blank")}</label>
-                <input
-                  id="pledge-website"
-                  name="website"
-                  tabIndex={-1}
-                  autoComplete="off"
-                />
-              </div>
-              <label className="flex gap-2 text-xs text-navy-900/70">
-                <input
-                  name="consent"
-                  type="checkbox"
-                  required
-                  checked={consent}
-                  onChange={(e) => setConsent(e.target.checked)}
-                  className="mt-0.5"
-                />
-                <span>
-                  {t("I have read and understood the Data Collection & Consent Notice (DPDP Act, 2023) and give my specific and informed consent to Jagannath Foundation to process my personal data for the stated purposes.")}</span>
-              </label>
-              <button
-                type="submit"
-                disabled={sending}
-                className="bg-orange-500 hover:bg-orange-400 disabled:opacity-60 text-white px-5 py-2 rounded-full text-sm font-semibold"
-              >
-                {localize(sending ? "Saving…" : "Record my pledge")}
-              </button>
-            </>
-          ))}
-        </Stagger>
-      </Reveal>
-      <RazorpayTestButton />
-    </Layout>
-  );
+            <Stagger as="form" onSubmit={handleSubmit} className="border border-navy-900/10 rounded-xl p-6 space-y-4" gap={0.07} distance={16}>
+              <h2 className="text-xl font-serif-heading font-bold text-navy-950">{translateText("Record my pledge")}</h2>
+              <p className="text-xs text-navy-900/50">{translateText("This records an expression of interest only. No payment or PAN details are collected here.")}</p>
+              {localizeText(submitted ? (<p className="form-success text-sm text-navy-900" role="status">{translateText("Your pledge note is recorded. No payment was made; the Foundation can follow up using your contact details.")}</p>) : (<>
+                  {localizeText(error && (<p className="form-error" role="alert">
+                      {translateError(error)}
+                    </p>))}
+                  <Field name="name" label={translateText("Full name")} required/>
+                  <Field name="email" label={translateText("Email")} type="email" required/>
+                  <Field name="phone" label={translateText("Phone")} type="tel"/>
+                  <Field name="amount" label={translateText("Pledge amount (INR)")} type="number"/>
+                  <div>
+                    <label htmlFor="pledge-cause" className="text-sm font-medium block mb-1">{translateText("Named cause")}</label>
+                    <select id="pledge-cause" name="cause" className="w-full border border-navy-900/20 rounded-lg px-3 py-2 text-sm">
+                      {localizeText(causes.map((c) => (<option key={c} value={c}>
+                          {localizeText(c)}
+                        </option>)))}
+                    </select>
+                  </div>
+                  <div className="form-honeypot" aria-hidden="true">
+                    <label htmlFor="pledge-website">{translateText("Leave this field blank")}</label>
+                    <input id="pledge-website" name="website" tabIndex={-1} autoComplete="off"/>
+                  </div>
+                  <label className="flex gap-2 text-xs text-navy-900/70">
+                    <input name="consent" type="checkbox" required checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-0.5"/>
+                    <span>{translateText("I consent to Jagannath Foundation using these details to follow up on my pledge.")}</span>
+                  </label>
+                  <p className="text-xs text-navy-900/60">{translateText("Read our")}{localizeText(" ")}
+                    <Link className="underline" href="/privacy-policy">{translateText("privacy policy")}</Link>
+                    .
+                  </p>
+                  <button type="submit" disabled={sending} className="bg-orange-500 hover:bg-orange-400 disabled:opacity-60 text-white px-5 py-2 rounded-full text-sm font-semibold">
+                    {localizeText(sending ? "Saving…" : "Record my pledge")}
+                  </button>
+                </>))}
+            </Stagger>
+          </Reveal>
+        </section>
+
+        <section id="monthly-autopay" className="monthly-autopay-section" aria-labelledby="monthly-autopay-title">
+          <div className="wrap py-16">
+            <Reveal className="monthly-autopay-card" delay={0.04} direction="up">
+              <MonthlyAutoPay />
+            </Reveal>
+          </div>
+        </section>
+      </div>
+    </Layout>);
 }
-
-function Field({
-  name,
-  label,
-  type = "text",
-  required = false,
-}: {
-  name: string;
-  label: string;
-  type?: string;
-  required?: boolean;
+function Field({ name, label, type = "text", required = false, }: {
+    name: string;
+    label: string;
+    type?: string;
+    required?: boolean;
 }) {
-  useTranslation();
-  return (
-    <div>
-      <label
-        htmlFor={`pledge-${name}`}
-        className="text-sm font-medium block mb-1"
-      >
-        {localize(label)}
+    usePageTranslation();
+    return (<div>
+      <label htmlFor={`pledge-${name}`} className="text-sm font-medium block mb-1">
+        {localizeText(label)}
       </label>
-      <input
-        id={`pledge-${name}`}
-        name={name}
-        type={type}
-        min={type === "number" ? "0" : undefined}
-        step={type === "number" ? "0.01" : undefined}
-        required={required}
-        className="w-full border border-navy-900/20 rounded-lg px-3 py-2 text-sm"
-      />
-    </div>
-  );
+      <input id={`pledge-${name}`} name={name} type={type} min={type === "number" ? "0" : undefined} step={type === "number" ? "0.01" : undefined} required={required} className="w-full border border-navy-900/20 rounded-lg px-3 py-2 text-sm"/>
+    </div>);
+}
+function CopyValue({ value, label }: {
+    value: string;
+    label: string;
+}) {
+    usePageTranslation();
+    const [copied, setCopied] = useState(false);
+    const button = useRef<HTMLButtonElement>(null);
+    const timer = useRef<number | undefined>(undefined);
+    useEffect(() => () => window.clearTimeout(timer.current), []);
+    async function copy() {
+        try {
+            await navigator.clipboard.writeText(value);
+        }
+        catch {
+            const area = document.createElement("textarea");
+            area.value = value;
+            area.setAttribute("readonly", "");
+            area.style.position = "fixed";
+            area.style.opacity = "0";
+            document.body.appendChild(area);
+            area.select();
+            document.execCommand("copy");
+            area.remove();
+        }
+        setCopied(true);
+        if (button.current && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            gsap.fromTo(button.current, { scale: 0.86 }, { scale: 1, duration: 0.55, ease: "back.out(3)", clearProps: "transform" });
+        }
+        window.clearTimeout(timer.current);
+        timer.current = window.setTimeout(() => setCopied(false), 1800);
+    }
+    return (<>
+      <button ref={button} type="button" className="copy-chip" data-copied={copied} aria-label={`Copy ${label}`} onClick={() => void copy()}>
+        {localizeText(copied ? "Copied ✓" : "Copy")}
+      </button>
+      <span className="sr-only" role="status">
+        {localizeText(copied ? `${label} copied to clipboard` : "")}
+      </span>
+    </>);
 }

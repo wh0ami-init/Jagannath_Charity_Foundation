@@ -1,17 +1,16 @@
-import { tr as t, localize } from "../i18n";
-import { useTranslation } from "react-i18next";
+import { tr as translateText, localize as localizeText, trError as translateError } from "../i18n";
+import { useTranslation as usePageTranslation } from "react-i18next";
 import { Link } from "wouter";
 
 export default function DataCollectionNotice({ showPolicyLink = false }: { showPolicyLink?: boolean }) {
-  useTranslation();
+  usePageTranslation();
   return (
     <div className="data-collection-notice">
-      <h3>{t("Data Collection & Consent Notice (DPDP Act, 2023)")}</h3>
-      <p><strong>{t("What data we collect:")}</strong> {" "}{t("If you submit a form, the Foundation stores the details you provide, such as your name, email, phone, message, volunteering interests, or pledge amount and cause. The website does not collect payment card details or PAN through its forms.")}</p>
-      <p><strong>{t("Why we process it:")}</strong> {" "}{t("Form details are used by the Foundation team to respond to messages, follow up on volunteer interest or pledges, and manage requests for programme updates. A pledge form records an expression of interest only; it does not make a payment.")}</p>
-      <p><strong>{t("Access and deletion:")}</strong> {" "}{t("Submissions are stored in the Foundation's website database and can be viewed by an authenticated site administrator. They remain there until an administrator deletes them. To request a copy, correction or deletion, or to withdraw consent, contact the Foundation at secretariatjagannathfoundation@gmail.com or +91 97006 43333.")}</p>
-      <p><strong>{t("Grievance Redressal:")}</strong> {" "}{t("To exercise your rights, withdraw consent, or raise a grievance, please contact our Grievance Officer at secretariatjagannathfoundation@gmail.com or +91 97006 43333. If your grievance is not resolved, you have the right to file a complaint with the Data Protection Board of India.")}</p>
-      {localize(showPolicyLink && <Link href="/privacy-policy" className="newsletter-privacy-link">{t("Read the full Privacy Policy")}{" "}<span aria-hidden="true">↗</span></Link>)}
+      <h3>{translateText("Data collection and consent")}</h3>
+      <p><strong>{translateText("What data we collect:")}</strong> {translateText("If you submit a form, the Foundation stores the details you provide, such as your name, email, phone, message, volunteering interests, or pledge amount and cause. The website does not collect payment card details or PAN through its forms.")}</p>
+      <p><strong>{translateText("Why we process it:")}</strong> {translateText("Form details help the Foundation respond to messages and service requests, follow up on volunteer interest or pledges, and record programme-update requests. A pledge records interest only; it does not make a payment. Programme emails are not sent automatically yet.")}</p>
+      <p><strong>{translateText("Access and deletion:")}</strong> {translateText("Submissions are stored in the Foundation's website database and are visible to authenticated administrators. They remain until an administrator deletes them. To request a copy, correction or deletion, withdraw consent, or raise a concern, contact secretariatjagannathfoundation@gmail.com or +91 97006 43333.")}</p>
+      {localizeText(showPolicyLink && <Link href="/privacy-policy" className="newsletter-privacy-link">{translateText("Read the full Privacy Policy")} <span aria-hidden="true">↗</span></Link>)}
     </div>
   );
 }

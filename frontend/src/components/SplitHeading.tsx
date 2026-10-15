@@ -37,9 +37,9 @@ export default function SplitHeading({
         onSplit: (self) =>
           gsap.from(self.lines, {
             yPercent: 110,
-            duration: 1.1,
+            duration: 1.4,
             ease: "power4.out",
-            stagger: 0.12,
+            stagger: 0.18,
             delay,
             scrollTrigger: { trigger: el, start, once: true },
           }),

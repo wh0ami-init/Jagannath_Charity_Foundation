@@ -1,5 +1,5 @@
-import { tr as t, localize } from "../i18n";
-import { useTranslation } from "react-i18next";
+import { tr as translateText, localize as localizeText, trError as translateError } from "../i18n";
+import { useTranslation as usePageTranslation } from "react-i18next";
 import { useEffect, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -11,14 +11,14 @@ import { DynamicImage } from "../lib/ImagesContext";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-/* which photo slot each programme uses (admin panel can replace them) */
+/* Curated community photos used to illustrate each programme. */
 const photoSlot: Record<string, string> = {
-  "education-literacy": "work-education",
-  "health-family-welfare": "work-health",
-  "youth-skills-sport": "work-youth",
-  "women-livelihoods": "work-livelihoods",
-  "environment-land": "work-environment",
-  "solar-clean-energy": "work-solar",
+  "education-literacy": "community-work-education",
+  "health-family-welfare": "community-work-health",
+  "youth-skills-sport": "community-work-youth",
+  "women-livelihoods": "community-work-livelihoods",
+  "environment-land": "community-work-environment",
+  "solar-clean-energy": "community-work-solar",
 };
 
 const programmes = [
@@ -141,7 +141,7 @@ const programmes = [
 type Programme = (typeof programmes)[number];
 
 function ProgrammeCard({ p, index }: { p: Programme; index: number }) {
-  useTranslation();
+  usePageTranslation();
   const card = useRef<HTMLElement>(null);
   const fromRight = index % 2 === 1;
 
@@ -168,8 +168,8 @@ function ProgrammeCard({ p, index }: { p: Programme; index: number }) {
         )
         .fromTo(
           q(".wp-img"),
-          { scale: 1.4 },
-          { scale: 1.12, duration: 1.8, ease: "power2.out" },
+          { scale: 1.12, filter: "brightness(.72)" },
+          { scale: 1, filter: "brightness(.84)", duration: 2.2, ease: "power2.out" },
           0.1,
         )
         .from(
@@ -177,22 +177,27 @@ function ProgrammeCard({ p, index }: { p: Programme; index: number }) {
           { autoAlpha: 0, scale: 0.6, duration: 0.7, ease: "back.out(1.8)" },
           0.9,
         )
-        // 3) text comes in one by one (same fonts, same sizes - only movement)
+        // Hold on the photo, then reveal the glass content panel.
+        .from(
+          q(".wp-content-panel"),
+          { autoAlpha: 0, y: 42, scale: 0.975, duration: 0.95, ease: "power3.out" },
+          1.9,
+        )
+        // 4) bring the main copy up and the activity panel in from the right.
         .from(
           q(".wp-text > *"),
-          { autoAlpha: 0, y: 26, duration: 0.8, stagger: 0.09 },
-          0.55,
+          { autoAlpha: 0, y: 22, duration: 0.72, stagger: 0.08 },
+          2.15,
         )
-        // 4) the side box and its list items
         .from(
           q(".wp-aside"),
-          { autoAlpha: 0, x: fromRight ? -30 : 30, duration: 0.9 },
-          0.75,
+          { autoAlpha: 0, x: 64, duration: 0.9, ease: "power3.out" },
+          2.1,
         )
         .from(
           q(".wp-aside li"),
-          { autoAlpha: 0, x: 18, duration: 0.6, stagger: 0.08 },
-          1.0,
+          { autoAlpha: 0, x: 18, duration: 0.56, stagger: 0.07 },
+          2.35,
         );
 
       // 5) parallax: photo moves slowly while you scroll past
@@ -218,62 +223,60 @@ function ProgrammeCard({ p, index }: { p: Programme; index: number }) {
     <article
       ref={card}
       id={`programme-${p.slug}`}
-      className="work-programme-card rounded-2xl border border-navy-900/10 bg-white p-5 shadow-[0_12px_36px_rgba(24,55,47,.045)] sm:p-7 lg:p-8"
+      className="work-programme-card rounded-2xl border border-navy-900/10 p-5 shadow-[0_12px_36px_rgba(24,55,47,.045)] sm:p-7 lg:p-8"
     >
       <div className="wp-photo">
         <DynamicImage
           slotKey={photoSlot[p.slug]}
-          alt={localize(p.title)}
+          alt={localizeText(p.title)}
           className="wp-img"
+          preferLocal
         />
-        <span className="wp-badge work-index">{localize(p.num)}</span>
+        <span className="wp-badge work-index">{localizeText(p.num)}</span>
       </div>
 
-      <div className="grid gap-7 lg:grid-cols-[1.02fr_.98fr] lg:gap-9">
+      <div className="wp-content-panel grid gap-7 lg:grid-cols-[1.02fr_.98fr] lg:gap-9">
         <div className="wp-text py-1">
           <p className="mb-2 text-sm font-semibold tracking-wide text-orange-600">
-            {localize(p.num)} <span className="text-navy-900/35">/ 06</span>
+            {localizeText(p.num)} <span className="text-navy-900/35">/ 06</span>
           </p>
           <h2 className="font-serif-heading text-2xl font-bold text-navy-950 sm:text-3xl">
-            {localize(p.title)}
+            {localizeText(p.title)}
           </h2>
           <p className="mt-4 text-lg font-semibold leading-7 text-navy-950">
-            {localize(p.lead)}
+            {localizeText(p.lead)}
           </p>
           <div className="mt-4 space-y-4 text-sm leading-7 text-navy-900/70 sm:text-base">
-            {localize(p.paragraphs.map((paragraph) => (
-              <p key={paragraph}>{localize(paragraph)}</p>
+            {localizeText(p.paragraphs.map((paragraph) => (
+              <p key={paragraph}>{localizeText(paragraph)}</p>
             )))}
           </div>
         </div>
 
         <aside
-          className="wp-aside rounded-xl border border-navy-900/10 bg-[#f8f7f2] p-5 sm:p-6"
-          aria-label={t("{{name}} potential activities and intended audience", { name: t(p.title) })}
+          className="wp-aside"
+          aria-label={localizeText(`${p.title} potential activities and intended audience`)}
         >
-          <h3 className="font-serif-heading text-xl font-semibold text-navy-950">
-            {t("Potential areas of work")}</h3>
+          <h3 className="font-serif-heading text-xl font-semibold text-navy-950"> {translateText("Potential areas of work")} </h3>
           <ul className="mt-3 divide-y divide-navy-900/10">
-            {localize(p.activities.map((activity) => (
+            {localizeText(p.activities.map((activity) => (
               <li
                 key={activity}
                 className="py-3 text-sm leading-6 text-navy-900/75"
               >
-                {localize(activity)}
+                {localizeText(activity)}
               </li>
             )))}
           </ul>
           <p className="mt-4 text-sm leading-6 text-navy-900/75">
-            <strong className="font-semibold text-navy-950">
-              {t("Intended focus.")}{localize(" ")}
+            <strong className="font-semibold text-navy-950"> {translateText("Intended focus.")}{localizeText(" ")}
             </strong>
-            {localize(p.audience)}
+            {localizeText(p.audience)}
           </p>
           <a
             href="/contact"
             className="programme-contact-button group mt-5 inline-flex min-h-11 items-center rounded-full border border-navy-900/40 px-5 text-sm font-medium text-navy-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-700"
-          >
-            {t("Ask about this programme")}{localize(" ")}
+          > {translateText("Ask about this programme")}{localizeText(" ")}
             <span
               className="programme-contact-arrow ml-2 inline-block"
               aria-hidden="true"
@@ -288,7 +291,7 @@ function ProgrammeCard({ p, index }: { p: Programme; index: number }) {
 }
 
 export default function Programmes() {
-  useTranslation();
+  usePageTranslation();
   useEffect(() => {
     const targetId = decodeURIComponent(window.location.hash.slice(1));
     if (!targetId.startsWith("programme-")) return;
@@ -326,27 +329,24 @@ export default function Programmes() {
       <PageHero
         theme="work"
         motif="programmes"
-        eyebrow={t("Focus areas")}
-        title={t("Six programme areas, planned with care.")}
-        description={t("These six areas guide the Foundation’s programme planning. Specific activities, locations and delivery partners will be published as they are confirmed.")}
+        eyebrow={translateText("Focus areas")}
+        title={translateText("Six programme areas, planned with care.")}
+        description={translateText("These six areas guide the Foundation’s programme planning. Specific activities, locations and delivery partners will be published as they are confirmed.")}
       />
 
-      <Reveal as="section" className="wrap pt-10" aria-label={t("Programme status")}>
-        <p className="max-w-3xl border-l-2 border-orange-500 pl-4 text-sm leading-6 text-navy-900/65">
-          {t("Programme areas describe the Foundation’s intended focus; they are not a count of completed projects or beneficiaries. See")}{localize(" ")}
+      <Reveal as="section" className="wrap pt-10" aria-label={translateText("Programme status")}>
+        <p className="max-w-3xl border-l-2 border-orange-500 pl-4 text-sm leading-6 text-navy-900/65"> {translateText("Programme areas describe the Foundation’s intended focus; they are not a count of completed projects or beneficiaries. See")}{localizeText(" ")}
           <a
             className="font-semibold text-navy-950 underline underline-offset-4"
             href="/projects"
-          >
-            {t("Projects")}</a>{localize(" ")}
-          {t("for named initiatives and their current status.")}</p>
+          > {translateText("Projects")} </a>{localizeText(" ")} {translateText("for named initiatives and their current status.")} </p>
       </Reveal>
 
       <section
         className="wrap space-y-7 py-16 md:space-y-9 md:py-20"
-        aria-label={t("Programme areas")}
+        aria-label={translateText("Programme areas")}
       >
-        {localize(programmes.map((p, i) => (
+        {localizeText(programmes.map((p, i) => (
           <ProgrammeCard key={p.num} p={p} index={i} />
         )))}
       </section>

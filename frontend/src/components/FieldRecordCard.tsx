@@ -1,5 +1,5 @@
-import { tr as t, localize } from "../i18n";
-import { useTranslation } from "react-i18next";
+import { tr as translateText, localize as localizeText, trError as translateError } from "../i18n";
+import { useTranslation as usePageTranslation } from "react-i18next";
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -23,7 +23,7 @@ export default function FieldRecordCard({
   description,
   photos,
 }: FieldRecordCardProps) {
-  useTranslation();
+  usePageTranslation();
   const root = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion();
 
@@ -35,6 +35,7 @@ export default function FieldRecordCard({
       // 1) Card intro: label, drawing line, title, description
       gsap
         .timeline({
+          delay: 0.16,
           defaults: { ease: "power3.out" },
           scrollTrigger: { trigger: el, start: "top 82%", once: true },
         })
@@ -80,7 +81,7 @@ export default function FieldRecordCard({
         onEnter: (batch) => {
           batch.forEach((fig, i) => {
             gsap
-              .timeline({ delay: i * 0.14, defaults: { ease: "power3.out" } })
+              .timeline({ delay: 0.24 + i * 0.22, defaults: { ease: "power3.out" } })
               .to(fig, { autoAlpha: 1, y: 0, duration: 0.9 }, 0)
               .to(
                 fig.querySelector(".fr-clip"),
@@ -95,7 +96,7 @@ export default function FieldRecordCard({
               .to(
                 fig.querySelector(".fr-caption"),
                 { autoAlpha: 1, y: 0, duration: 0.8 },
-                0.55,
+                0.75,
               );
           });
         },
@@ -110,8 +111,7 @@ export default function FieldRecordCard({
       className="rounded-2xl border border-navy-900/10 bg-white/80 p-6 sm:p-8"
     >
       <div className="flex items-center gap-4">
-        <span className="fr-number text-xs font-semibold uppercase tracking-[.19em] text-orange-600">
-          {t("Record")}{" "}{localize(String(index + 1).padStart(2, "0"))}
+        <span className="fr-number text-xs font-semibold uppercase tracking-[.19em] text-orange-600"> {translateText("Record")} {localizeText(String(index + 1).padStart(2, "0"))}
         </span>
         <span
           className="fr-line h-px flex-1 bg-navy-900/15"
@@ -120,14 +120,14 @@ export default function FieldRecordCard({
       </div>
 
       <h3 className="fr-title mt-4 font-serif-heading text-xl font-bold text-navy-950 sm:text-2xl">
-        {localize(title)}
+        {localizeText(title)}
       </h3>
       <p className="fr-desc mt-3 max-w-4xl leading-7 text-navy-900/70">
-        {localize(description)}
+        {localizeText(description)}
       </p>
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {localize(photos.map(([image, alt, caption]) => (
+        {localizeText(photos.map(([image, alt, caption]) => (
           <figure
             key={image}
             className="fr-photo group overflow-hidden rounded-xl border border-navy-900/10 bg-[#f8f7f2]"
@@ -135,15 +135,15 @@ export default function FieldRecordCard({
             <div className="fr-clip aspect-[4/3] overflow-hidden">
               <div className="fr-zoom h-full w-full">
                 <img
-                  src={`/images/activities/${image}.jpg`}
-                  alt={localize(alt)}
+                  src={`/images/activities/${image}.webp`}
+                  alt={localizeText(alt)}
                   loading="lazy"
                   className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                 />
               </div>
             </div>
             <figcaption className="fr-caption px-4 py-3 text-sm leading-6 text-navy-900/70">
-              {localize(caption)}
+              {localizeText(caption)}
             </figcaption>
           </figure>
         )))}

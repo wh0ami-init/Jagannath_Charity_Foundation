@@ -1,6 +1,7 @@
-import { tr as t, localize, trError } from "../i18n";
-import { useTranslation } from "react-i18next";
+import { tr as translateText, localize as localizeText, trError as translateError } from "../i18n";
+import { useTranslation as usePageTranslation } from "react-i18next";
 import { useState, FormEvent } from "react";
+import { Link } from "wouter";
 import Layout from "../components/Layout";
 import PageHero from "../components/PageHero";
 import Reveal from "../components/Reveal";
@@ -8,7 +9,7 @@ import { submissionPayload, submitForm } from "../lib/api";
 import Stagger from "../components/Stagger";
 
 export default function Contact() {
-  useTranslation();
+  usePageTranslation();
   const [consent, setConsent] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
@@ -37,40 +38,35 @@ export default function Contact() {
       <PageHero
         theme="contact"
         motif="place"
-        eyebrow={t("Contact")}
-        title={t("Trust headquarters, Bhubaneswar.")}
-        description={t("Programme questions, volunteering, membership and press all come to the same desk. If it is urgent, call. If it can wait, use the form.")}
+        eyebrow={translateText("Contact")}
+        title={translateText("Trust headquarters, Bhubaneswar.")}
+        description={translateText("Programme questions, volunteering, membership and press all come to the same desk. If it is urgent, call. If it can wait, use the form.")}
       />
 
       <Reveal as="section" className="wrap py-16 grid lg:grid-cols-2 gap-12">
         <div className="contact-details-column">
           <dl className="space-y-5 text-sm">
             <div>
-              <dt className="text-navy-900/50">{t("Telephone")}</dt>
+              <dt className="text-navy-900/50">{translateText("Telephone")}</dt>
               <dd className="font-medium">
                 <a href="tel:+919700643333">+91 97006 43333</a>
               </dd>
             </div>
             <div>
-              <dt className="text-navy-900/50">{t("Email")}</dt>
+              <dt className="text-navy-900/50">{translateText("Email")}</dt>
               <dd className="font-medium">
-                <a href="mailto:chairman@jagannathfoundation.charity">
-                  {t("chairman@jagannathfoundation.charity")}</a>
+                <a href="mailto:chairman@jagannathfoundation.charity"> {translateText("chairman@jagannathfoundation.charity")} </a>
                 <br />
-                <a href="mailto:secretariatjagannathfoundation@gmail.com">
-                  {t("secretariatjagannathfoundation@gmail.com")}</a>
+                <a href="mailto:secretariatjagannathfoundation@gmail.com"> {translateText("secretariatjagannathfoundation@gmail.com")} </a>
               </dd>
             </div>
             <div>
-              <dt className="text-navy-900/50">{t("Trust house")}</dt>
-              <dd className="font-medium">
-                {t("Foundation House, Raj Bhavan")}<br />
-                {t("Tapaswini Colony, Near Z1, Nandan Kanan Road")}<br />
-                {t("Bhubaneswar, Khordha 751024")}</dd>
+              <dt className="text-navy-900/50">{translateText("Trust house")}</dt>
+              <dd className="font-medium"> {translateText("Foundation House, Raj Bhavan")} <br /> {translateText("Tapaswini Colony, Near Z1, Nandan Kanan Road")} <br /> {translateText("Bhubaneswar, Khordha 751024")} </dd>
             </div>
             <div>
-              <dt className="text-navy-900/50">{t("Web")}</dt>
-              <dd className="font-medium">{t("www.jagannathfoundation.charity")}</dd>
+              <dt className="text-navy-900/50">{translateText("Web")}</dt>
+              <dd className="font-medium">{translateText("www.jagannathfoundation.charity")}</dd>
             </div>
           </dl>
 
@@ -78,34 +74,27 @@ export default function Contact() {
             id="press-media"
             className="press-media mt-10 scroll-mt-28 border-t border-navy-900/15 pt-7"
           >
-            <p className="text-xs font-semibold uppercase tracking-[.18em] text-orange-600">
-              {t("Press & media")}</p>
-            <h2 className="mt-2 font-serif-heading text-2xl font-bold text-navy-950">
-              {t("For the press")}</h2>
-            <p className="mt-3 text-base leading-7 text-navy-900/70">
-              {t("For media queries, interview requests and field visits, contact the secretariat. Please mark your subject line clearly so the right person can respond.")}</p>
+            <p className="text-xs font-semibold uppercase tracking-[.18em] text-orange-600"> {translateText("Press & media")} </p>
+            <h2 className="mt-2 font-serif-heading text-2xl font-bold text-navy-950"> {translateText("For the press")} </h2>
+            <p className="mt-3 text-base leading-7 text-navy-900/70"> {translateText("For media queries, interview requests and field visits, contact the secretariat. Please mark your subject line clearly so the right person can respond.")} </p>
             <dl className="mt-5 space-y-4 text-sm">
               <div>
-                <dt className="text-navy-900/55">{t("Media desk")}</dt>
+                <dt className="text-navy-900/55">{translateText("Media desk")}</dt>
                 <dd className="font-semibold">
-                  <a href="mailto:secretariatjagannathfoundation@gmail.com">
-                    {t("secretariatjagannathfoundation@gmail.com")}</a>
+                  <a href="mailto:secretariatjagannathfoundation@gmail.com"> {translateText("secretariatjagannathfoundation@gmail.com")} </a>
                 </dd>
               </div>
               <div>
-                <dt className="text-navy-900/55">{t("Chairman")}</dt>
+                <dt className="text-navy-900/55">{translateText("Chairman")}</dt>
                 <dd className="font-semibold">
-                  <a href="mailto:chairman@jagannathfoundation.charity">
-                    {t("chairman@jagannathfoundation.charity")}</a>
+                  <a href="mailto:chairman@jagannathfoundation.charity"> {translateText("chairman@jagannathfoundation.charity")} </a>
                   <span className="px-2 text-navy-900/35">·</span>
                   <a href="tel:+919700643333">+91 97006 43333</a>
                 </dd>
               </div>
             </dl>
             <p className="mt-5 text-sm leading-6 text-navy-900/65">
-              <span className="font-semibold text-navy-950">
-                {t("Suggested subjects:")}</span>{localize(" ")}
-              {t("Media query · Interview request · Field visit")}</p>
+              <span className="font-semibold text-navy-950"> {translateText("Suggested subjects:")} </span>{localizeText(" ")} {translateText("Media query · Interview request · Field visit")} </p>
           </aside>
         </div>
 
@@ -116,28 +105,25 @@ export default function Contact() {
           gap={0.07}
           distance={16}
         >
-          <h2 className="text-xl font-serif-heading font-bold text-navy-950">
-            {t("Send a message")}</h2>
-          {localize(submitted ? (
-            <p className="form-success text-sm text-navy-900" role="status">
-              {t("Message received. The Foundation can follow up using your contact details.")}</p>
+          <h2 className="text-xl font-serif-heading font-bold text-navy-950"> {translateText("Send a message")} </h2>
+          {localizeText(submitted ? (
+            <p className="form-success text-sm text-navy-900" role="status"> {translateText("Message received. The Foundation can follow up using your contact details.")} </p>
           ) : (
             <>
-              {localize(error && (
+              {localizeText(error && (
                 <p className="form-error" role="alert">
-                  {trError(error)}
+                  {translateError(error)}
                 </p>
               ))}
-              <Field name="name" label={t("Full name")} required />
-              <Field name="email" label={t("Email")} type="email" required />
-              <Field name="phone" label={t("Phone")} type="tel" />
-              <Field name="subject" label={t("Subject")} />
+              <Field name="name" label={translateText("Full name")} required />
+              <Field name="email" label={translateText("Email")} type="email" required />
+              <Field name="phone" label={translateText("Phone")} type="tel" />
+              <Field name="subject" label={translateText("Subject")} />
               <div>
                 <label
                   htmlFor="contact-message"
                   className="text-sm font-medium block mb-1"
-                >
-                  {t("Message")}</label>
+                > {translateText("Message")} </label>
                 <textarea
                   id="contact-message"
                   name="message"
@@ -147,7 +133,7 @@ export default function Contact() {
                 />
               </div>
               <div className="form-honeypot" aria-hidden="true">
-                <label htmlFor="contact-website">{t("Leave this field blank")}</label>
+                <label htmlFor="contact-website">{translateText("Leave this field blank")}</label>
                 <input
                   id="contact-website"
                   name="website"
@@ -164,15 +150,15 @@ export default function Contact() {
                   onChange={(e) => setConsent(e.target.checked)}
                   className="mt-0.5"
                 />
-                <span>
-                  {t("I have read and understood the Data Collection & Consent Notice (DPDP Act, 2023) and give my specific and informed consent to Jagannath Foundation to process my personal data for the stated purposes.")}</span>
+                <span> {translateText("I consent to Jagannath Foundation using these details to respond to my message.")} </span>
               </label>
+              <p className="text-xs text-navy-900/60">{translateText("Read our")} <Link className="underline" href="/privacy-policy">{translateText("privacy policy")}</Link>.</p>
               <button
                 type="submit"
                 disabled={sending}
                 className="bg-orange-500 hover:bg-orange-400 disabled:opacity-60 text-white px-5 py-2 rounded-full text-sm font-semibold"
               >
-                {localize(sending ? "Sending…" : "Send message")}
+                {localizeText(sending ? "Sending…" : "Send message")}
               </button>
             </>
           ))}
@@ -193,14 +179,14 @@ function Field({
   type?: string;
   required?: boolean;
 }) {
-  useTranslation();
+  usePageTranslation();
   return (
     <div>
       <label
         htmlFor={`contact-${name}`}
         className="text-sm font-medium block mb-1"
       >
-        {localize(label)}
+        {localizeText(label)}
       </label>
       <input
         id={`contact-${name}`}

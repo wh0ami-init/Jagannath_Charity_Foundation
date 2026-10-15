@@ -1,20 +1,141 @@
-import { tr as t, localize } from "../i18n";
-import { useTranslation } from "react-i18next";
+import { tr as translateText, localize as localizeText, trError as translateError } from "../i18n";
+import { useTranslation as usePageTranslation } from "react-i18next";
+import type { ReactNode } from "react";
 import Layout from "../components/Layout";
-import DataCollectionNotice from "../components/DataCollectionNotice";
 import PageHero from "../components/PageHero";
 import Reveal from "../components/Reveal";
-
+import "./privacy.css";
+const contents = [
+    ["information", "Information you share"],
+    ["purposes", "How we use it"],
+    ["payments", "Payments"],
+    ["sharing", "Who can access it"],
+    ["retention", "Storage & retention"],
+    ["security", "Security & cookies"],
+    ["your-choices", "Your choices"],
+    ["children", "Children’s privacy"],
+    ["changes", "Policy updates"],
+] as const;
 export default function Privacy() {
-  useTranslation();
-  return (
-    <Layout hideNewsletter>
-      <PageHero theme="privacy" motif="privacy" eyebrow={t("Privacy")} title={t("Privacy Policy")} description={t("How the Foundation handles the information you share through this website.")} />
-      <Reveal as="section" className="wrap py-16 max-w-3xl">
-        <div className="prose prose-sm max-w-none text-navy-900/80 space-y-4">
-          <DataCollectionNotice />
+    usePageTranslation();
+    return (<Layout hideNewsletter>
+      <div className="privacy-page">
+        <PageHero theme="privacy" motif="privacy" eyebrow={translateText("The Foundation")} title={translateText("Your information, handled with care.")} description={translateText("A plain-language guide to the personal information this website receives, why we use it, and how to contact us about it.")} facts={[
+            { value: "Only what you submit", label: "Collection" },
+            { value: "No advertising trackers", label: "Public pages" },
+            { value: "You can contact us", label: "Requests" },
+        ]}/>
+
+        <div className="wrap privacy-layout">
+          <aside className="privacy-sidebar" aria-label={translateText("Privacy policy contents")}>
+            <div className="privacy-sidebar-card">
+              <p className="privacy-kicker">{translateText("On this page")}</p>
+              <nav>
+                {localizeText(contents.map(([id, label], index) => (<a href={`#${id}`} key={id}>
+                    <span>{localizeText(String(index + 1).padStart(2, "0"))}</span>{localizeText(label)}
+                  </a>)))}
+              </nav>
+              <p className="privacy-reviewed">{translateText("Last reviewed \u00B7 10 October 2026")}</p>
+            </div>
+          </aside>
+
+          <div className="privacy-content">
+            <Reveal className="privacy-opening">
+              <p className="privacy-kicker">{translateText("A clear promise")}</p>
+              <h2>{translateText("We ask for details to respond and keep the work moving.")}</h2>
+              <p>{translateText("The Foundation does not sell personal information. We limit its use to the request, pledge, volunteer interest or update request you send us, and to the operation and security of this website.")}</p>
+            </Reveal>
+
+            <PolicySection id="information" number="01" title={translateText("Information you share")}>
+              <p>{translateText("Depending on the form, you may choose to provide:")}</p>
+              <ul>
+                <li><strong>{translateText("Contact:")}</strong>{translateText("your name, email address, phone number, subject and message.")}</li>
+                <li><strong>{translateText("Volunteering:")}</strong>{translateText("contact details, district or city, skills and the interests you describe.")}</li>
+                <li><strong>{translateText("Pledges:")}</strong>{translateText("contact details, a named cause and an optional pledge amount. A pledge is an expression of interest, not a payment.")}</li>
+                <li><strong>{translateText("Programme updates:")}</strong>{translateText("your email address and consent to be contacted. Update emails are not sent automatically by the current site.")}</li>
+                <li><strong>{translateText("Community portal requests:")}</strong>{translateText("contact details, district or city, selected service and the message you send.")}</li>
+                <li><strong>{translateText("Beneficiary applications:")}</strong>{translateText("name, phone number, optional email and address, and the personal, location and support details you choose to include. If you separately opt in to the public directory, only the display name and support category you choose are shown. We do not accept identity document uploads through this form.")}</li>
+              </ul>
+              <p>{translateText("Forms ask for consent before submission; an email address is optional on beneficiary applications. Public directory inclusion is a separate choice and is off by default. Please avoid including sensitive information that is not needed to answer your request. If you email or call the Foundation directly, the details you choose to share are also received by the relevant team.")}</p>
+              <p>{translateText("For abuse prevention, the website\u2019s server temporarily processes network information such as an IP address when applying request limits. Hosting infrastructure may also handle technical request data under its own operating and security practices.")}</p>
+            </PolicySection>
+
+            <PolicySection id="purposes" number="02" title={translateText("How we use it")}>
+              <p>{translateText("We use submitted information to:")}</p>
+              <ul>
+                <li>{translateText("reply to messages and community service requests;")}</li>
+                <li>{translateText("follow up on volunteer interest or a donation pledge;")}</li>
+                <li>{translateText("record a request for programme updates;")}</li>
+                <li>{translateText("maintain the website, prevent misuse and protect administrative access; and")}</li>
+                <li>{translateText("meet legal or accounting obligations where they apply.")}</li>
+              </ul>
+              <p>{translateText("We do not use a pledge as evidence that a payment has been made. We do not use the newsletter form to send recurring emails automatically at this time.")}</p>
+            </PolicySection>
+
+            <PolicySection id="payments" number="03" title={translateText("Payments")}>
+              <div className="privacy-callout">
+                <span className="privacy-callout-mark" aria-hidden="true">₹</span>
+                <p>
+                  <strong>{translateText("Razorpay mode controls whether a payment is real.")}</strong>{translateText("Test Mode is fixed at \u20B9100 and collects no real money. A live contribution is enabled only when the backend is explicitly configured with live Razorpay credentials. A payment receipt confirms payment; it is not a tax exemption certificate.")}</p>
+              </div>
+              <p>{translateText("The donation form asks for your name, email address, phone number, optional postal address, named cause and amount. The Foundation stores these details with the payment status and Razorpay payment identifiers. Email ownership is not separately verified. Razorpay processes the checkout and any recurring payment mandate under its own privacy terms. The website does not store card numbers, bank login credentials or PAN. A printable payment receipt is shown after server confirmation; it is not an official Form 10BE tax certificate.")}</p>
+              <p>{translateText("Bank transfers are arranged directly by you through your bank. Email the Foundation to identify a bank transfer or request a receipt. Any applicable tax certificate is handled separately under the rules that apply.")}</p>
+            </PolicySection>
+
+            <PolicySection id="sharing" number="04" title={translateText("Who can access it")}>
+              <p>{translateText("Form submissions are available to authenticated Foundation administrators so they can respond and manage requests. Service providers may process technical information to host, secure and deliver the site. Google Fonts is loaded from Google\u2019s font service, and Razorpay is contacted when someone starts checkout or authorizes a monthly mandate.")}</p>
+              <p>{translateText("We do not sell personal information or share it for advertising. We may disclose information if required by law or to protect the website, its users or the Foundation from misuse.")}</p>
+            </PolicySection>
+
+            <PolicySection id="retention" number="05" title={translateText("Storage & retention")}>
+              <p>{translateText("Form submissions are stored in the website database and remain there until an authorized administrator deletes them. The administrator can remove a submission from the site inbox. Copies held in infrastructure backups may remain until those backups expire under the relevant provider\u2019s schedule.")}</p>
+              <p>{translateText("Payment records are currently test transactions. The application does not yet apply an automatic deletion schedule to them. The Foundation should set a retention period before enabling live online donations.")}</p>
+            </PolicySection>
+
+            <PolicySection id="security" number="06" title={translateText("Security & cookies")}>
+              <p>{translateText("The site uses authenticated administrator access and technical safeguards intended to protect the information it stores. No internet service can promise that transmission or storage is risk-free; please contact us if you believe your information has been exposed.")}</p>
+              <p>{translateText("Public pages do not currently use advertising or analytics trackers. An essential, HTTP-only session cookie is used when an administrator signs in. The browser may also contact external services that provide site fonts or payment checkout.")}</p>
+            </PolicySection>
+
+            <PolicySection id="your-choices" number="07" title={translateText("Your choices")}>
+              <p>{translateText("You can choose not to submit a form. You may also ask us to provide a copy of information you sent, correct it, delete it or stop using it for a request. If you asked for programme updates, you can withdraw that request. We will review and handle requests under the requirements that apply.")}</p>
+              <p>{translateText("Contact the Foundation at")}<a href="mailto:secretariatjagannathfoundation@gmail.com">{translateText("secretariatjagannathfoundation@gmail.com")}</a>{translateText("or")}<a href="tel:+919700643333">+91 97006 43333</a>{translateText(". Please tell us which form or request you are referring to so we can locate it.")}</p>
+            </PolicySection>
+
+            <PolicySection id="children" number="08" title={translateText("Children\u2019s privacy")}>
+              <p>{translateText("A parent or authorized guardian should submit a beneficiary application on behalf of a child. Please do not submit a child\u2019s personal details unless you are authorized to do so. If you believe a child\u2019s information was sent to us by mistake, contact the Foundation and ask us to review it.")}</p>
+            </PolicySection>
+
+            <PolicySection id="changes" number="09" title={translateText("Policy updates")}>
+              <p>{translateText("We may update this notice when the website or its data practices change. The review date at the top of this page shows the latest revision. If a change affects a form\u2019s purpose or the information it asks for, the form notice should be updated as well.")}</p>
+            </PolicySection>
+
+            <Reveal className="privacy-contact-card">
+              <div>
+                <p className="privacy-kicker">{translateText("Questions or requests")}</p>
+                <h2>{translateText("Talk to the Foundation.")}</h2>
+                <p>{translateText("Include the email address you used and the type of request you sent. We\u2019ll route it to the right person.")}</p>
+              </div>
+              <div className="privacy-contact-actions">
+                <a href="mailto:secretariatjagannathfoundation@gmail.com">{translateText("Email the secretariat")}<span aria-hidden="true">↗</span></a>
+                <a href="tel:+919700643333">{translateText("Call +91 97006 43333")}</a>
+              </div>
+            </Reveal>
+          </div>
         </div>
-      </Reveal>
-    </Layout>
-  );
+      </div>
+    </Layout>);
+}
+function PolicySection({ id, number, title, children, }: {
+    id: string;
+    number: string;
+    title: string;
+    children: ReactNode;
+}) {
+    usePageTranslation();
+    return (<Reveal as="section" className="privacy-policy-section" aria-labelledby={`${id}-heading`}>
+      <p className="privacy-kicker">{localizeText(number)}{translateText("\u00B7 Privacy practice")}</p>
+      <h2 id={`${id}-heading`}>{localizeText(title)}</h2>
+      <div className="privacy-policy-copy" id={id}>{localizeText(children)}</div>
+    </Reveal>);
 }

@@ -23,7 +23,14 @@ def ensure_image_slots(db: Session):
                 continue
             expected_filename = f"{slot_key}{seed_path.suffix.lower()}"
             current_upload = UPLOAD_DIR / existing.file_path
-            is_seeded_slot = existing.file_path in {expected_filename, "placeholder.jpg"}
+            legacy_logo = slot_key == "site-logo" and existing.file_path in {
+                "site-logo.png",
+                "site-logo.svg",
+            }
+            is_seeded_slot = (
+                existing.file_path in {expected_filename, "placeholder.jpg"}
+                or legacy_logo
+            )
             upload_is_missing = not current_upload.is_file()
 
             # Restore a seed image for placeholders, seeded slots, and uploads

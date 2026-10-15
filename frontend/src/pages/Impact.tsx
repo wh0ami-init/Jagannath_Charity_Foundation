@@ -1,3 +1,5 @@
+import { tr as translateText, localize as localizeText, trError as translateError } from "../i18n";
+import { useTranslation as usePageTranslation } from "react-i18next";
 import { tr as t, localize } from "../i18n";
 import { useTranslation } from "react-i18next";
 import Layout from "../components/Layout";
@@ -132,6 +134,7 @@ const fieldRecords = [
 ] as const;
 
 export default function Impact() {
+  usePageTranslation();
   useTranslation();
   return (
     <Layout>

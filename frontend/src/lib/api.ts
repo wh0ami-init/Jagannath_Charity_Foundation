@@ -1,35 +1,57 @@
-export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8010";
+const configuredApiUrl = import.meta.env.VITE_API_URL?.trim();
+// The localhost fallback is useful during local development, but a production
+// build without VITE_API_URL should use same-origin API routes instead of
+// accidentally sending visitors' browsers to their own localhost.
+export const API_URL = (
+  configuredApiUrl || (import.meta.env.DEV ? "http://localhost:8010" : "")
+).replace(/\/+$/, "");
 
 export function apiUrl(path: string) {
   return `${API_URL}${path}`;
 }
 
-const TOKEN_KEY = "jf_admin_token";
+// The admin session lives in an HttpOnly cookie that JavaScript cannot read.
+// The CSRF token is kept only in memory and restored from /api/auth/me after a refresh.
+let csrfToken: string | null = null;
 
-export function getToken() {
-  return localStorage.getItem(TOKEN_KEY);
-}
+// Remove any token saved in localStorage by earlier versions of the site.
+try { localStorage.removeItem("jf_admin_token"); } catch { /* storage unavailable */ }
 
-export function setToken(token: string) {
-  localStorage.setItem(TOKEN_KEY, token);
-}
-
-export function clearToken() {
-  localStorage.removeItem(TOKEN_KEY);
+function csrfHeaders(): Record<string, string> {
+  return csrfToken ? { "X-CSRF-Token": csrfToken } : {};
 }
 
 export async function login(username: string, password: string) {
   const res = await fetch(apiUrl("/api/auth/login"), {
     method: "POST",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password }),
   });
+  if (res.status === 429) {
+    const error = await res.json().catch(() => null);
+    throw new Error(error?.detail || "Too many login attempts. Please try again later.");
+  }
   if (!res.ok) {
     throw new Error("Invalid username or password");
   }
   const data = await res.json();
-  setToken(data.access_token);
+  csrfToken = data.csrf_token;
   return data;
+}
+
+/** Checks the cookie session and restores the CSRF token. Throws if not signed in. */
+export async function fetchSession() {
+  const res = await fetch(apiUrl("/api/auth/me"), { credentials: "include" });
+  if (!res.ok) throw new Error("Session expired");
+  const data = await res.json();
+  csrfToken = data.csrf_token;
+  return data as { username: string };
+}
+
+export async function logout() {
+  csrfToken = null;
+  await fetch(apiUrl("/api/auth/logout"), { method: "POST", credentials: "include" }).catch(() => undefined);
 }
 
 export interface ImageSlot {
@@ -39,13 +61,14 @@ export interface ImageSlot {
   alt_text: string;
   url: string;
   updated_at: string;
+  category?: "national" | "public" | "regional" | "culture" | null;
 }
 
 export type SiteContent = Record<string, { label: string; page: string; value: string }>;
 
 export interface FormSubmission {
   id: number;
-  kind: "contact" | "volunteer" | "pledge" | "newsletter" | "service";
+  kind: "contact" | "volunteer" | "pledge" | "newsletter" | "service" | "beneficiary";
   name: string;
   email: string;
   phone: string;
@@ -56,6 +79,80 @@ export interface FormSubmission {
   amount: number | null;
   cause: string;
   created_at: string;
+}
+
+export interface BeneficiaryApplicationPayload {
+  full_name: string;
+  gender: string;
+  date_of_birth: string | null;
+  father_name: string;
+  caste_category: string;
+  phone: string;
+  email: string;
+  address: string;
+  state: string;
+  district: string;
+  beneficiary_category: string;
+  other_category: string;
+  reason: string;
+  consent: boolean;
+  public_listing: boolean;
+  public_display_name: string;
+  website: string;
+}
+
+export interface PublicBeneficiary {
+  id: string;
+  display_name: string;
+  category: string;
+  status: "active";
+}
+
+export async function submitBeneficiaryApplication(payload: BeneficiaryApplicationPayload) {
+  const res = await fetch(apiUrl("/api/beneficiaries/applications"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ detail: "Your application could not be saved." }));
+    const detail = Array.isArray(error.detail) ? error.detail[0]?.msg : error.detail;
+    throw new Error(detail || "Your application could not be saved.");
+  }
+  return res.json() as Promise<{ received: boolean; listed: boolean; id?: number }>;
+}
+
+export async function fetchPublicBeneficiaries(): Promise<PublicBeneficiary[]> {
+  const res = await fetch(apiUrl("/api/beneficiaries"));
+  if (!res.ok) throw new Error("Could not load the beneficiary directory");
+  return res.json();
+}
+
+export interface AdminDonation {
+  id: number; amount_paise: number; currency: string; status: string;
+  donor_name: string; donor_email: string; donor_phone: string; donor_address: string;
+  cause: string; order_id: string | null; payment_id: string | null;
+  created_at: string; paid_at: string | null;
+  refund_amount_paise: number; refunded_at: string | null;
+  subscription_id?: string | null;
+}
+
+export interface AdminRecurringDonation {
+  id: number; subscription_id: string; plan_id: string; amount_paise: number;
+  currency: string; status: string; donor_name: string; donor_email: string;
+  donor_phone: string; cause: string; created_at: string; updated_at: string;
+}
+
+export async function fetchDonations(): Promise<AdminDonation[]> {
+  const res = await fetch(apiUrl("/api/payments/admin/donations"), { credentials: "include" });
+  if (!res.ok) throw new Error("Could not load donations");
+  return res.json();
+}
+
+export async function fetchRecurringDonations(): Promise<AdminRecurringDonation[]> {
+  const res = await fetch(apiUrl("/api/payments/admin/subscriptions"), { credentials: "include" });
+  if (!res.ok) throw new Error("Could not load monthly mandates");
+  return res.json();
 }
 
 export function submissionPayload(form: HTMLFormElement, kind: FormSubmission["kind"]) {
@@ -93,9 +190,7 @@ export async function submitForm(payload: Record<string, string | number | boole
 }
 
 export async function fetchSubmissions(): Promise<FormSubmission[]> {
-  const res = await fetch(apiUrl("/api/submissions"), {
-    headers: { Authorization: `Bearer ${getToken()}` },
-  });
+  const res = await fetch(apiUrl("/api/submissions"), { credentials: "include" });
   if (!res.ok) throw new Error("Could not load the admin inbox");
   return res.json();
 }
@@ -103,7 +198,8 @@ export async function fetchSubmissions(): Promise<FormSubmission[]> {
 export async function deleteSubmission(id: number) {
   const res = await fetch(apiUrl(`/api/submissions/${id}`), {
     method: "DELETE",
-    headers: { Authorization: `Bearer ${getToken()}` },
+    credentials: "include",
+    headers: csrfHeaders(),
   });
   if (!res.ok) throw new Error("Could not delete this submission");
 }
@@ -117,7 +213,8 @@ export async function fetchContent(): Promise<SiteContent> {
 export async function updateContent(key: string, value: string) {
   const res = await fetch(apiUrl(`/api/content/${key}`), {
     method: "PUT",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
+    credentials: "include",
+    headers: { "Content-Type": "application/json", ...csrfHeaders() },
     body: JSON.stringify({ value }),
   });
   if (!res.ok) throw new Error("Could not save this update");
@@ -131,12 +228,12 @@ export async function fetchImages(): Promise<ImageSlot[]> {
 }
 
 export async function replaceImage(slotKey: string, file: File): Promise<ImageSlot> {
-  const token = getToken();
   const formData = new FormData();
   formData.append("file", file);
   const res = await fetch(apiUrl(`/api/images/${slotKey}`), {
     method: "POST",
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    credentials: "include",
+    headers: csrfHeaders(),
     body: formData,
   });
   if (!res.ok) {
@@ -144,4 +241,26 @@ export async function replaceImage(slotKey: string, file: File): Promise<ImageSl
     throw new Error(err.detail || "Upload failed");
   }
   return res.json();
+}
+
+export async function addGalleryImage(input: { label: string; alt_text: string; category: NonNullable<ImageSlot["category"]>; file: File }): Promise<ImageSlot> {
+  const form = new FormData();
+  form.append("label", input.label);
+  form.append("alt_text", input.alt_text);
+  form.append("category", input.category);
+  form.append("file", input.file);
+  const res = await fetch(apiUrl("/api/images"), { method: "POST", credentials: "include", headers: csrfHeaders(), body: form });
+  if (!res.ok) { const err = await res.json().catch(() => ({ detail: "Could not add this photo" })); throw new Error(err.detail || "Could not add this photo"); }
+  return res.json();
+}
+
+export async function updateGalleryImage(slotKey: string, input: { label: string; alt_text: string; category: NonNullable<ImageSlot["category"]> }): Promise<ImageSlot> {
+  const res = await fetch(apiUrl(`/api/images/${encodeURIComponent(slotKey)}`), { method: "PUT", credentials: "include", headers: { "Content-Type": "application/json", ...csrfHeaders() }, body: JSON.stringify(input) });
+  if (!res.ok) { const err = await res.json().catch(() => ({ detail: "Could not save this photo" })); throw new Error(err.detail || "Could not save this photo"); }
+  return res.json();
+}
+
+export async function deleteGalleryImage(slotKey: string): Promise<void> {
+  const res = await fetch(apiUrl(`/api/images/${encodeURIComponent(slotKey)}`), { method: "DELETE", credentials: "include", headers: csrfHeaders() });
+  if (!res.ok) { const err = await res.json().catch(() => ({ detail: "Could not delete this photo" })); throw new Error(err.detail || "Could not delete this photo"); }
 }

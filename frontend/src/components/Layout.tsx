@@ -1,3 +1,5 @@
+import { tr as translateText, localize as localizeText, trError as translateError } from "../i18n";
+import { useTranslation as usePageTranslation } from "react-i18next";
 import { tr as t, localize } from "../i18n";
 import { useTranslation } from "react-i18next";
 import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -19,6 +21,7 @@ export default function Layout({
   children: ReactNode;
   hideNewsletter?: boolean;
 }) {
+  usePageTranslation();
   useTranslation();
   const progressRef = useRef<HTMLDivElement>(null);
   const [showTop, setShowTop] = useState(false);

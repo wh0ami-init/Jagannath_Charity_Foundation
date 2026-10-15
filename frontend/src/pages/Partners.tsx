@@ -1,10 +1,11 @@
+import { tr as translateText, localize as localizeText, trError as translateError } from "../i18n";
+import { useTranslation as usePageTranslation } from "react-i18next";
 import { tr as t, localize } from "../i18n";
 import { useTranslation } from "react-i18next";
 import Layout from "../components/Layout";
 import PageHero from "../components/PageHero";
 import Reveal from "../components/Reveal";
 import Stagger from "../components/Stagger";
-import SplitHeading from "../components/SplitHeading";
 
 type IndexEntry = {
   name: string;
@@ -106,6 +107,7 @@ const partnerGroups: {
 ];
 
 export default function Partners() {
+  usePageTranslation();
   useTranslation();
   return (
     <Layout>
@@ -164,7 +166,7 @@ export default function Partners() {
             </div>
             <div className="partner-registration mt-7 lg:col-span-2">
               <p>
-                <strong>{t("CSR registration.")}</strong> {" "}{t("Jagannath Foundation is registered with the Ministry of Corporate Affairs to undertake CSR activities. Registration number")}{" "}<strong>{t("CSR00118119")}</strong>{localize(" ")}
+                <strong>{t("CSR registration.")}</strong> {localizeText(" ")}{t("Jagannath Foundation is registered with the Ministry of Corporate Affairs to undertake CSR activities. Registration number")}{localizeText(" ")}<strong>{t("CSR00118119")}</strong>{localize(" ")}
                 {t("(Form CSR-1 approved 21 September 2026, SRN AC6085516).")}</p>
               <p className="mt-2">
                 {t("Companies may use this number when routing funds under Section 135 of the Companies Act.")}</p>
@@ -191,7 +193,7 @@ export default function Partners() {
                 <header className="partner-index-heading grid gap-3 lg:grid-cols-[.72fr_1.28fr] lg:gap-16">
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-[.18em] text-orange-600">
-                      {localize(group.number)} {" "}{t("· Partnership category")}</p>
+                      {localize(group.number)} {localizeText(" ")}{t("· Partnership category")}</p>
                     <h2 className="mt-3 max-w-md font-serif-heading text-2xl font-bold text-navy-950 sm:text-3xl">
                       {localize(group.title)}
                     </h2>

@@ -1,14 +1,15 @@
-import { tr as t, localize } from "../i18n";
-import { useTranslation } from "react-i18next";
+import { tr as translateText, localize as localizeText, trError as translateError } from "../i18n";
+import { useTranslation as usePageTranslation } from "react-i18next";
 import { useState, FormEvent } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { submissionPayload, submitForm } from "../lib/api";
 import DataCollectionNotice from "./DataCollectionNotice";
 import Reveal from "./Reveal";
+import { Link } from "wouter";
 
 export default function Newsletter() {
-  useTranslation();
+  usePageTranslation();
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -34,12 +35,10 @@ export default function Newsletter() {
     <Reveal as="section" className="newsletter-section bg-navy-900 text-white">
       <div className="wrap py-14 grid gap-8 lg:grid-cols-2 items-center">
         <div className="newsletter-copy">
-          <p className="newsletter-eyebrow">{t("Stay informed")}</p>
-          <h2 className="newsletter-title">
-            {t("Programme notes,")}<br /><em>{t("not slogans.")}</em>
+          <p className="newsletter-eyebrow">{translateText("Stay informed")}</p>
+          <h2 className="newsletter-title"> {translateText("Programme notes,")}<br /><em>{translateText("not slogans.")}</em>
           </h2>
-          <p className="newsletter-description">
-            {t("Occasional updates on classrooms, camps, skills and household energy. You can withdraw consent at any time.")}</p>
+          <p className="newsletter-description"> {translateText("Occasional updates on classrooms, camps, skills and household energy. You can withdraw consent at any time.")} </p>
         </div>
         <motion.form
           onSubmit={handleSubmit}
@@ -49,14 +48,13 @@ export default function Newsletter() {
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: reducedMotion ? 0 : 1.35, delay: reducedMotion ? 0 : 0.24, ease: [0.22, 0.7, 0.2, 1] }}
         >
-          {localize(submitted ? (
-            <p className="form-success text-sm" role="status">{t("Your update request is saved. Programme emails are not sent automatically yet.")}</p>
+          {localizeText(submitted ? (
+            <p className="form-success text-sm" role="status">{translateText("Your update request is saved. Programme emails are not sent automatically yet.")}</p>
           ) : (
             <>
-              {localize(error && <p className="form-error" role="alert">{localize(error)}</p>)}
+              {localizeText(error && <p className="form-error" role="alert">{translateError(error)}</p>)}
               <div>
-                <label htmlFor="news-email" className="text-sm font-medium block mb-1">
-                  {t("Email address")}</label>
+                <label htmlFor="news-email" className="text-sm font-medium block mb-1"> {translateText("Email address")} </label>
                 <input
                   id="news-email"
                   name="email"
@@ -64,13 +62,14 @@ export default function Newsletter() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t("you@example.com")}
+                  placeholder={translateText("you@example.com")}
                   className="w-full border border-navy-900/20 rounded-lg px-3 py-2 text-sm"
                 />
+                <p className="mt-2 text-xs text-navy-900/55">{translateText("Your request is saved, but programme emails are not sent automatically yet.")}</p>
               </div>
-              <div className="form-honeypot" aria-hidden="true"><label htmlFor="news-website">{t("Leave this field blank")}</label><input id="news-website" name="website" tabIndex={-1} autoComplete="off" /></div>
+              <div className="form-honeypot" aria-hidden="true"><label htmlFor="news-website">{translateText("Leave this field blank")}</label><input id="news-website" name="website" tabIndex={-1} autoComplete="off" /></div>
               <details className="newsletter-privacy-notice" open onToggle={() => window.requestAnimationFrame(() => ScrollTrigger.refresh())}>
-                <summary>{t("Data collection and consent notice")}</summary>
+                <summary>{translateText("Data collection and consent notice")}</summary>
                 <DataCollectionNotice showPolicyLink />
               </details>
               <label className="flex gap-2 text-xs text-navy-900/70">
@@ -82,15 +81,15 @@ export default function Newsletter() {
                   onChange={(e) => setConsent(e.target.checked)}
                   className="mt-0.5"
                 />
-                <span>
-                  {t("I have read and understood the Data Collection & Consent Notice (DPDP Act, 2023) and give my specific and informed consent to Jagannath Foundation to process my personal data for the stated purposes.")}</span>
+                <span> {translateText("I consent to Jagannath Foundation saving my email address and using it to handle my request for programme updates.")} </span>
               </label>
+              <p className="text-xs text-navy-900/60">{translateText("Read our")} <Link className="underline" href="/privacy-policy">{translateText("privacy policy")}</Link>.</p>
               <button
                 type="submit"
                 disabled={sending}
                 className="bg-orange-500 hover:bg-orange-400 disabled:opacity-60 text-white px-5 py-2 rounded-full text-sm font-semibold"
               >
-                {localize(sending ? "Saving…" : "Request updates")}
+                {localizeText(sending ? "Saving…" : "Request updates")}
               </button>
             </>
           ))}

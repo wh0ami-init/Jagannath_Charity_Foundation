@@ -1,5 +1,5 @@
-import { tr as t, localize } from "../i18n";
-import { useTranslation } from "react-i18next";
+import { tr as translateText, localize as localizeText, trError as translateError } from "../i18n";
+import { useTranslation as usePageTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import Layout from "../components/Layout";
@@ -8,7 +8,6 @@ import Reveal from "../components/Reveal";
 import { DynamicImage } from "../lib/ImagesContext";
 import { useImages } from "../lib/ImagesContext";
 import Stagger from "../components/Stagger";
-import SplitHeading from "../components/SplitHeading";
 
 const trustBoard = [
   {
@@ -208,39 +207,42 @@ function PersonCard({
   onSelect,
 }: {
   person: Person;
-  index: number;
   onSelect: (person: Person) => void;
 }) {
-  useTranslation();
+  usePageTranslation();
   const { images } = useImages();
-  const { slot, role, name, body } = person;
+  const { slot, role, name } = person;
   const imageSlot = images[slot];
   const showImage = imageSlot
     ? !imageSlot.url.endsWith("/placeholder.jpg")
     : slot.startsWith("team-");
   return (
     <article className="team-card team-profile-card rounded-xl border border-navy-900/10 overflow-hidden">
-      {localize(showImage ? (
+      {localizeText(showImage ? (
         <div className="team-portrait-frame">
-          <DynamicImage slotKey={slot} alt={localize(name)} className="team-portrait" />
+          <DynamicImage
+            slotKey={slot}
+            alt={localizeText(name)}
+            className="team-portrait"
+            preferLocal={slot === "team-jagannath-patnaik"}
+          />
         </div>
       ) : (
         <div
           className="team-portrait-frame person-portrait-pending"
-          aria-label={t("Portrait for {{name}} has not been added", { name: t(name) })}
+          aria-label={localizeText(`Portrait for ${name} has not been added`)}
         >
-          <span>{localize(initials(name))}</span>
+          <span>{localizeText(initials(name))}</span>
         </div>
       ))}
       <div className="team-profile-copy">
-        <p className="team-profile-role">{localize(role)}</p>
-        <h3>{localize(name)}</h3>
+        <p className="team-profile-role">{localizeText(role)}</p>
+        <h3>{localizeText(name)}</h3>
         <button
           type="button"
           className="team-view-more"
           onClick={() => onSelect(person)}
-        >
-          {t("View more")}{" "}<span aria-hidden="true">→</span>
+        > {translateText("View more")} <span aria-hidden="true">→</span>
         </button>
       </div>
     </article>
@@ -248,7 +250,7 @@ function PersonCard({
 }
 
 export default function Team() {
-  useTranslation();
+  usePageTranslation();
   const { images } = useImages();
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -285,11 +287,10 @@ export default function Team() {
       : selectedPerson.slot.startsWith("team-"));
 
   const renderPeople = (people: Person[]) =>
-    people.map((person, index) => (
+    people.map((person) => (
       <PersonCard
         key={person.name}
         person={person}
-        index={index}
         onSelect={openPerson}
       />
     ));
@@ -299,48 +300,48 @@ export default function Team() {
       <PageHero
         theme="team"
         motif="leadership"
-        eyebrow={t("Key leadership")}
-        title={t("Who holds the trust, and who tests the work.")}
-        description={t("The settlor and managing trustee, the founder trustees, the Board of Management and the Board of Advisors govern the Foundation with clear policy and strategic planning.")}
+        eyebrow={translateText("Key leadership")}
+        title={translateText("Who holds the trust, and who tests the work.")}
+        description={translateText("The settlor and managing trustee, the founder trustees, the Board of Management and the Board of Advisors govern the Foundation with clear policy and strategic planning.")}
       />
 
       <Reveal as="section" className="wrap py-16">
-        <h2 className="team-section-heading">{t("Board of Trustees")}</h2>
+        <h2 className="team-section-heading">{translateText("Board of Trustees")}</h2>
         <Stagger
           className="team-profile-grid team-profile-grid-trust"
           gap={0.1}
           distance={28}
         >
-          {localize(renderPeople(trustBoard))}
+          {localizeText(renderPeople(trustBoard))}
         </Stagger>
       </Reveal>
 
       <Reveal as="section" className="wrap pb-16">
-        <h2 className="team-section-heading">{t("Board of Management")}</h2>
+        <h2 className="team-section-heading">{translateText("Board of Management")}</h2>
         <Stagger
           className="team-profile-grid team-profile-grid-management"
           gap={0.1}
           distance={28}
         >
-          {localize(renderPeople(boardOfManagement))}
+          {localizeText(renderPeople(boardOfManagement))}
         </Stagger>
       </Reveal>
 
       <Reveal as="section" className="wrap pb-16">
-        <h2 className="team-section-heading">{t("Board of Advisors")}</h2>
+        <h2 className="team-section-heading">{translateText("Board of Advisors")}</h2>
         <Stagger
           className="team-profile-grid team-profile-grid-advisors"
           gap={0.1}
           distance={28}
         >
-          {localize(renderPeople(
+          {localizeText(renderPeople(
             advisors.map((advisor) => ({ ...advisor, body: advisor.note })),
           ))}
         </Stagger>
       </Reveal>
 
       <AnimatePresence>
-        {localize(selectedPerson && (
+        {localizeText(selectedPerson && (
           <motion.div
             className="team-profile-backdrop"
             role="presentation"
@@ -369,23 +370,26 @@ export default function Team() {
                 ref={closeButtonRef}
                 type="button"
                 className="team-profile-close"
-                aria-label={t("Close profile")}
+                aria-label={translateText("Close profile")}
                 onClick={() => setSelectedPerson(null)}
               >
                 ×
               </button>
               <div className="team-profile-background">
-                {localize(showSelectedPhoto ? (
+                {localizeText(showSelectedPhoto ? (
                   <DynamicImage
                     slotKey={selectedPerson.slot}
-                    alt={localize(selectedPerson.name)}
+                    alt={localizeText(selectedPerson.name)}
+                    preferLocal={
+                      selectedPerson.slot === "team-jagannath-patnaik"
+                    }
                   />
                 ) : (
                   <div
                     className="team-profile-placeholder"
-                    aria-label={t("Portrait for {{name}} has not been added", { name: t(selectedPerson.name) })}
+                    aria-label={localizeText(`Portrait for ${selectedPerson.name} has not been added`)}
                   >
-                    <span>{localize(initials(selectedPerson.name))}</span>
+                    <span>{localizeText(initials(selectedPerson.name))}</span>
                   </div>
                 ))}
                 <div className="team-profile-image-shade" />
@@ -403,11 +407,11 @@ export default function Team() {
                 >
                   <p className="eyebrow">
                     <span />
-                    {localize(selectedPerson.role)}
+                    {localizeText(selectedPerson.role)}
                   </p>
-                  <h2 id="team-profile-name">{localize(selectedPerson.name)}</h2>
+                  <h2 id="team-profile-name">{localizeText(selectedPerson.name)}</h2>
                   <div className="team-profile-rule" />
-                  <p>{localize(selectedPerson.body)}</p>
+                  <p>{localizeText(selectedPerson.body)}</p>
                 </motion.div>
               </div>
             </motion.aside>
