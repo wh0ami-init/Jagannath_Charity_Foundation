@@ -98,14 +98,19 @@ export default function RazorpayTestButton() {
   const [receipt, setReceipt] = useState<DonationReceipt | null>(null);
   const [paymentMode, setPaymentMode] = useState<"test" | "live">("test");
   const [paymentConfigured, setPaymentConfigured] = useState(false);
+  const [setupMessage, setSetupMessage] = useState("Checking donation setup…");
 
   useEffect(() => {
     void fetch(apiUrl("/api/payments/mode")).then(response => response.ok ? response.json() : null)
       .then(result => {
         if (result?.mode === "test" || result?.mode === "live") setPaymentMode(result.mode);
         setPaymentConfigured(result?.configured === true);
+        if (!result) setSetupMessage("Could not reach the donation service. Please try again later.");
+        else if (!result.payment_configured) setSetupMessage("Razorpay is not configured for the selected mode on the backend.");
+        else if (!result.email_configured) setSetupMessage("Email verification needs SMTP settings in the backend environment.");
+        else setSetupMessage("");
       })
-      .catch(() => undefined);
+      .catch(() => setSetupMessage("Could not reach the donation service. Please try again later."));
   }, []);
 
   useEffect(() => () => {
@@ -237,16 +242,21 @@ export default function RazorpayTestButton() {
           </span>
           <h2>Make your support count.</h2>
           <p>
-            Continue through Razorpay Checkout to try the Foundation’s secure
-            online giving flow. Your payment response is confirmed by our
-            server before it is marked complete.
+            Complete a simple, verified donation in three steps. Your details
+            stay with this contribution, and the receipt is shown only after
+            Razorpay confirms the payment.
           </p>
+          <ol className="donation-checkout-steps">
+            <li><span>01</span><div><strong>Verify your email</strong><small>Enter the code sent to your inbox.</small></div></li>
+            <li><span>02</span><div><strong>Pay with Razorpay</strong><small>Test Mode uses a fixed ₹100 test payment.</small></div></li>
+            <li><span>03</span><div><strong>Receive your receipt</strong><small>We show it here after payment confirmation.</small></div></li>
+          </ol>
           <div className="donation-checkout-assurance">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M12 3 19 6v5c0 4.8-2.9 8.1-7 10-4.1-1.9-7-5.2-7-10V6l7-3Z" />
               <path d="m9 12 2 2 4-4" />
             </svg>
-            <span>Payment status is verified by the Foundation’s server</span>
+            <span>Payment is confirmed by the Foundation’s server.</span>
           </div>
         </div>
 
@@ -264,7 +274,7 @@ export default function RazorpayTestButton() {
             <p className="donation-checkout-disclaimer">
               {paymentMode === "test" ? "Test Mode is fixed at ₹100; the Foundation receives no real money." : "Your payment is processed through the Foundation’s live Razorpay account."}
             </p>
-            {!paymentConfigured && <p className="form-error" role="status">Online donations are temporarily unavailable while payment settings are configured.</p>}
+            {!paymentConfigured && <p className="donation-setup-status" role="status">{setupMessage}</p>}
           </div>
           {!completed && <div className="donation-details-form">
             <label className="donation-checkout-label">Full name<input required maxLength={150} autoComplete="name" disabled={emailSent} value={donor.name} onChange={e => setDonor({...donor, name:e.target.value})} /></label>
@@ -274,7 +284,7 @@ export default function RazorpayTestButton() {
             <label className="donation-checkout-label">Named cause<select disabled={emailSent} value={donor.cause} onChange={e => setDonor({...donor, cause:e.target.value})}>{["Education & literacy", "Health & family welfare", "Youth skills & sport", "Women's livelihoods", "Environment & land", "Solar housing & clean energy", "Where most needed"].map(cause => <option key={cause}>{cause}</option>)}</select></label>
             <label className="donation-checkout-label">Amount in INR<input type="number" min={1} max={1000000} value={donor.amount_rupees} disabled={emailSent || paymentMode === "test"} onChange={e => setDonor({...donor, amount_rupees:Number(e.target.value)})} />{paymentMode === "test" && <small>₹100 while Razorpay is in Test Mode.</small>}</label>
             {!emailSent && <button type="button" disabled={busy || !paymentConfigured || !donor.name.trim() || !donor.email.trim()} onClick={() => void sendEmailCode()} className="donation-checkout-button">Send email verification code</button>}
-            {emailSent && !verificationToken && <div><label className="donation-checkout-label">6-digit email code<input inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={e => setCode(e.target.value.replace(/\D/g, ""))} /></label><button type="button" disabled={busy || code.length !== 6} onClick={() => void verifyEmail()} className="donation-checkout-button">Verify email</button></div>}
+            {emailSent && !verificationToken && <div className="donation-email-code"><label className="donation-checkout-label">6-digit email code<input inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={e => setCode(e.target.value.replace(/\D/g, ""))} /></label><button type="button" disabled={busy || code.length !== 6} onClick={() => void verifyEmail()} className="donation-checkout-button">Verify email</button></div>}
             {verificationToken && <button type="button" disabled={busy || !!pendingResponse} onClick={openPayment} className="donation-checkout-button">{busy ? "Payment in progress…" : "Continue to Razorpay Checkout"}</button>}
           </div>}
           {receipt && <div className="donation-receipt" id="donation-receipt">
