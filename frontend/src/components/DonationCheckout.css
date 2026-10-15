@@ -48,7 +48,7 @@
   text-transform: uppercase;
 }
 
-.donation-checkout-eyebrow > span {
+.donation-checkout-eyebrow>span {
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -64,7 +64,7 @@
   text-wrap: balance;
 }
 
-.donation-checkout-copy > p {
+.donation-checkout-copy>p {
   max-width: 42ch;
   margin: 20px 0 0;
   color: rgba(255, 255, 255, .75);
@@ -79,8 +79,14 @@
   padding: 0;
   list-style: none;
 }
-.donation-checkout-steps li { display: flex; align-items: flex-start; gap: 13px; }
-.donation-checkout-steps li > span {
+
+.donation-checkout-steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+}
+
+.donation-checkout-steps li>span {
   display: grid;
   width: 34px;
   height: 34px;
@@ -92,8 +98,20 @@
   font-size: 11px;
   font-weight: 800;
 }
-.donation-checkout-steps strong { display: block; color: #fff; font-size: 14px; }
-.donation-checkout-steps small { display: block; margin-top: 3px; color: rgba(255, 255, 255, .7); font-size: 13px; line-height: 1.5; }
+
+.donation-checkout-steps strong {
+  display: block;
+  color: #fff;
+  font-size: 14px;
+}
+
+.donation-checkout-steps small {
+  display: block;
+  margin-top: 3px;
+  color: rgba(255, 255, 255, .7);
+  font-size: 13px;
+  line-height: 1.5;
+}
 
 .donation-checkout-assurance {
   display: flex;
@@ -204,11 +222,18 @@
   align-items: start;
   gap: 1rem 1.2rem;
 }
-.donation-details-form > label,
-.donation-details-form > button,
-.donation-details-form > div { min-width: 0; }
-.donation-details-form > button,
-.donation-details-form > div { grid-column: 1 / -1; }
+
+.donation-details-form>label,
+.donation-details-form>button,
+.donation-details-form>div {
+  min-width: 0;
+}
+
+.donation-details-form>button,
+.donation-details-form>div {
+  grid-column: 1 / -1;
+}
+
 .donation-details-form input,
 .donation-details-form select {
   display: block;
@@ -222,12 +247,17 @@
   background: #fff;
   font: 400 14px/1.4 var(--font-sans);
 }
+
 .donation-details-form input:focus,
 .donation-details-form select:focus {
   outline: 3px solid rgba(29, 78, 62, .16);
   border-color: #315b49;
 }
-.donation-details-form [aria-invalid="true"] { border-color: #b42318; }
+
+.donation-details-form [aria-invalid="true"] {
+  border-color: #b42318;
+}
+
 .donation-required,
 .donation-optional {
   margin-left: 4px;
@@ -235,6 +265,7 @@
   font-size: 10px;
   font-weight: 500;
 }
+
 .donation-field-error,
 .donation-field-hint {
   display: block;
@@ -243,23 +274,88 @@
   font-weight: 500;
   line-height: 1.45;
 }
-.donation-field-error { color: #b42318; }
-.donation-field-hint { color: #718076; }
-.donation-details-form .donation-checkout-button { justify-content: center; text-align: center; }
-.donation-details-form input:disabled { background: #f3f5f6; color: #667783; }
-.donation-details-form small { display: block; margin-top: .25rem; color: #718397; font-weight: 400; }
-.donation-setup-status { margin: .65rem 0 0; padding: .7rem .85rem; border: 1px solid #f0d8a8; border-radius: .65rem; background: #fff8e9; color: #7d551a; font-size: .82rem; line-height: 1.5; }
-.donation-receipt { padding: 1rem; border: 1px solid #d9ad55; border-radius: .75rem; background: #fffdf7; color: #19354d; }
-.donation-receipt h3 { font-family: Georgia, serif; font-size: 1.4rem; }
-.donation-receipt p { margin: .65rem 0; line-height: 1.55; overflow-wrap: anywhere; }
-@media print {
-  body * { visibility: hidden !important; }
-  #donation-receipt, #donation-receipt * { visibility: visible !important; }
-  #donation-receipt { position: absolute; inset: 0; width: 100%; border: 0; border-radius: 0; }
-  #donation-receipt button { display: none; }
+
+.donation-field-error {
+  color: #b42318;
 }
 
-.donation-checkout-disclaimer { margin: 9px 0 0; }
+.donation-field-hint {
+  color: #718076;
+}
+
+.donation-details-form .donation-checkout-button {
+  justify-content: center;
+  text-align: center;
+}
+
+.donation-details-form input:disabled {
+  background: #f3f5f6;
+  color: #667783;
+}
+
+.donation-details-form small {
+  display: block;
+  margin-top: .25rem;
+  color: #718397;
+  font-weight: 400;
+}
+
+.donation-setup-status {
+  margin: .65rem 0 0;
+  padding: .7rem .85rem;
+  border: 1px solid #f0d8a8;
+  border-radius: .65rem;
+  background: #fff8e9;
+  color: #7d551a;
+  font-size: .82rem;
+  line-height: 1.5;
+}
+
+.donation-receipt {
+  padding: 1rem;
+  border: 1px solid #d9ad55;
+  border-radius: .75rem;
+  background: #fffdf7;
+  color: #19354d;
+}
+
+.donation-receipt h3 {
+  font-family: Georgia, serif;
+  font-size: 1.4rem;
+}
+
+.donation-receipt p {
+  margin: .65rem 0;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+
+  #donation-receipt,
+  #donation-receipt * {
+    visibility: visible !important;
+  }
+
+  #donation-receipt {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    border: 0;
+    border-radius: 0;
+  }
+
+  #donation-receipt button {
+    display: none;
+  }
+}
+
+.donation-checkout-disclaimer {
+  margin: 9px 0 0;
+}
 
 .donation-checkout-button {
   display: flex;
@@ -345,8 +441,13 @@ body.razorpay-checkout-active::after {
 }
 
 @keyframes donation-backdrop-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @media (max-width: 760px) {
@@ -357,24 +458,215 @@ body.razorpay-checkout-active::after {
     border-radius: 22px;
   }
 
-  .donation-checkout-copy h2 { max-width: 14ch; }
-  .donation-checkout-panel { width: 100%; }
-  .donation-details-form { grid-template-columns: minmax(0, 1fr); }
-  .donation-details-form > label,
-  .donation-details-form > button,
-  .donation-details-form > div { grid-column: 1; }
+  .donation-checkout-copy h2 {
+    max-width: 14ch;
+  }
+
+  .donation-checkout-panel {
+    width: 100%;
+  }
+
+  .donation-details-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .donation-details-form>label,
+  .donation-details-form>button,
+  .donation-details-form>div {
+    grid-column: 1;
+  }
 }
 
 @media (min-width: 761px) and (max-width: 1100px) {
-  .donation-checkout-card { grid-template-columns: minmax(0, 1fr); gap: 30px; }
-  .donation-checkout-copy h2 { max-width: 18ch; }
+  .donation-checkout-card {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 30px;
+  }
+
+  .donation-checkout-copy h2 {
+    max-width: 18ch;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .donation-checkout-button,
-  .donation-checkout-arrow { transition: none; }
+  .donation-checkout-arrow {
+    transition: none;
+  }
 
   body.razorpay-checkout-active::after {
     animation: none;
+  }
+}
+
+/* ═════════════ CHECKOUT · MOTION LAYER ═════════════ */
+
+/* Steps timeline rail (drawn by GSAP through --rail) */
+.donation-checkout-steps {
+  position: relative;
+  --rail: 1;
+}
+
+.donation-checkout-steps::before {
+  content: "";
+  position: absolute;
+  top: 17px;
+  bottom: 17px;
+  left: 16.5px;
+  width: 1px;
+  background: linear-gradient(#f0cb83, rgba(240, 203, 131, .12));
+  transform: scaleY(var(--rail));
+  transform-origin: top center;
+}
+
+.donation-checkout-steps li {
+  position: relative;
+}
+
+.donation-checkout-steps li>span {
+  position: relative;
+  z-index: 1;
+  background: #18372f;
+}
+
+/* Button: light sweep + loading spinner */
+.donation-checkout-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.donation-checkout-button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, .55) 50%, transparent 80%);
+  transform: translateX(-130%) skewX(-18deg);
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .donation-checkout-button:hover:not(:disabled)::after {
+    transform: translateX(130%) skewX(-18deg);
+    transition: transform .8s ease;
+  }
+}
+
+.donation-checkout-button:active:not(:disabled) {
+  transform: scale(.985);
+}
+
+.donation-checkout-button[aria-busy="true"] {
+  justify-content: center;
+}
+
+.donation-checkout-button[aria-busy="true"]::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  border: 2px solid rgba(24, 55, 47, .25);
+  border-top-color: #18372f;
+  border-radius: 50%;
+  animation: donation-btn-spin .7s linear infinite;
+}
+
+@keyframes donation-btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Live dot on the mode badge */
+.donation-checkout-test {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.donation-checkout-test::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: donation-live 2s ease-in-out infinite;
+}
+
+@keyframes donation-live {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: .35;
+    transform: scale(.7);
+  }
+}
+
+/* Validation messages ease in with a tiny shake */
+.donation-field-error,
+.form-error,
+.donation-setup-status {
+  animation: donation-msg-in .4s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+@keyframes donation-msg-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+
+  40% {
+    opacity: 1;
+    transform: translateX(5px);
+  }
+
+  70% {
+    transform: translateX(-3px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Receipt check mark (drawn by GSAP) */
+.donation-receipt-check {
+  display: block;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 12px;
+  fill: none;
+  stroke: #2f7d57;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.donation-receipt-ring {
+  stroke-dasharray: 151;
+}
+
+.donation-receipt-tick {
+  stroke-dasharray: 40;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .donation-checkout-button::after,
+  .donation-checkout-test::before,
+  .donation-field-error,
+  .form-error,
+  .donation-setup-status {
+    animation: none;
+    transition: none;
+  }
+
+  .donation-checkout-button[aria-busy="true"]::before {
+    animation-duration: 1.6s;
   }
 }

@@ -4,7 +4,7 @@ import secrets
 from datetime import datetime, timedelta, timezone
 
 from fastapi import Depends, HTTPException, Request, Response, status
-from jose import jwt, JWTError
+import jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
@@ -82,7 +82,7 @@ def get_current_admin(request: Request, db: Session = Depends(get_db)) -> AdminU
         raise credentials_error
     try:
         payload = jwt.decode(token, settings.jwt_secret, algorithms=[settings.jwt_algorithm])
-    except JWTError:
+    except jwt.InvalidTokenError:
         raise credentials_error
     username = payload.get("sub")
     csrf = payload.get("csrf")

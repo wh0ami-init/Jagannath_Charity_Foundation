@@ -28,6 +28,12 @@ class ProductionSettingsTests(unittest.TestCase):
         with self.assertRaises(ValidationError):
             self.settings(database_url="sqlite:///./app.db")
 
+    def test_jwt_algorithm_is_locked_to_hs256(self):
+        self.assertEqual(self.settings().jwt_algorithm, "HS256")
+        for algorithm in ["HS384", "RS256", "none"]:
+            with self.subTest(algorithm=algorithm), self.assertRaises(ValidationError):
+                self.settings(jwt_algorithm=algorithm)
+
 
 if __name__ == "__main__":
     unittest.main()

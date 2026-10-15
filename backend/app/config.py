@@ -41,6 +41,13 @@ class Settings(BaseSettings):
             raise ValueError("JWT_SECRET must be a unique random secret of at least 32 characters")
         return value
 
+    @field_validator("jwt_algorithm")
+    @classmethod
+    def validate_jwt_algorithm(cls, value: str) -> str:
+        if value != "HS256":
+            raise ValueError("JWT_ALGORITHM must be HS256")
+        return value
+
     @field_validator("cookie_samesite")
     @classmethod
     def validate_samesite(cls, value: str) -> str:

@@ -12,7 +12,7 @@
 .donation-section-eyebrow {
   margin: 0 0 12px;
   color: #a86a25;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: .16em;
   text-transform: uppercase;
@@ -27,8 +27,8 @@
   text-wrap: balance;
 }
 
-.donation-choice-heading > p:last-child,
-.donation-section-heading > p:last-child {
+.donation-choice-heading>p:last-child,
+.donation-section-heading>p:last-child {
   margin: 14px auto 0;
   color: rgba(25, 45, 37, .68);
   font-size: 15px;
@@ -118,7 +118,7 @@
   font: 700 clamp(22px, 2.6vw, 30px) / 1.15 var(--font-serif);
 }
 
-.donation-choice-card > p {
+.donation-choice-card>p {
   max-width: 42ch;
   margin: 10px 0 23px;
   color: rgba(25, 45, 37, .7);
@@ -154,7 +154,7 @@
   font-size: clamp(28px, 3.5vw, 40px);
 }
 
-.donation-section-heading > p:last-child {
+.donation-section-heading>p:last-child {
   max-width: 650px;
 }
 
@@ -186,7 +186,7 @@
   font-size: clamp(30px, 4vw, 44px);
 }
 
-.monthly-autopay-copy > p:not(.donation-section-eyebrow) {
+.monthly-autopay-copy>p:not(.donation-section-eyebrow) {
   max-width: 58ch;
   margin: 15px 0 0;
   color: rgba(25, 45, 37, .73);
@@ -242,7 +242,7 @@
   font-weight: 800;
 }
 
-.monthly-autopay-form > label:not(.monthly-autopay-consent) {
+.monthly-autopay-form>label:not(.monthly-autopay-consent) {
   display: block;
   color: #34483c;
   font-size: 14px;
@@ -269,7 +269,9 @@
   border-color: #315b49;
 }
 
-.monthly-autopay-form [aria-invalid="true"] { border-color: #b42318; }
+.monthly-autopay-form [aria-invalid="true"] {
+  border-color: #b42318;
+}
 
 .monthly-autopay-consent {
   display: flex;
@@ -299,11 +301,269 @@
 }
 
 @media (max-width: 760px) {
+
   .donation-choice-grid,
   .monthly-autopay-layout {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .donation-choice-grid { gap: 14px; }
-  .donation-choice-card { min-height: 0; }
+  .donation-choice-grid {
+    gap: 14px;
+  }
+
+  .donation-choice-card {
+    min-height: 0;
+  }
+}
+
+/* ═════════════ DONATE · MOTION LAYER ═════════════ */
+
+.donation-choice-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform .35s cubic-bezier(.2, .7, .2, 1), box-shadow .35s ease, border-color .35s ease;
+}
+
+.donation-choice-card::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  opacity: 0;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), rgba(217, 154, 70, .17), transparent 62%);
+  transition: opacity .35s ease;
+  pointer-events: none;
+}
+
+.donation-choice-card--monthly::before {
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), rgba(82, 118, 99, .2), transparent 62%);
+}
+
+.donation-choice-card::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 3px;
+  background: linear-gradient(90deg, #d99a46, #f0cb83);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform .55s cubic-bezier(.2, .7, .2, 1);
+  pointer-events: none;
+}
+
+.donation-choice-card--monthly::after {
+  background: linear-gradient(90deg, #366549, #7fae8f);
+}
+
+.donation-choice-card:focus-visible::before {
+  opacity: 1;
+}
+
+.donation-choice-card:focus-visible::after {
+  transform: scaleX(1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .donation-choice-card:hover {
+    transform: translateY(-6px);
+  }
+
+  .donation-choice-card:hover::before {
+    opacity: 1;
+  }
+
+  .donation-choice-card:hover::after {
+    transform: scaleX(1);
+  }
+}
+
+/* touch devices: instant press feedback */
+.donation-choice-card:active .donation-choice-icon {
+  transform: scale(.92);
+}
+
+.donation-choice-card:active {
+  border-color: rgba(168, 106, 37, .56);
+}
+
+.donation-choice-icon {
+  position: relative;
+}
+
+.donation-choice-icon::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border: 1px solid currentColor;
+  border-radius: inherit;
+  opacity: 0;
+  animation: donation-ring 3.4s ease-out infinite;
+  pointer-events: none;
+}
+
+.donation-choice-card--monthly .donation-choice-icon::after {
+  animation-delay: 1.2s;
+}
+
+@keyframes donation-ring {
+  0% {
+    transform: scale(1);
+    opacity: .45;
+  }
+
+  70%,
+  100% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+}
+
+/* Bank transfer card */
+.bank-details {
+  background: rgba(255, 255, 255, .6);
+  box-shadow: 0 14px 40px rgba(16, 44, 37, .05);
+}
+
+.bank-row {
+  margin-inline: -10px;
+  padding: 7px 10px;
+  border-radius: 9px;
+  transition: background-color .25s ease;
+}
+
+.bank-row:hover {
+  background: rgba(217, 154, 70, .09);
+}
+
+.copy-chip {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 10px;
+  padding: 3px 10px;
+  border: 1px solid rgba(24, 55, 47, .18);
+  border-radius: 999px;
+  background: #fff;
+  color: #295a43;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+}
+
+.copy-chip:hover {
+  border-color: #b8762f;
+  background: #fbf7ec;
+}
+
+.copy-chip:focus-visible {
+  outline: 3px solid #b8762f;
+  outline-offset: 2px;
+}
+
+.copy-chip[data-copied="true"] {
+  border-color: #366549;
+  background: #edf5ed;
+  color: #366549;
+}
+
+@media (pointer: coarse) {
+  .copy-chip {
+    min-height: 36px;
+    padding: 6px 14px;
+    font-size: 12px;
+  }
+}
+
+/* Pledge form focus */
+.donation-flow-section form input:not([type="checkbox"]),
+.donation-flow-section form select {
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.donation-flow-section form input:not([type="checkbox"]):focus,
+.donation-flow-section form select:focus {
+  outline: none;
+  border-color: #315b49;
+  box-shadow: 0 0 0 4px rgba(29, 78, 62, .12);
+}
+
+/* Monthly card: slow ambient rings */
+.monthly-autopay-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.monthly-autopay-card::before,
+.monthly-autopay-card::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.monthly-autopay-card::before {
+  top: -140px;
+  right: -140px;
+  width: 360px;
+  aspect-ratio: 1;
+  border: 1px dashed rgba(54, 101, 73, .25);
+  animation: donation-spin 70s linear infinite;
+}
+
+.monthly-autopay-card::after {
+  top: -70px;
+  right: -70px;
+  width: 220px;
+  aspect-ratio: 1;
+  border: 1px solid rgba(217, 154, 70, .3);
+  animation: donation-spin 45s linear infinite reverse;
+}
+
+@keyframes donation-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 760px) {
+  .bank-row {
+    margin-inline: -8px;
+    padding: 8px;
+  }
+
+  .monthly-autopay-card::before {
+    width: 240px;
+    top: -110px;
+    right: -110px;
+  }
+
+  .monthly-autopay-card::after {
+    width: 150px;
+    top: -55px;
+    right: -55px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .donation-choice-card,
+  .donation-choice-card::after,
+  .copy-chip {
+    transition: none;
+  }
+
+  .donation-choice-icon::after,
+  .monthly-autopay-card::before,
+  .monthly-autopay-card::after {
+    animation: none;
+  }
+
+  .donation-choice-card:hover {
+    transform: none;
+  }
 }

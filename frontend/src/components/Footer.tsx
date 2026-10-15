@@ -51,6 +51,32 @@ export default function Footer() {
         </Reveal>
       </div>
 
+      <Reveal className="wrap footer-admin-entry" delay={0.12}>
+        <span className="footer-admin-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 3 19 6v5c0 4.7-2.9 8-7 10-4.1-2-7-5.3-7-10V6l7-3Z" />
+            <path d="m9.5 12 1.7 1.7 3.6-3.8" />
+          </svg>
+        </span>
+        <span className="footer-admin-copy">
+          <strong>Foundation team</strong>
+          <small>Authorized staff access</small>
+        </span>
+        <Link href="/admin/login" className="footer-admin-link">
+          <svg className="footer-admin-lock" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path className="footer-admin-lock-shackle" d="M7.5 10V7.5a4.5 4.5 0 0 1 9 0V10" />
+            <rect x="5" y="10" width="14" height="11" rx="2.5" />
+            <path d="M12 14v3" />
+          </svg>
+          <span className="footer-admin-link-label" aria-hidden="true">
+            <span className="footer-admin-link-compact">Admin</span>
+            <span className="footer-admin-link-expanded">Administrator sign in</span>
+          </span>
+          <span className="footer-admin-link-arrow" aria-hidden="true">→</span>
+          <span className="sr-only">Administrator sign in</span>
+        </Link>
+      </Reveal>
+
       <div className="footer-legal">
         <div className="wrap footer-legal-inner">
           <span>© {new Date().getFullYear()} Jagannath Foundation</span>
