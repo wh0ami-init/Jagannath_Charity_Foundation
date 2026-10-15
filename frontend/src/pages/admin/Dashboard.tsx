@@ -131,7 +131,32 @@ const KIND_NAMES: Record<Kind, string> = {
   pledge: "Pledge",
   newsletter: "Updates request",
   service: "Service request",
+  beneficiary: "Beneficiary application",
 };
+
+function parseBeneficiaryApplication(message: string) {
+  try {
+    const record = JSON.parse(message) as { application?: Record<string, unknown>; public_listing?: unknown };
+    return record.application && typeof record.application === "object"
+      ? record.application
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+const BENEFICIARY_FIELD_LABELS: [string, string][] = [
+  ["gender", "Gender"],
+  ["date_of_birth", "Date of birth"],
+  ["father_name", "Father / guardian"],
+  ["caste_category", "Caste category"],
+  ["address", "Address"],
+  ["state", "State / territory"],
+  ["district", "District"],
+  ["beneficiary_category", "Support category"],
+  ["other_category", "Specified support"],
+  ["reason", "Request details"],
+];
 
 const reduced = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1038,7 +1063,10 @@ function MessagesView({
       ) : (
         <div className="ac-msgs">
           {shown.map((m) => {
-            const long = (m.message ?? "").length > 180;
+            const beneficiaryApplication = m.kind === "beneficiary"
+              ? parseBeneficiaryApplication(m.message ?? "")
+              : null;
+            const long = !beneficiaryApplication && (m.message ?? "").length > 180;
             const expanded = open.has(m.id);
             return (
               <article key={m.id} className="ac-msg ac-reveal">
@@ -1054,11 +1082,25 @@ function MessagesView({
                     </time>
                   </div>
                   {m.subject && <p className="ac-msg-subject">{m.subject}</p>}
+                  {beneficiaryApplication && (
+                    <dl className="ac-beneficiary-details">
+                      {BENEFICIARY_FIELD_LABELS.map(([key, label]) => {
+                        const value = beneficiaryApplication[key];
+                        return typeof value === "string" && value.trim() ? (
+                          <div key={key}>
+                            <dt>{label}</dt>
+                            <dd>{value}</dd>
+                          </div>
+                        ) : null;
+                      })}
+                      <div><dt>Public directory</dt><dd>{beneficiaryApplication.public_listing ? "Applicant opted in" : "Private application"}</dd></div>
+                    </dl>
+                  )}
                   {m.message && (
                     <p
                       className={`ac-msg-text${long && !expanded ? " is-clamped" : ""}`}
                     >
-                      {m.message}
+                      {beneficiaryApplication ? "Beneficiary application details are shown above." : m.message}
                     </p>
                   )}
                   {long && (

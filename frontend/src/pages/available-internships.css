@@ -1,0 +1,492 @@
+.available-internships-page {
+  min-height: 100vh;
+  color: #1c3150;
+  background:
+    radial-gradient(ellipse at 8% 32%, rgba(112, 166, 145, .13), transparent 34%),
+    radial-gradient(ellipse at 94% 70%, rgba(222, 173, 91, .12), transparent 31%),
+    linear-gradient(145deg, #f6f8f6 0%, #f0f4f7 52%, #f7f5ef 100%);
+}
+
+.available-internships-page .pagehero {
+  --hero-deep: #16344e;
+  --hero-mid: #155366;
+  --hero-bright: #087a79;
+  --hero-glow: rgba(61, 184, 170, .56);
+  min-height: 445px;
+  border-radius: 0 0 50% 50% / 0 0 34px 34px;
+}
+
+.available-internships-page .pagehero-content {
+  padding-block: 112px 54px;
+}
+
+.available-internships-page .pagehero h1 {
+  max-width: 15ch;
+  font: 600 clamp(40px, 5.2vw, 64px)/.98 var(--font-serif);
+}
+
+.internship-title-accent {
+  color: #f0bd68;
+}
+
+.available-internships-page .pagehero-lede {
+  max-width: 54ch;
+  margin-top: 14px;
+  font-size: 16px;
+}
+
+.available-internships-page .pagehero-facts dl {
+  justify-content: center;
+  max-width: 720px;
+}
+
+.available-internships-page .pagehero-facts dl > div {
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 22px;
+}
+
+.available-internships-page .pagehero-facts dd {
+  color: #fff;
+  font: 750 24px/1 var(--font-sans);
+}
+
+.available-internships-page .pagehero-facts dt {
+  color: rgba(255, 255, 255, .78);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.internships-content {
+  position: relative;
+  z-index: 2;
+  padding-bottom: clamp(68px, 9vw, 112px);
+}
+
+.internships-wrap {
+  width: min(1280px, calc(100% - 56px));
+  margin: -52px auto 0;
+}
+
+.internships-filters {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px 12px;
+  overflow: hidden;
+  isolation: isolate;
+  padding: clamp(26px, 3.6vw, 40px);
+  border: 1px solid rgba(255, 255, 255, .9);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, .94);
+  box-shadow: 0 20px 54px rgba(24, 44, 68, .12);
+}
+
+.internships-filters > :not(.internships-filter-atmosphere) {
+  position: relative;
+  z-index: 1;
+}
+
+.internships-filter-atmosphere,
+.internships-empty-atmosphere {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.internships-filter-glow,
+.internships-empty-glow {
+  position: absolute;
+  display: block;
+  width: 300px;
+  height: 230px;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: .18;
+  will-change: transform;
+}
+
+.internships-filter-glow--green {
+  top: -125px;
+  left: 8%;
+  background: radial-gradient(ellipse, rgba(83, 150, 110, .72), transparent 70%);
+}
+
+.internships-filter-glow--gold {
+  right: 4%;
+  bottom: -145px;
+  background: radial-gradient(ellipse, rgba(221, 169, 82, .7), transparent 70%);
+}
+
+.internships-field {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+}
+
+.internships-field > span {
+  color: #617493;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.internships-field > span i {
+  margin-right: 5px;
+  color: #7890b1;
+  font-size: 12px;
+  font-style: normal;
+}
+
+.internships-field input,
+.internships-field select {
+  width: 100%;
+  min-width: 0;
+  min-height: 54px;
+  padding: 0 15px;
+  border: 1px solid #dce4ef;
+  border-radius: 10px;
+  background: #f8fafd;
+  color: #263a55;
+  font: 500 15px/1.4 var(--font-sans);
+  opacity: .9;
+}
+
+.internships-field input::placeholder {
+  color: #62728a;
+}
+
+.internships-input-wrap {
+  position: relative;
+}
+
+.internships-input-wrap > i {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  color: #326481;
+  font-size: 22px;
+  font-style: normal;
+  line-height: 1;
+  transform: translateY(-55%);
+  pointer-events: none;
+}
+
+.internships-input-wrap input {
+  padding-left: 42px;
+}
+
+.internships-results {
+  margin-top: 30px;
+}
+
+.internships-results-heading,
+.internships-heading-title {
+  display: flex;
+  align-items: center;
+}
+
+.internships-results-heading {
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.internships-heading-title {
+  min-width: 0;
+  gap: 10px;
+}
+
+.internships-heading-title > span:first-child {
+  color: #087b70;
+  font-size: 21px;
+  transform: rotate(-10deg);
+}
+
+.internships-heading-title h2 {
+  margin: 0;
+  color: #1c3150;
+  font: 750 clamp(20px, 2.4vw, 25px)/1.2 var(--font-sans);
+  letter-spacing: -.025em;
+  white-space: nowrap;
+}
+
+.internships-heading-rule {
+  width: 42px;
+  height: 2px;
+  flex: 1 1 60px;
+  margin-left: 2px;
+  background: linear-gradient(90deg, #d6dfeb, transparent);
+}
+
+.internships-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 1px solid #dce4ef;
+  border-radius: 999px;
+  color: #52617a;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.internships-count i {
+  color: #687c99;
+  font-style: normal;
+}
+
+.internships-empty {
+  position: relative;
+  display: flex;
+  min-height: 280px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 34px 20px 24px;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid rgba(255, 255, 255, .82);
+  border-radius: 22px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, .69), rgba(246, 248, 242, .48));
+  box-shadow: 0 18px 48px rgba(24, 44, 68, .055), inset 0 1px rgba(255, 255, 255, .8);
+  text-align: center;
+}
+
+.internships-empty > :not(.internships-empty-atmosphere) {
+  position: relative;
+  z-index: 1;
+}
+
+.internships-empty-glow--green {
+  top: 5%;
+  left: 18%;
+  width: 340px;
+  height: 240px;
+  background: radial-gradient(ellipse, rgba(122, 175, 143, .48), transparent 72%);
+}
+
+.internships-empty-glow--gold {
+  right: 12%;
+  bottom: -12%;
+  width: 300px;
+  height: 220px;
+  background: radial-gradient(ellipse, rgba(226, 185, 113, .35), transparent 72%);
+}
+
+.internships-empty-icon {
+  display: grid;
+  width: 68px;
+  height: 68px;
+  margin-bottom: 12px;
+  place-items: center;
+  border: 1px solid rgba(186, 145, 76, .2);
+  border-radius: 22px 22px 22px 8px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, .92), rgba(244, 237, 217, .7));
+  color: #9ba99b;
+  box-shadow: 0 8px 22px rgba(38, 78, 56, .08), inset 0 0 16px rgba(192, 151, 77, .08);
+  will-change: transform;
+}
+
+.internships-empty-icon svg {
+  width: 58px;
+  height: 58px;
+  stroke: currentColor;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.internships-empty-icon path:first-child {
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+.internships-empty-icon path:nth-child(2) {
+  fill: none;
+}
+
+.internships-empty h3 {
+  margin: 0;
+  color: #294738;
+  font: 750 18px/1.3 var(--font-sans);
+}
+
+.internships-empty p {
+  margin: 7px 0 0;
+  color: #6c7f70;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.internships-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 26px;
+}
+
+.internship-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 14px;
+  padding: 20px 22px;
+  border: 1px solid #e0e8f1;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, .8);
+}
+
+.internship-card > span {
+  grid-column: 1 / -1;
+  color: #687c99;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.internship-card h3 {
+  margin: 0;
+  color: #203b61;
+  font: 700 18px/1.35 var(--font-sans);
+}
+
+.internship-card button {
+  grid-column: 2;
+  grid-row: 2;
+  border: 0;
+  background: transparent;
+  color: #256b64;
+  font: 700 13px/1 var(--font-sans);
+}
+
+.internships-modal-art .intern-art-draw {
+  fill: none;
+  stroke: rgba(255, 255, 255, .92);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 1px 5px rgba(255, 255, 255, .18));
+}
+
+.internships-modal-art .intern-art-cap {
+  fill: #e9b860;
+  stroke: #fff3d8;
+  stroke-width: 2;
+  opacity: 0;
+  filter: drop-shadow(0 0 18px rgba(233, 184, 96, .38));
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.internships-modal-art .intern-art-spark {
+  fill: #f3c879;
+  opacity: 0;
+  filter: drop-shadow(0 0 7px rgba(243, 200, 121, .65));
+}
+
+.internships-modal-art .intern-art-ground {
+  stroke: rgba(208, 234, 207, .76);
+  stroke-width: 3;
+}
+
+@media (max-width: 760px) {
+  .available-internships-page .pagehero {
+    min-height: 410px;
+  }
+
+  .available-internships-page .pagehero-content {
+    padding-block: 100px 42px;
+  }
+
+  .available-internships-page .pagehero-art {
+    top: auto;
+    right: 0;
+    bottom: 0;
+    width: min(64vw, 360px);
+    opacity: .3;
+  }
+
+  .internships-wrap {
+    margin-top: -38px;
+  }
+
+  .internships-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .internships-search {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 520px) {
+  .available-internships-page .pagehero {
+    min-height: 420px;
+  }
+
+  .available-internships-page .pagehero h1 {
+    font-size: clamp(31px, 9vw, 42px);
+  }
+
+  .available-internships-page .pagehero-lede br {
+    display: none;
+  }
+
+  .available-internships-page .pagehero-facts dl {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .available-internships-page .pagehero-facts dl > div {
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 12px 6px;
+    text-align: center;
+  }
+
+  .available-internships-page .pagehero-facts dl > div + div {
+    padding-left: 6px;
+  }
+
+  .available-internships-page .pagehero-facts dd {
+    font-size: 20px;
+  }
+
+  .available-internships-page .pagehero-facts dt {
+    font-size: 8px;
+  }
+
+  .internships-wrap {
+    width: min(100% - 36px, 1280px);
+    margin-top: -28px;
+  }
+
+  .internships-filters {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 13px;
+    padding: 18px;
+    border-radius: 17px;
+  }
+
+  .internships-search {
+    grid-column: auto;
+  }
+
+  .internships-results-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .internships-heading-title h2 {
+    white-space: normal;
+  }
+
+  .internships-empty {
+    min-height: 240px;
+    padding-inline: 8px;
+  }
+}

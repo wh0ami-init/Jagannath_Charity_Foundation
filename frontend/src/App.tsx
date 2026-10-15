@@ -19,7 +19,15 @@ const Contact = lazy(() => import("./pages/Contact"));
 const Volunteer = lazy(() => import("./pages/Volunteer"));
 const Services = lazy(() => import("./pages/Services"));
 const Privacy = lazy(() => import("./pages/Privacy"));
+const Campaigns = lazy(() => import("./pages/Campaigns"));
+const ProgramsAndEvents = lazy(() => import("./pages/ProgramsAndEvents"));
+const ProjectExpenses = lazy(() => import("./pages/ProjectExpenses"));
+const Careers = lazy(() => import("./pages/Careers"));
+const AvailableInternships = lazy(() => import("./pages/AvailableInternships"));
+const CertificateVerification = lazy(() => import("./pages/CertificateVerification"));
 const ComingSoon = lazy(() => import("./pages/ComingSoon"));
+const ActiveBeneficiaries = lazy(() => import("./pages/ActiveBeneficiaries"));
+const ApplyBeneficiary = lazy(() => import("./pages/ApplyBeneficiary"));
 const AdminLogin = lazy(() => import("./pages/admin/Login"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 
@@ -56,7 +64,15 @@ export default function App() {
               <Route path="/contact" component={Contact} />
               <Route path="/volunteer" component={Volunteer} />
               <Route path="/services" component={Services} />
-              {comingSoonSections.map((section) => (
+              <Route path="/campaigns" component={Campaigns} />
+              <Route path="/programs-and-events" component={ProgramsAndEvents} />
+              <Route path="/project-expenses" component={ProjectExpenses} />
+              <Route path="/careers" component={Careers} />
+              <Route path="/internships/available" component={AvailableInternships} />
+              <Route path="/internships/certificate-verification" component={CertificateVerification} />
+              <Route path="/beneficiaries/active" component={ActiveBeneficiaries} />
+              <Route path="/beneficiaries/apply" component={ApplyBeneficiary} />
+              {comingSoonSections.filter((section) => !["/campaigns", "/programs-and-events", "/project-expenses", "/careers", "/internships/available", "/internships/certificate-verification", "/beneficiaries/active", "/beneficiaries/apply"].includes(section.href)).map((section) => (
                 <Route key={section.href} path={section.href}>
                   <ComingSoon section={section} />
                 </Route>

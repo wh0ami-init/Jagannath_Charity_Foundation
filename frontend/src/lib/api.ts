@@ -68,7 +68,7 @@ export type SiteContent = Record<string, { label: string; page: string; value: s
 
 export interface FormSubmission {
   id: number;
-  kind: "contact" | "volunteer" | "pledge" | "newsletter" | "service";
+  kind: "contact" | "volunteer" | "pledge" | "newsletter" | "service" | "beneficiary";
   name: string;
   email: string;
   phone: string;
@@ -79,6 +79,53 @@ export interface FormSubmission {
   amount: number | null;
   cause: string;
   created_at: string;
+}
+
+export interface BeneficiaryApplicationPayload {
+  full_name: string;
+  gender: string;
+  date_of_birth: string | null;
+  father_name: string;
+  caste_category: string;
+  phone: string;
+  email: string;
+  address: string;
+  state: string;
+  district: string;
+  beneficiary_category: string;
+  other_category: string;
+  reason: string;
+  consent: boolean;
+  public_listing: boolean;
+  public_display_name: string;
+  website: string;
+}
+
+export interface PublicBeneficiary {
+  id: string;
+  display_name: string;
+  category: string;
+  status: "active";
+}
+
+export async function submitBeneficiaryApplication(payload: BeneficiaryApplicationPayload) {
+  const res = await fetch(apiUrl("/api/beneficiaries/applications"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ detail: "Your application could not be saved." }));
+    const detail = Array.isArray(error.detail) ? error.detail[0]?.msg : error.detail;
+    throw new Error(detail || "Your application could not be saved.");
+  }
+  return res.json() as Promise<{ received: boolean; listed: boolean; id?: number }>;
+}
+
+export async function fetchPublicBeneficiaries(): Promise<PublicBeneficiary[]> {
+  const res = await fetch(apiUrl("/api/beneficiaries"));
+  if (!res.ok) throw new Error("Could not load the beneficiary directory");
+  return res.json();
 }
 
 export interface AdminDonation {

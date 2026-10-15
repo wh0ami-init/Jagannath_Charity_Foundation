@@ -65,9 +65,10 @@ export default function Privacy() {
                 <li><strong>Pledges:</strong> contact details, a named cause and an optional pledge amount. A pledge is an expression of interest, not a payment.</li>
                 <li><strong>Programme updates:</strong> your email address and consent to be contacted. Update emails are not sent automatically by the current site.</li>
                 <li><strong>Community portal requests:</strong> contact details, district or city, selected service and the message you send.</li>
+                <li><strong>Beneficiary applications:</strong> name, phone number, optional email and address, and the personal, location and support details you choose to include. If you separately opt in to the public directory, only the display name and support category you choose are shown. We do not accept identity document uploads through this form.</li>
               </ul>
               <p>
-                The form asks for an email address and your consent before it can be submitted. Please avoid including sensitive information that is not needed to answer your request. If you email or call the Foundation directly, the details you choose to share are also received by the relevant team.
+                Forms ask for consent before submission; an email address is optional on beneficiary applications. Public directory inclusion is a separate choice and is off by default. Please avoid including sensitive information that is not needed to answer your request. If you email or call the Foundation directly, the details you choose to share are also received by the relevant team.
               </p>
               <p>
                 For abuse prevention, the website’s server temporarily processes network information such as an IP address when applying request limits. Hosting infrastructure may also handle technical request data under its own operating and security practices.
@@ -142,7 +143,7 @@ export default function Privacy() {
 
             <PolicySection id="children" number="08" title="Children’s privacy">
               <p>
-                This website’s forms are intended for people able to make their own request. Please do not submit a child’s personal details unless you are authorized to do so. If you believe a child’s information was sent to us by mistake, contact the Foundation and ask us to review it.
+                A parent or authorized guardian should submit a beneficiary application on behalf of a child. Please do not submit a child’s personal details unless you are authorized to do so. If you believe a child’s information was sent to us by mistake, contact the Foundation and ask us to review it.
               </p>
             </PolicySection>
 

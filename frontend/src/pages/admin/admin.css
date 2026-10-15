@@ -1123,10 +1123,68 @@
     color: #8a3a26;
 }
 
+.ac-pill[data-kind="beneficiary"] {
+    background: #e8f0e7;
+    color: #315d3d;
+}
+
 .ac-msg-subject {
     margin: 8px 0 2px;
     font-weight: 800;
     color: var(--g950);
+}
+
+.ac-beneficiary-details {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 18px;
+    margin: 14px 0 4px;
+    padding: 14px 16px;
+    border: 1px solid rgba(49, 93, 61, .14);
+    border-radius: 14px;
+    background: #f7faf5;
+}
+
+.ac-beneficiary-details > div {
+    min-width: 0;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(49, 93, 61, .09);
+}
+
+.ac-beneficiary-details > div:last-child,
+.ac-beneficiary-details > div:nth-last-child(2):nth-child(odd) {
+    border-bottom: 0;
+}
+
+.ac-beneficiary-details dt {
+    color: #718174;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.ac-beneficiary-details dd {
+    margin: 4px 0 0;
+    color: #263d30;
+    font-size: 13px;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+@media (max-width: 620px) {
+    .ac-beneficiary-details {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .ac-beneficiary-details > div:nth-last-child(2):nth-child(odd) {
+        border-bottom: 1px solid rgba(49, 93, 61, .09);
+    }
+
+    .ac-beneficiary-details > div:last-child {
+        border-bottom: 0;
+    }
 }
 
 .ac-msg-text {
