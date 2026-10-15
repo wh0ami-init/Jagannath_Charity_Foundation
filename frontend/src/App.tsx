@@ -3,6 +3,7 @@ import { Redirect, Route, Switch, useLocation } from "wouter";
 import { ImagesProvider } from "./lib/ImagesContext";
 import { SiteContentProvider } from "./lib/SiteContentContext";
 import WelcomeScreen from "./components/WelcomeScreen";
+import { comingSoonSections } from "./lib/comingSoonSections";
 
 const Home = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
@@ -18,6 +19,7 @@ const Contact = lazy(() => import("./pages/Contact"));
 const Volunteer = lazy(() => import("./pages/Volunteer"));
 const Services = lazy(() => import("./pages/Services"));
 const Privacy = lazy(() => import("./pages/Privacy"));
+const ComingSoon = lazy(() => import("./pages/ComingSoon"));
 const AdminLogin = lazy(() => import("./pages/admin/Login"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 
@@ -54,6 +56,11 @@ export default function App() {
               <Route path="/contact" component={Contact} />
               <Route path="/volunteer" component={Volunteer} />
               <Route path="/services" component={Services} />
+              {comingSoonSections.map((section) => (
+                <Route key={section.href} path={section.href}>
+                  <ComingSoon section={section} />
+                </Route>
+              ))}
               <Route path="/privacy-policy" component={Privacy} />
               <Route path="/admin/login" component={AdminLogin} />
               <Route path="/admin" component={AdminDashboard} />

@@ -5,6 +5,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useReducedMotion } from "motion/react";
+import { comingSoonSections } from "../lib/comingSoonSections";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -13,15 +14,25 @@ const primaryLinks = [
   { href: "/programmes", label: "Programmes" },
   { href: "/projects", label: "Projects" },
   { href: "/impact", label: "Our impact" },
+  { href: "/certificates", label: "Certificates" },
+  { href: "/gallery", label: "Gallery" },
+  { href: "/team", label: "People" },
 ];
 
+const internshipLinks = comingSoonSections.filter((link) =>
+  link.href.startsWith("/internships/"),
+);
+const beneficiaryLinks = comingSoonSections.filter((link) =>
+  link.href.startsWith("/beneficiaries/"),
+);
 const exploreLinks = [
-  { href: "/team", label: "People", note: "Trustees, leadership and advisors" },
   { href: "/partners", label: "Partners", note: "The organisations alongside us" },
-  { href: "/gallery", label: "Gallery", note: "Moments from the Foundation" },
   { href: "/volunteer", label: "Volunteer", note: "Offer your time and experience" },
   { href: "/services", label: "Community portal", note: "Membership, opportunities and requests" },
   { href: "/contact", label: "Contact", note: "Reach the Foundation team" },
+  ...comingSoonSections.filter((link) =>
+    !link.href.startsWith("/internships/") && !link.href.startsWith("/beneficiaries/"),
+  ),
 ];
 
 export default function Header() {
@@ -91,7 +102,7 @@ export default function Header() {
     { scope: headerRef, dependencies: [reducedMotion] },
   );
 
-  // 2) Menu items slide in one by one (phone menu + "Explore" panel)
+  // Menu items slide in for the responsive and grouped navigation panels.
   useGSAP(
     () => {
       const header = headerRef.current;
@@ -110,7 +121,7 @@ export default function Header() {
       }
       if (exploreOpen) {
         // opacity only: these links already have their own hover transform in CSS
-        gsap.from(header.querySelectorAll(".nav-explore-link"), {
+        gsap.from(header.querySelectorAll(".nav-explore-link, .nav-explore-group"), {
           opacity: 0,
           duration: 0.4,
           ease: "power1.out",
@@ -200,7 +211,10 @@ export default function Header() {
             aria-label={open ? "Close navigation" : "Open navigation"}
             aria-controls="site-navigation"
             aria-expanded={open}
-            onClick={() => setOpen((value) => !value)}
+            onClick={() => {
+              setOpen((value) => !value);
+              setExploreOpen(false);
+            }}
           >
             <span>{open ? "Close" : "Menu"}</span>
             <i aria-hidden="true" className={open ? "is-open" : ""}>
@@ -234,18 +248,12 @@ export default function Header() {
                 }}
               />
             ))}
-            <NavLink
-              href="/certificates"
-              label="Certificates"
-              onNavigate={() => {
-                setOpen(false);
-                setExploreOpen(false);
-              }}
-            />
             <div
               className={`nav-explore${exploreOpen ? " is-open" : ""}`}
               onPointerEnter={(event) => {
-                if (event.pointerType === "mouse") setExploreOpen(true);
+                if (event.pointerType === "mouse") {
+                  setExploreOpen(true);
+                }
               }}
               onPointerLeave={(event) => {
                 if (event.pointerType === "mouse") setExploreOpen(false);
@@ -254,7 +262,7 @@ export default function Header() {
               <button
                 ref={exploreToggleRef}
                 type="button"
-                className={`nav-explore-toggle${exploreLinks.some((link) => location === link.href || location.startsWith(`${link.href}/`)) ? " active" : ""}`}
+                className={`nav-explore-toggle${exploreLinks.some((link) => isCurrentRoute(location, link.href)) || internshipLinks.some((link) => isCurrentRoute(location, link.href)) || beneficiaryLinks.some((link) => isCurrentRoute(location, link.href)) ? " active" : ""}`}
                 aria-expanded={exploreOpen}
                 aria-controls="nav-explore-panel"
                 onClick={(event) => {
@@ -273,10 +281,10 @@ export default function Header() {
                 <svg
                   className="nav-explore-chevron"
                   aria-hidden="true"
-                  viewBox="0 0 12 12"
+                  viewBox="0 0 16 16"
                   fill="none"
                 >
-                  <path d="m2.5 4.5 3.5 3 3.5-3" />
+                  <path d="M1 4 8 12 15 4Z" fill="currentColor" stroke="none" />
                 </svg>
               </button>
               <div
@@ -305,6 +313,53 @@ export default function Header() {
                     </Link>
                   ))}
                 </div>
+                <section className="nav-explore-groups" aria-label="Opportunities and support">
+                  <p className="nav-explore-groups-heading">Opportunities &amp; support</p>
+                  <div className="nav-explore-group-grid">
+                    <div className="nav-explore-group">
+                      <span className="nav-explore-group-title">Internships</span>
+                      <small className="nav-explore-group-note">Opportunities and certificate checks</small>
+                      <div className="nav-explore-subgrid">
+                        {internshipLinks.map((link) => (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            tabIndex={exploreOpen ? 0 : -1}
+                            onClick={() => {
+                              setOpen(false);
+                              setExploreOpen(false);
+                            }}
+                            className="nav-explore-child"
+                          >
+                            <span>{link.label}</span>
+                            <i aria-hidden="true">↗</i>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="nav-explore-group">
+                      <span className="nav-explore-group-title">Beneficiaries</span>
+                      <small className="nav-explore-group-note">Support and application information</small>
+                      <div className="nav-explore-subgrid">
+                        {beneficiaryLinks.map((link) => (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            tabIndex={exploreOpen ? 0 : -1}
+                            onClick={() => {
+                              setOpen(false);
+                              setExploreOpen(false);
+                            }}
+                            className="nav-explore-child"
+                          >
+                            <span>{link.label}</span>
+                            <i aria-hidden="true">↗</i>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </section>
               </div>
             </div>
             <Link
@@ -339,4 +394,8 @@ function NavLink({
       {label}
     </Link>
   );
+}
+
+function isCurrentRoute(location: string, href: string) {
+  return location === href || location.startsWith(`${href}/`);
 }

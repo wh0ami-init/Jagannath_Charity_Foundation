@@ -3,6 +3,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useReducedMotion } from "motion/react";
 import { Link } from "wouter";
+import type { HeroMotif } from "../lib/comingSoonSections";
 import "./PageHero.css";
 
 gsap.registerPlugin(useGSAP);
@@ -19,7 +20,20 @@ type Theme =
   | "certificates";
 
 type Fact = { value: string; label: string };
-type Motif = "origin" | "programmes" | "measure" | "leadership" | "giving" | "place" | "volunteers" | "privacy" | "projects" | "partners" | "services" | "documents";
+type Motif =
+  | "origin"
+  | "programmes"
+  | "measure"
+  | "leadership"
+  | "giving"
+  | "place"
+  | "volunteers"
+  | "privacy"
+  | "projects"
+  | "partners"
+  | "services"
+  | "documents"
+  | HeroMotif;
 
 type PageHeroProps = {
   theme: Theme;
@@ -123,6 +137,15 @@ export default function PageHero({
       </div>
       <div className="pagehero-art" aria-hidden="true">
         <svg viewBox="0 0 640 500" role="presentation">
+          {motif === "video-gallery" && <g><path className="pagehero-art-line" d="M245 164 H505 V356 H245 Z M245 204 H505 M245 316 H505 M272 164 V204 M315 164 V204 M358 164 V204 M401 164 V204 M444 164 V204 M272 316 V356 M315 316 V356 M358 316 V356 M401 316 V356 M444 316 V356" /><path className="pagehero-art-accent" d="m355 231 82 42-82 43v-85Z" /><circle className="pagehero-art-node" cx="480" cy="182" r="7" /></g>}
+          {motif === "campaigns" && <g><path className="pagehero-art-line" d="M272 405 V112 M275 132 C350 95 417 167 500 128 V272 C417 311 350 239 275 276" /><path className="pagehero-art-accent" d="M280 143 C352 112 418 177 493 140 V257 C418 294 352 229 280 260 V143Z" /><path className="pagehero-art-line" d="M232 405 H313" /><circle className="pagehero-art-node" cx="492" cy="140" r="8" /></g>}
+          {motif === "events" && <g><path className="pagehero-art-line" d="M258 157 H502 V374 H258 Z M258 218 H502 M312 128 V184 M448 128 V184 M299 257 H330 M365 257 H396 M431 257 H462 M299 299 H330 M365 299 H396 M431 299 H462" /><path className="pagehero-art-accent" d="m383 242 15 30 33 5-24 23 6 33-30-16-29 16 6-33-24-23 33-5 14-30Z" /><circle className="pagehero-art-node" cx="312" cy="157" r="8" /><circle className="pagehero-art-node" cx="448" cy="157" r="8" /></g>}
+          {motif === "expenses" && <g><path className="pagehero-art-line" d="M269 112 H422 L488 178 V395 H269 Z M422 112 V180 H488 M311 221 H438 M311 263 H438 M311 305 H368 M311 359 H449" /><path className="pagehero-art-accent" d="M378 359 V328 H401 V359 M412 359 V296 H435 V359 M446 359 V264 H469 V359" /><circle className="pagehero-art-node" cx="469" cy="264" r="7" /></g>}
+          {motif === "internships" && <g><path className="pagehero-art-line" d="M390 168 C340 140 286 148 244 170 V369 C294 345 343 350 390 380 C437 350 486 345 536 369 V170 C494 148 440 140 390 168 Z M390 168 V380 M270 211 C307 194 343 195 366 207 M270 254 C307 237 343 238 366 250 M514 211 C477 194 441 195 414 207 M514 254 C477 237 441 238 414 250" /><path className="pagehero-art-accent" d="m490 116 8 18 19 3-14 13 4 19-17-10-17 10 4-19-14-13 19-3 8-18Z" /></g>}
+          {motif === "certificate-check" && <g><path className="pagehero-art-line" d="M282 112 H424 L489 177 V358 H282 Z M424 112 V180 H489 M318 225 H443 M318 265 H416" /><circle className="pagehero-art-orbit" cx="471" cy="350" r="74" /><path className="pagehero-art-accent" d="m435 350 25 25 48-53" /><path className="pagehero-art-line" d="m445 408-6 38 32-16 32 16-7-39" /></g>}
+          {motif === "careers" && <g><path className="pagehero-art-line" d="M246 211 H534 V382 H246 Z M220 247 H560 V382 H220 Z M351 247 V293 H429 V247 M378 280 H402 V297 H378 Z" /><path className="pagehero-art-accent" d="M351 247 V194 C351 174 367 158 387 158 H423 C443 158 459 174 459 194 V211 M387 285 V293 H402 V285" /><circle className="pagehero-art-node" cx="405" cy="158" r="9" /></g>}
+          {motif === "beneficiary-directory" && <g><path className="pagehero-art-line" d="M231 379 C231 322 267 288 310 288 C353 288 389 322 389 379 M372 379 C372 308 414 264 465 264 C516 264 554 308 554 379 M207 412 H579" /><circle className="pagehero-art-node" cx="310" cy="226" r="38" /><circle className="pagehero-art-node" cx="465" cy="202" r="43" /><path className="pagehero-art-accent" d="M387 358 C401 347 418 341 436 341 M406 331 C418 321 432 316 447 316" /></g>}
+          {motif === "beneficiary-apply" && <g><path className="pagehero-art-line" d="M282 108 H429 L492 171 V388 H282 Z M429 108 V174 H492 M318 222 H420 M318 263 H389 M318 304 H389" /><circle className="pagehero-art-orbit" cx="450" cy="316" r="57" /><circle className="pagehero-art-node" cx="450" cy="293" r="17" /><path className="pagehero-art-line" d="M416 352 C421 329 436 319 450 319 C464 319 479 329 484 352" /><path className="pagehero-art-accent" d="M430 388 H470 M450 368 V408" /></g>}
           {motif === "origin" && <g><path className="pagehero-art-line" d="M380 414 V267 M380 322 C332 300 306 260 300 206 M380 326 C433 297 463 250 472 195 M380 283 C354 248 356 212 370 172" /><circle className="pagehero-art-node" cx="300" cy="202" r="13" /><circle className="pagehero-art-node" cx="474" cy="190" r="13" /><circle className="pagehero-art-node" cx="372" cy="166" r="13" /><path className="pagehero-art-line" d="M326 414 H434" /></g>}
           {motif === "programmes" && <g><circle className="pagehero-art-orbit" cx="390" cy="250" r="120" /><path className="pagehero-art-line" d="M390 130 V370 M286 190 L494 310 M286 310 L494 190" /><circle className="pagehero-art-node" cx="390" cy="130" r="13" /><circle className="pagehero-art-node" cx="494" cy="190" r="13" /><circle className="pagehero-art-node" cx="494" cy="310" r="13" /><circle className="pagehero-art-node" cx="390" cy="370" r="13" /><circle className="pagehero-art-node" cx="286" cy="310" r="13" /><circle className="pagehero-art-node" cx="286" cy="190" r="13" /></g>}
           {motif === "measure" && <g><path className="pagehero-art-line" d="M240 382 H550 M260 382 V310 M330 382 V260 M400 382 V214 M470 382 V173 M540 382 V123" /><path className="pagehero-art-line" d="M260 282 L330 239 L400 260 L470 184 L540 145" /><circle className="pagehero-art-node" cx="330" cy="239" r="7" /><circle className="pagehero-art-node" cx="400" cy="260" r="7" /><circle className="pagehero-art-node" cx="470" cy="184" r="7" /><circle className="pagehero-art-node" cx="540" cy="145" r="7" /></g>}
