@@ -79,58 +79,6 @@ const principles = [
   },
 ];
 
-/* ---------- Quick link icons (inline SVG, inherit colour via currentColor) ---------- */
-
-const IdCardIcon = () => (
-  <svg
-    viewBox="0 0 576 512"
-    className="h-10 w-10"
-    fill="currentColor"
-    aria-hidden="true"
-  >
-    <path d="M528 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h480c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zM176 128c35.3 0 64 28.7 64 64s-28.7 64-64 64-64-28.7-64-64 28.7-64 64-64zm112 236.8c0 10.6-10 19.2-22.4 19.2H86.4C74 384 64 375.4 64 364.8v-19.2c0-31.8 30.1-57.6 67.2-57.6h5c12.3 5.1 25.7 8 39.8 8s27.6-2.9 39.8-8h5c37.1 0 67.2 25.8 67.2 57.6v19.2zM512 312c0 4.4-3.6 8-8 8H360c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h144c4.4 0 8 3.6 8 8v16zm0-64c0 4.4-3.6 8-8 8H360c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h144c4.4 0 8 3.6 8 8v16zm0-64c0 4.4-3.6 8-8 8H360c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h144c4.4 0 8 3.6 8 8v16z" />
-  </svg>
-);
-
-const CertificateIcon = () => (
-  <svg
-    viewBox="0 0 512 512"
-    className="h-10 w-10"
-    fill="currentColor"
-    aria-hidden="true"
-  >
-    <path d="M458.622 255.92l45.985-45.005c13.708-12.977 7.316-36.039-10.664-40.339l-62.65-15.99 17.661-62.015c4.991-17.838-11.829-34.663-29.661-29.671l-61.994 17.667-15.984-62.671C337.085.197 313.765-6.276 300.99 7.228L256 53.57 211.011 7.229c-12.63-13.351-36.047-7.234-40.325 10.668l-15.985 62.671-61.995-17.667C74.87 57.907 58.056 74.738 63.046 92.572l17.661 62.015-62.65 15.99C.069 174.878-6.31 197.944 7.392 210.915l45.985 45.005-45.985 45.004c-13.708 12.977-7.316 36.039 10.664 40.339l62.65 15.99-17.661 62.015c-4.991 17.838 11.829 34.663 29.661 29.671l61.994-17.667 15.984 62.671c4.439 18.575 27.696 24.018 40.325 10.668L256 458.61l44.989 46.001c12.5 13.488 35.987 7.486 40.325-10.668l15.984-62.671 61.994 17.667c17.836 4.994 34.651-11.837 29.661-29.671l-17.661-62.015 62.65-15.99c17.987-4.302 24.366-27.367 10.664-40.339l-45.984-45.004z" />
-  </svg>
-);
-
-const PdfIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    className="h-10 w-10"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z" />
-    <path d="M14 2v5h5" />
-    <path d="M9 17c1.5-1 3-4 3-6.5 0-1-.8-1.2-1.1-.4-.6 1.7.5 4 2.1 5.2 1 .7 2.4.8 3 .4.6-.5-.3-1.2-1.4-1.2-1.6 0-3.6.7-5.1 1.9" />
-  </svg>
-);
-
-const quickLinks = [
-  { title: "Generate ID Card", href: "/generate-id-card", Icon: IdCardIcon },
-  {
-    title: "Generate Certificate",
-    href: "/generate-certificate",
-    Icon: CertificateIcon,
-  },
-  { title: "Appointment Letter", href: "/appointment-letter", Icon: PdfIcon },
-  { title: "Donate Us", href: "/donate", Icon: PdfIcon },
-];
-
 export default function Home() {
   const content = useSiteContent();
   const [slide, setSlide] = useState(0);
@@ -275,7 +223,7 @@ export default function Home() {
               Our story
             </span>
           </Link>
-        </div>
+        </div>git 
         <div className="hero-bottom">
           <span>JAGANNATH FOUNDATION</span>
           <span>PEOPLE · DIGNITY · POSSIBILITY</span>
@@ -301,27 +249,6 @@ export default function Home() {
           <span>MANAV SEVA</span>
           <b>सेवा</b>
           <span>ISHWAR SEVA</span>
-        </div>
-      </section>
-
-      {/* Quick links (Tailwind) */}
-      <section aria-label="Quick links" className="bg-transparent py-10">
-        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-5 px-4 sm:px-6 lg:grid-cols-4 lg:px-8">
-          {quickLinks.map(({ title, href, Icon }) => (
-            <Link
-              key={title}
-              href={href}
-              className="group flex min-h-[200px] flex-col items-center justify-center gap-4 rounded-xl bg-white/60 p-6 text-center shadow-[0_4px_20px_rgba(0,0,0,0.12)] backdrop-blur-sm transition duration-200 hover:-translate-y-1 hover:bg-white/90 hover:shadow-[0_8px_28px_rgba(0,0,0,0.18)] focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2"
-            >
-              <span className="text-orange-500 transition-transform duration-200 group-hover:scale-110">
-                <Icon />
-              </span>
-              <span className="font-serif text-xl font-bold text-[#17382f] transition-colors duration-200 group-hover:text-orange-600">
-                {title}
-              </span>
-              <span className="h-0.5 w-8 rounded bg-orange-500 transition-all duration-200 group-hover:w-16" />
-            </Link>
-          ))}
         </div>
       </section>
 
