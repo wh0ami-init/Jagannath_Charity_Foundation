@@ -10,7 +10,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 from app.database import Base, get_db
-from app.models import Donation
+from app.models import Donation, RecurringDonation
 from app.routers import payments
 
 
@@ -161,3 +161,37 @@ class PaymentVerificationTests(unittest.TestCase):
         self.assertEqual(self.request("/api/payments/webhook", self.event(), signature="\u00e9")[0], 400)
         self.client.payment.fetch.assert_not_called()
         self.assertEqual(self.snapshot(), ("pending", None, None))
+
+    def test_captured_subscription_webhook_creates_recurring_receipt_record_once(self):
+        with self.sessions() as db:
+            db.add(RecurringDonation(
+                razorpay_subscription_id="sub_test", razorpay_plan_id="plan_test",
+                amount_paise=10000, currency="INR", status="created",
+                donor_name="A Donor", donor_email="donor@example.org", donor_phone="+91 98765 43210",
+                cause="Where most needed",
+            ))
+            db.commit()
+        self.client.subscription.fetch.return_value = {
+            "id": "sub_test", "plan_id": "plan_test", "status": "active",
+        }
+        self.client.payment.fetch.return_value = {
+            "id": "pay_recurring", "amount": 10000, "currency": "INR",
+            "status": "captured", "captured": True, "created_at": 1_700_000_000,
+        }
+        event = {
+            "event": "subscription.charged",
+            "payload": {
+                "subscription": {"entity": {"id": "sub_test", "status": "active"}},
+                "payment": {"entity": {"id": "pay_recurring", "status": "captured"}},
+            },
+        }
+        body = json.dumps(event).encode()
+        signature = self.signature(body, "webhook-secret")
+        self.assertEqual(self.request("/api/payments/webhook", None, signature, raw=body)[0], 200)
+        self.assertEqual(self.request("/api/payments/webhook", None, signature, raw=body)[0], 200)
+        with self.sessions() as db:
+            receipts = db.query(Donation).filter_by(razorpay_payment_id="pay_recurring").all()
+            self.assertEqual(len(receipts), 1)
+            self.assertEqual(receipts[0].razorpay_subscription_id, "sub_test")
+            self.assertEqual(receipts[0].status, "paid")
+            self.assertEqual(db.query(RecurringDonation).one().status, "active")

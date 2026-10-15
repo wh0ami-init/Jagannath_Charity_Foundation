@@ -15,12 +15,6 @@ class Settings(BaseSettings):
     razorpay_key_secret: str = ""
     razorpay_webhook_secret: str = ""
     razorpay_mode: str = "test"
-    smtp_host: str = ""
-    smtp_port: int = 587
-    smtp_username: str = ""
-    smtp_password: str = ""
-    smtp_from_email: str = ""
-    smtp_use_tls: bool = True
 
     # Admin session cookie. Blank SameSite = "none" in production (frontend and API on
     # different sites, e.g. vercel.app + railway.app), "lax" otherwise. Use "lax" or
@@ -80,7 +74,7 @@ class Settings(BaseSettings):
         return self
 
     @model_validator(mode="after")
-    def validate_payment_mail_settings(self):
+    def validate_payment_settings(self):
         self.razorpay_mode = self.razorpay_mode.strip().lower()
         if self.razorpay_mode not in {"test", "live"}:
             raise ValueError("RAZORPAY_MODE must be test or live")

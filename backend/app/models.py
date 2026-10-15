@@ -87,6 +87,7 @@ class Donation(Base):
     razorpay_payment_id = Column(
         String(100), unique=True, nullable=True
     )
+    razorpay_subscription_id = Column(String(100), nullable=True, index=True)
 
     status = Column(String(20), nullable=False, default="pending")
 
@@ -103,20 +104,21 @@ class Donation(Base):
     paid_at = Column(DateTime, nullable=True)
 
 
-class DonationEmailCode(Base):
-    __tablename__ = "donation_email_codes"
+class RecurringDonation(Base):
+    __tablename__ = "recurring_donations"
 
     id = Column(Integer, primary_key=True)
-    email = Column(String(254), nullable=False, index=True)
+    razorpay_subscription_id = Column(String(100), unique=True, nullable=False)
+    razorpay_plan_id = Column(String(100), nullable=False)
+    authorization_payment_id = Column(String(100), nullable=True)
+    amount_paise = Column(Integer, nullable=False)
+    currency = Column(String(3), nullable=False, default="INR")
+    status = Column(String(24), nullable=False, default="created", index=True)
     donor_name = Column(String(150), nullable=False)
-    donor_phone = Column(String(40), nullable=False, default="")
+    donor_email = Column(String(254), nullable=False)
+    donor_phone = Column(String(40), nullable=False)
     donor_address = Column(String(500), nullable=False, default="")
-    amount_rupees = Column(Integer, nullable=False)
-    cause = Column(String(160), nullable=False, default="")
-    code_hash = Column(String(64), nullable=False)
-    verification_token_hash = Column(String(64), nullable=True)
-    attempts = Column(Integer, nullable=False, default=0)
-    expires_at = Column(DateTime, nullable=False)
-    verified_at = Column(DateTime, nullable=True)
-    used_at = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, nullable=False, default=utcnow)
+    cause = Column(String(160), nullable=False, default="Where most needed")
+    consented_at = Column(DateTime, nullable=False, default=utcnow)
+    created_at = Column(DateTime, nullable=False, default=utcnow, index=True)
+    updated_at = Column(DateTime, nullable=False, default=utcnow, onupdate=utcnow)

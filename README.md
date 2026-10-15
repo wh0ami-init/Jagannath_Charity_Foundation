@@ -9,7 +9,7 @@ Public website and private administration console for Jagannath Charity Foundati
 - Admin tools for editing selected site copy, replacing managed images and handling form submissions.
 - Vercel frontend and Railway API deployment support.
 
-The donation page supports one-time Razorpay checkout, email verification and personalized payment receipts. Test Mode is fixed at ₹100 and does not collect real money. Live payments require explicitly setting `RAZORPAY_MODE=live` with the Foundation's live account credentials. Pledge forms remain expressions of interest, not payments. The site does not automatically send newsletter messages.
+The donation page supports one-time Razorpay checkout, Razorpay monthly subscriptions and printable payment receipts. Test Mode uses ₹100 and does not collect real money. Live payments require `RAZORPAY_MODE=live` and the Foundation's live Razorpay credentials. Razorpay Subscriptions must also be enabled for the account. Pledge forms remain expressions of interest, not payments. Payment receipts are not official Form 10BE tax certificates. The site does not automatically send newsletter messages.
 
 ## Architecture
 
@@ -130,7 +130,6 @@ Vite embeds `VITE_API_URL` at build time. Redeploy the frontend after changing i
 | `FORM_IP_LIMIT`, `FORM_WINDOW_SECONDS` | No | Public form submissions per IP within the window. Defaults `10`, `900`. |
 | `RAZORPAY_MODE` | No | `test` by default; set to `live` only when the Foundation is ready to accept real donations. Backend requires matching `rzp_test_` or `rzp_live_` credentials. |
 | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` | Payment | Provider credentials; keep private. Use the webhook secret for Razorpay's captured-payment webhook. |
-| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM_EMAIL`, `SMTP_USE_TLS` | Payment email | SMTP delivery for email verification and confirmed donation receipts. These are backend-only settings. |
 | `VITE_API_URL` | Frontend | Public API origin, compiled into the frontend at build time. |
 
 ## Security and operations

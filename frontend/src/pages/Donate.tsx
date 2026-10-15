@@ -6,6 +6,7 @@ import Reveal from "../components/Reveal";
 import { submissionPayload, submitForm } from "../lib/api";
 import Stagger from "../components/Stagger";
 import RazorpayTestButton from "../components/RazorpayTestButton";
+import MonthlyAutoPay from "../components/MonthlyAutoPay";
 import "./donate.css";
 
 const causes = [
@@ -49,14 +50,14 @@ export default function Donate() {
         motif="giving"
         eyebrow="Donate"
         title="Choose how you’d like to support the Foundation."
-        description="Make a one-time contribution or record a pledge. Monthly AutoPay is not available yet. All income is applied only to the objects of the trust."
+        description="Make a one-time contribution, arrange a bank transfer or record a pledge. Monthly AutoPay setup is in progress. All income is applied only to the objects of the trust."
       />
 
       <section className="donation-choice-section wrap" aria-labelledby="donation-choice-title">
         <Reveal className="donation-choice-heading" delay={0.02}>
           <p className="donation-section-eyebrow">Ways to support</p>
           <h2 id="donation-choice-title">Choose how you’d like to contribute.</h2>
-          <p>Online checkout is in test mode. Monthly AutoPay is being prepared.</p>
+          <p>Choose a one-time gift or learn about monthly giving. AutoPay enrollment is being prepared.</p>
         </Reveal>
         <Stagger className="donation-choice-grid" gap={0.12} distance={24}>
           <a className="donation-choice-card donation-choice-card--once" href="#one-time">
@@ -79,7 +80,7 @@ export default function Donate() {
             </span>
             <span className="donation-choice-label">Recurring contribution</span>
             <h3>Give monthly with AutoPay</h3>
-            <p>Monthly AutoPay is not available yet. A one-time contribution will never enroll you in recurring payments.</p>
+            <p>Monthly AutoPay enrollment is being prepared. Your one-time contribution will never start a recurring payment.</p>
             <span className="donation-choice-link">Explore monthly giving <span aria-hidden="true">→</span></span>
           </a>
         </Stagger>
@@ -219,18 +220,7 @@ export default function Donate() {
       <section id="monthly-autopay" className="monthly-autopay-section" aria-labelledby="monthly-autopay-title">
         <div className="wrap py-16">
           <Reveal className="monthly-autopay-card" delay={0.04} direction="up">
-            <div className="monthly-autopay-copy">
-              <p className="donation-section-eyebrow">Monthly contribution</p>
-              <h2 id="monthly-autopay-title">Support the work month after month.</h2>
-              <p>Monthly AutoPay is not available yet. When it launches, it will use a separate UPI or card mandate flow with its own confirmation.</p>
-              <p className="monthly-autopay-note">
-                No recurring payment can be started from this website yet. A one-time contribution above does not enroll you in AutoPay.
-              </p>
-            </div>
-            <div className="monthly-autopay-status" role="status">
-              <span className="monthly-autopay-status-mark" aria-hidden="true">↻</span>
-              <span><strong>AutoPay setup is in progress</strong><small>Monthly giving will have its own setup and confirmation flow.</small></span>
-            </div>
+            <MonthlyAutoPay />
           </Reveal>
         </div>
       </section>

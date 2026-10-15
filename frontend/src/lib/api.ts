@@ -85,13 +85,26 @@ export interface AdminDonation {
   id: number; amount_paise: number; currency: string; status: string;
   donor_name: string; donor_email: string; donor_phone: string; donor_address: string;
   cause: string; order_id: string | null; payment_id: string | null;
-  created_at: string; paid_at: string | null; receipt_email_sent_at: string | null;
+  created_at: string; paid_at: string | null;
   refund_amount_paise: number; refunded_at: string | null;
+  subscription_id?: string | null;
+}
+
+export interface AdminRecurringDonation {
+  id: number; subscription_id: string; plan_id: string; amount_paise: number;
+  currency: string; status: string; donor_name: string; donor_email: string;
+  donor_phone: string; cause: string; created_at: string; updated_at: string;
 }
 
 export async function fetchDonations(): Promise<AdminDonation[]> {
   const res = await fetch(apiUrl("/api/payments/admin/donations"), { credentials: "include" });
   if (!res.ok) throw new Error("Could not load donations");
+  return res.json();
+}
+
+export async function fetchRecurringDonations(): Promise<AdminRecurringDonation[]> {
+  const res = await fetch(apiUrl("/api/payments/admin/subscriptions"), { credentials: "include" });
+  if (!res.ok) throw new Error("Could not load monthly mandates");
   return res.json();
 }
 

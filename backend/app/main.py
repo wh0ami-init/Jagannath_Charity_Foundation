@@ -38,11 +38,20 @@ donation_additions = {
     "receipt_email_sent_at": "DATETIME NULL",
     "refund_amount_paise": "INTEGER NOT NULL DEFAULT 0",
     "refunded_at": "DATETIME NULL",
+    "razorpay_subscription_id": "VARCHAR(100) NULL",
 }
 for column_name, column_definition in donation_additions.items():
     if column_name not in donation_columns:
         with engine.begin() as connection:
             connection.execute(text(f"ALTER TABLE donations ADD COLUMN {column_name} {column_definition}"))
+
+donation_indexes = {index["name"] for index in inspect(engine).get_indexes("donations")}
+if "ix_donations_razorpay_subscription_id" not in donation_indexes:
+    with engine.begin() as connection:
+        connection.execute(text(
+            "CREATE INDEX ix_donations_razorpay_subscription_id "
+            "ON donations (razorpay_subscription_id)"
+        ))
 
 app = FastAPI(title="Jagannath Foundation - Site API")
 

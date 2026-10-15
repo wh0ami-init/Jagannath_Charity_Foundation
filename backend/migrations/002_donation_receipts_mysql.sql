@@ -7,4 +7,4 @@ ALTER TABLE donations
     ADD COLUMN cause VARCHAR(160) NOT NULL DEFAULT '',
     ADD COLUMN receipt_email_sent_at DATETIME NULL;
 
--- donation_email_codes is created by SQLAlchemy metadata on backend startup.
+-- The legacy donation_email_codes table, if present, is unused and left intact.

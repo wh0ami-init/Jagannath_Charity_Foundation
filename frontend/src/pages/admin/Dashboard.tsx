@@ -17,11 +17,13 @@ import {
   deleteGalleryImage,
   deleteSubmission,
   fetchDonations,
+  fetchRecurringDonations,
   fetchContent,
   fetchSession,
   fetchSubmissions,
   FormSubmission,
   AdminDonation,
+  AdminRecurringDonation,
   ImageSlot,
   logout as apiLogout,
   replaceImage,
@@ -1132,7 +1134,7 @@ function MessagesView({
   );
 }
 
-function DonationsView({ items }: { items: AdminDonation[] }) {
+function DonationsView({ items, mandates }: { items: AdminDonation[]; mandates: AdminRecurringDonation[] }) {
   return <div className="ac-view">
     <p className="ac-kicker ac-reveal">Payments</p>
     <h2 className="ac-h ac-reveal">Donations</h2>
@@ -1142,7 +1144,16 @@ function DonationsView({ items }: { items: AdminDonation[] }) {
         <div className="inbox-heading"><strong>{d.donor_name || "Donor"}</strong><span className="ac-chip">{d.status}</span><time>{new Date(d.paid_at || d.created_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })} IST</time></div>
         <p><a href={`mailto:${d.donor_email}`}>{d.donor_email}</a>{d.donor_phone ? ` · ${d.donor_phone}` : ""}</p>
         <p>₹{(d.amount_paise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}{d.refund_amount_paise ? ` · refunded ₹${(d.refund_amount_paise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}` : ""} · {d.cause || "Where most needed"}</p>
-        <small>Order: {d.order_id || "—"} · Payment: {d.payment_id || "—"} · Receipt email: {d.receipt_email_sent_at ? "sent" : d.status === "paid" ? "not sent" : "pending payment"}</small>
+        <small>Order: {d.order_id || "—"} · Payment: {d.payment_id || "—"}{d.subscription_id ? ` · Monthly mandate: ${d.subscription_id}` : ""}</small>
+      </article>)}</div>}
+    <h3 className="ac-h ac-reveal" style={{ marginTop: 38, fontSize: 22 }}>Monthly AutoPay mandates</h3>
+    <p className="ac-sub ac-reveal">Mandate status is synchronized from Razorpay webhooks. Each captured instalment also appears in payment records above.</p>
+    {!mandates.length ? <p className="ac-empty"><strong>No monthly mandates yet</strong></p> :
+      <div className="inbox-list">{mandates.map(mandate => <article className="inbox-item ac-reveal" key={mandate.id}>
+        <div className="inbox-heading"><strong>{mandate.donor_name || "Donor"}</strong><span className="ac-chip">{mandate.status}</span><time>{new Date(mandate.created_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })} IST</time></div>
+        <p><a href={`mailto:${mandate.donor_email}`}>{mandate.donor_email}</a>{mandate.donor_phone ? ` · ${mandate.donor_phone}` : ""}</p>
+        <p>₹{(mandate.amount_paise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })} monthly · {mandate.cause}</p>
+        <small>Subscription: {mandate.subscription_id} · Plan: {mandate.plan_id}</small>
       </article>)}</div>}
   </div>;
 }
@@ -1161,6 +1172,7 @@ export default function AdminDashboard() {
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [submissions, setSubmissions] = useState<FormSubmission[]>([]);
   const [donations, setDonations] = useState<AdminDonation[]>([]);
+  const [recurringDonations, setRecurringDonations] = useState<AdminRecurringDonation[]>([]);
   const [toast, setToast] = useState<Toast>(null);
   const [saving, setSaving] = useState<string | null>(null);
   const [savedKey, setSavedKey] = useState<string | null>(null);
@@ -1186,10 +1198,11 @@ export default function AdminDashboard() {
       return;
     }
     try {
-      const [text, inbox, donationRows] = await Promise.all([
+      const [text, inbox, donationRows, recurringRows] = await Promise.all([
         fetchContent(),
         fetchSubmissions(),
         fetchDonations(),
+        fetchRecurringDonations(),
       ]);
       setContent(text);
       setSubmissions(
@@ -1198,6 +1211,7 @@ export default function AdminDashboard() {
         ),
       );
       setDonations(donationRows);
+      setRecurringDonations(recurringRows);
       setDrafts(
         Object.fromEntries(Object.entries(text).map(([k, f]) => [k, f.value])),
       );
@@ -1497,7 +1511,7 @@ export default function AdminDashboard() {
       icon: "mail",
       title: "Donations",
       hint: "Payment records",
-      badge: donations.length ? <span className="ac-badge">{donations.length}</span> : undefined,
+      badge: donations.length + recurringDonations.length ? <span className="ac-badge">{donations.length + recurringDonations.length}</span> : undefined,
     },
     {
       key: "messages",
@@ -1609,7 +1623,7 @@ export default function AdminDashboard() {
               onExport={exportList}
             />
           )}
-          {section === "donations" && <DonationsView items={donations} />}
+          {section === "donations" && <DonationsView items={donations} mandates={recurringDonations} />}
         </main>
       </div>
 

@@ -83,10 +83,6 @@ form_ip_limiter = SlidingWindowLimiter(settings.form_ip_limit, settings.form_win
 # Limit it separately from forms so a public page cannot fill the database or
 # consume provider resources with an unbounded burst of test orders.
 payment_order_ip_limiter = SlidingWindowLimiter(limit=10, window_seconds=900)
-donation_email_ip_limiter = SlidingWindowLimiter(limit=10, window_seconds=900)
-donation_email_address_limiter = SlidingWindowLimiter(limit=5, window_seconds=900)
-
-
 def client_ip(request: Request) -> str:
     """Real client IP. Behind N trusted proxies, the client is the Nth entry from the
     right of X-Forwarded-For (earlier entries can be forged by the client)."""

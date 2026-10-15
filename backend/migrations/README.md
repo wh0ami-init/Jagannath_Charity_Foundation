@@ -20,20 +20,25 @@ Before rollout:
 6. Verify SHOW CREATE TABLE donations, unique keys, and existing website tables.
 7. Deploy reviewed backend with test keys, existing MySQL URL and a separate webhook
    secret. Configure `/api/payments/webhook` for `payment.captured`, `order.paid`,
-   and `refund.processed` (optionally `payment.refunded`).
+   `refund.processed`, and Razorpay subscription events `subscription.authenticated`,
+   `subscription.activated`, `subscription.charged`, `subscription.pending`,
+   `subscription.halted`, `subscription.cancelled`, `subscription.paused`,
+   `subscription.resumed`, and `subscription.completed`.
 8. Complete a test payment and verify pending -> paid once; test duplicate webhook.
    Track these test payment IDs separately from real donations. Live keys are
    accepted only after explicitly setting `RAZORPAY_MODE=live` and supplying an
-   `rzp_live_` key pair. Configure SMTP before enabling donor email verification
-   and receipt delivery.
+   `rzp_live_` key pair. Donor email is collected for the payment and receipt record;
+   it is not separately verified by the website.
 9. Apply `002_donation_receipts_mysql.sql` to add the donor fields to an existing
-   donations table. The backend also applies these additive columns at startup;
-   the email-code table is created by SQLAlchemy. Back up first and inspect the
-   live schema before applying manually.
+   donations table. The backend also applies these additive columns at startup.
+   Back up first and inspect the live schema before applying manually.
 10. Apply `003_donation_refund_tracking_mysql.sql` only if either refund column is
     missing; this production schema has both already. The backend also adds these
     columns at startup. Enable Razorpay `refund.processed` (and optionally
     `payment.refunded`) so refunds are recorded after server verification.
+11. Apply `004_recurring_donations_mysql.sql` to an existing production database
+    before enabling AutoPay. The application also creates the recurring table and
+    adds the subscription reference/index at startup; inspect the live schema first.
 
 Recovery:
 - Stop accepting payment requests and disable webhook delivery while investigating.

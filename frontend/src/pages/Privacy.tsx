@@ -97,7 +97,7 @@ export default function Privacy() {
                 </p>
               </div>
               <p>
-                The donation form asks for your name, verified email address, phone number, optional postal address, named cause and amount. The Foundation stores these details with the payment status and Razorpay order and payment identifiers. Razorpay processes the checkout interaction under its own privacy terms. The website does not store card numbers, bank login credentials or PAN. A receipt is displayed after server confirmation and emailed to the verified address.
+                The donation form asks for your name, email address, phone number, optional postal address, named cause and amount. The Foundation stores these details with the payment status and Razorpay payment identifiers. Email ownership is not separately verified. Razorpay processes the checkout and any recurring payment mandate under its own privacy terms. The website does not store card numbers, bank login credentials or PAN. A printable payment receipt is shown after server confirmation; it is not an official Form 10BE tax certificate.
               </p>
               <p>
                 Bank transfers are arranged directly by you through your bank. Email the Foundation to identify a bank transfer or request a receipt. Any applicable tax certificate is handled separately under the rules that apply.
@@ -106,7 +106,7 @@ export default function Privacy() {
 
             <PolicySection id="sharing" number="04" title="Who can access it">
               <p>
-                Form submissions are available to authenticated Foundation administrators so they can respond and manage requests. Service providers may process technical information to host, secure and deliver the site. Google Fonts is loaded from Google’s font service; Razorpay is contacted when someone starts checkout, and the configured email provider delivers verification codes and receipts.
+                Form submissions are available to authenticated Foundation administrators so they can respond and manage requests. Service providers may process technical information to host, secure and deliver the site. Google Fonts is loaded from Google’s font service, and Razorpay is contacted when someone starts checkout or authorizes a monthly mandate.
               </p>
               <p>
                 We do not sell personal information or share it for advertising. We may disclose information if required by law or to protect the website, its users or the Foundation from misuse.
