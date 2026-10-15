@@ -93,13 +93,6 @@ export default function PageHero({
         ease: "back.out(1.6)",
       }, 0.78);
 
-    gsap.to(".pagehero-art", {
-      y: -8,
-      duration: 5.5,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-    });
     gsap.to(".pagehero-glow--one", {
       x: 34,
       y: 18,
