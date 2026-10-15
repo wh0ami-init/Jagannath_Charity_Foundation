@@ -26,6 +26,22 @@ if "deleted_at" not in {column["name"] for column in inspect(engine).get_columns
     with engine.begin() as connection:
         connection.execute(text("ALTER TABLE image_slots ADD COLUMN deleted_at DATETIME NULL"))
 
+# Additive donation schema update: the original payments table predates donor
+# details and receipt delivery. Keep existing payment history intact.
+donation_columns = {column["name"] for column in inspect(engine).get_columns("donations")}
+donation_additions = {
+    "donor_name": "VARCHAR(150) NOT NULL DEFAULT ''",
+    "donor_email": "VARCHAR(254) NOT NULL DEFAULT ''",
+    "donor_phone": "VARCHAR(40) NOT NULL DEFAULT ''",
+    "donor_address": "VARCHAR(500) NOT NULL DEFAULT ''",
+    "cause": "VARCHAR(160) NOT NULL DEFAULT ''",
+    "receipt_email_sent_at": "DATETIME NULL",
+}
+for column_name, column_definition in donation_additions.items():
+    if column_name not in donation_columns:
+        with engine.begin() as connection:
+            connection.execute(text(f"ALTER TABLE donations ADD COLUMN {column_name} {column_definition}"))
+
 app = FastAPI(title="Jagannath Foundation - Site API")
 
 app.add_middleware(

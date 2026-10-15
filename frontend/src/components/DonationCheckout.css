@@ -175,6 +175,31 @@
   line-height: 1.6;
 }
 
+.donation-details-form { display: grid; gap: .8rem; }
+.donation-details-form input,
+.donation-details-form select {
+  display: block;
+  width: 100%;
+  margin-top: .35rem;
+  padding: .65rem .75rem;
+  border: 1px solid rgba(25, 53, 77, .2);
+  border-radius: .55rem;
+  color: #19354d;
+  background: #fff;
+  font: inherit;
+}
+.donation-details-form input:disabled { background: #f3f5f6; color: #667783; }
+.donation-details-form small { display: block; margin-top: .25rem; color: #718397; font-weight: 400; }
+.donation-receipt { padding: 1rem; border: 1px solid #d9ad55; border-radius: .75rem; background: #fffdf7; color: #19354d; }
+.donation-receipt h3 { font-family: Georgia, serif; font-size: 1.4rem; }
+.donation-receipt p { margin: .65rem 0; line-height: 1.55; overflow-wrap: anywhere; }
+@media print {
+  body * { visibility: hidden !important; }
+  #donation-receipt, #donation-receipt * { visibility: visible !important; }
+  #donation-receipt { position: absolute; inset: 0; width: 100%; border: 0; border-radius: 0; }
+  #donation-receipt button { display: none; }
+}
+
 .donation-checkout-disclaimer { margin: 9px 0 0; }
 
 .donation-checkout-button {

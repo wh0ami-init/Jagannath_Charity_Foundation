@@ -1,0 +1,250 @@
+.donation-choice-section {
+  padding-block: clamp(48px, 7vw, 88px);
+}
+
+.donation-choice-heading,
+.donation-section-heading {
+  max-width: 760px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.donation-section-eyebrow {
+  margin: 0 0 12px;
+  color: #a86a25;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.donation-choice-heading h2,
+.donation-section-heading h2,
+.monthly-autopay-copy h2 {
+  margin: 0;
+  color: #102c25;
+  font: 700 clamp(30px, 4vw, 46px) / 1.08 var(--font-serif);
+  text-wrap: balance;
+}
+
+.donation-choice-heading > p:last-child,
+.donation-section-heading > p:last-child {
+  margin: 14px auto 0;
+  color: rgba(25, 45, 37, .68);
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.donation-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  max-width: 1000px;
+  margin: 34px auto 0;
+}
+
+.donation-choice-card {
+  display: grid;
+  min-height: 270px;
+  align-content: start;
+  justify-items: start;
+  padding: clamp(24px, 4vw, 38px);
+  border: 1px solid rgba(25, 45, 37, .14);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, .72);
+  box-shadow: 0 18px 48px rgba(16, 44, 37, .07);
+  color: #192d25;
+}
+
+.donation-choice-card:hover,
+.donation-choice-card:focus-visible {
+  border-color: rgba(168, 106, 37, .56);
+  box-shadow: 0 22px 54px rgba(16, 44, 37, .12);
+}
+
+.donation-choice-card:focus-visible {
+  outline: 3px solid #b8762f;
+  outline-offset: 3px;
+}
+
+.donation-choice-icon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 21px;
+  place-items: center;
+  border: 1px solid rgba(168, 106, 37, .24);
+  border-radius: 16px;
+  background: #fff8e9;
+  color: #a86a25;
+}
+
+.donation-choice-icon svg {
+  width: 27px;
+  height: 27px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+.donation-choice-icon svg path:first-child {
+  fill: currentColor;
+  stroke: none;
+}
+
+.donation-choice-card--monthly .donation-choice-icon {
+  background: #edf5ed;
+  border-color: rgba(54, 101, 73, .2);
+  color: #366549;
+}
+
+.donation-choice-card--monthly .donation-choice-icon svg path:first-child {
+  fill: none;
+  stroke: currentColor;
+}
+
+.donation-choice-label {
+  color: #718176;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.donation-choice-card h3 {
+  margin: 8px 0 0;
+  color: #102c25;
+  font: 700 clamp(22px, 2.6vw, 30px) / 1.15 var(--font-serif);
+}
+
+.donation-choice-card > p {
+  max-width: 42ch;
+  margin: 10px 0 23px;
+  color: rgba(25, 45, 37, .7);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.donation-choice-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: auto;
+  color: #295a43;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.donation-choice-link span {
+  color: #b8762f;
+  font-size: 18px;
+}
+
+.donation-flow-section {
+  padding-top: 10px;
+  scroll-margin-top: 110px;
+}
+
+.donation-section-heading {
+  padding: 38px 0 12px;
+}
+
+.donation-section-heading h2 {
+  font-size: clamp(28px, 3.5vw, 40px);
+}
+
+.donation-section-heading > p:last-child {
+  max-width: 650px;
+}
+
+.monthly-autopay-section {
+  padding-block: 8px 28px;
+  scroll-margin-top: 110px;
+}
+
+.monthly-autopay-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, .55fr);
+  align-items: center;
+  gap: clamp(28px, 5vw, 72px);
+  padding: clamp(28px, 5vw, 58px);
+  border: 1px solid rgba(54, 101, 73, .2);
+  border-radius: 26px;
+  background:
+    radial-gradient(ellipse at 100% 0%, rgba(205, 169, 99, .18), transparent 38%),
+    linear-gradient(130deg, #f1f6ee 0%, #f8f7ef 100%);
+  box-shadow: 0 24px 65px rgba(16, 44, 37, .08);
+}
+
+.monthly-autopay-copy h2 {
+  max-width: 15ch;
+  font-size: clamp(30px, 4vw, 44px);
+}
+
+.monthly-autopay-copy > p:not(.donation-section-eyebrow) {
+  max-width: 58ch;
+  margin: 15px 0 0;
+  color: rgba(25, 45, 37, .73);
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.monthly-autopay-copy .monthly-autopay-note {
+  padding-left: 14px;
+  border-left: 2px solid #d99a46;
+  color: rgba(25, 45, 37, .62);
+  font-size: 13px;
+}
+
+.monthly-autopay-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 22px;
+  border: 1px solid rgba(54, 101, 73, .17);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .74);
+  color: #18372f;
+}
+
+.monthly-autopay-status-mark {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 14px;
+  background: #edf5ed;
+  color: #366549;
+  font-size: 25px;
+  line-height: 1;
+}
+
+.monthly-autopay-status strong,
+.monthly-autopay-status small {
+  display: block;
+}
+
+.monthly-autopay-status strong {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.monthly-autopay-status small {
+  margin-top: 5px;
+  color: rgba(25, 45, 37, .65);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@media (max-width: 760px) {
+  .donation-choice-grid,
+  .monthly-autopay-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .donation-choice-grid { gap: 14px; }
+  .donation-choice-card { min-height: 0; }
+  .monthly-autopay-status { align-items: center; }
+}

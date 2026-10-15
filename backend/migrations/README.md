@@ -22,7 +22,13 @@ Before rollout:
    secret. Configure /api/payments/webhook for payment.captured and order.paid.
 8. Complete a test payment and verify pending -> paid once; test duplicate webhook.
    Track these test payment IDs separately from real donations. Live keys are
-   intentionally rejected by the current backend.
+   accepted only after explicitly setting `RAZORPAY_MODE=live` and supplying an
+   `rzp_live_` key pair. Configure SMTP before enabling donor email verification
+   and receipt delivery.
+9. Apply `002_donation_receipts_mysql.sql` to add the donor fields to an existing
+   donations table. The backend also applies these additive columns at startup;
+   the email-code table is created by SQLAlchemy. Back up first and inspect the
+   live schema before applying manually.
 
 Recovery:
 - Stop accepting payment requests and disable webhook delivery while investigating.

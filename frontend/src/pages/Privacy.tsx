@@ -92,21 +92,21 @@ export default function Privacy() {
               <div className="privacy-callout">
                 <span className="privacy-callout-mark" aria-hidden="true">₹</span>
                 <p>
-                  <strong>The current online checkout is in test mode.</strong>
-                  It is configured for a ₹100 test transaction and is not a live donation service. Do not treat a test checkout as a real donation or tax receipt.
+                  <strong>Razorpay mode controls whether a payment is real.</strong>
+                  Test Mode is fixed at ₹100 and collects no real money. A live contribution is enabled only when the backend is explicitly configured with live Razorpay credentials. A payment receipt confirms payment; it is not a tax exemption certificate.
                 </p>
               </div>
               <p>
-                If you open the test checkout, Razorpay processes the checkout interaction under its own privacy terms. The Foundation’s payment database stores the test amount, currency, Razorpay order and payment identifiers, status and timestamps. The website does not store card numbers, bank login credentials or PAN in that payment record.
+                The donation form asks for your name, verified email address, phone number, optional postal address, named cause and amount. The Foundation stores these details with the payment status and Razorpay order and payment identifiers. Razorpay processes the checkout interaction under its own privacy terms. The website does not store card numbers, bank login credentials or PAN. A receipt is displayed after server confirmation and emailed to the verified address.
               </p>
               <p>
-                Bank transfers are arranged directly by you through your bank. If you email the Foundation to identify a transfer or request a receipt, the details in that email are handled as correspondence. A payment confirmation and any applicable tax certificate are separate documents; the current site does not automatically email either one.
+                Bank transfers are arranged directly by you through your bank. Email the Foundation to identify a bank transfer or request a receipt. Any applicable tax certificate is handled separately under the rules that apply.
               </p>
             </PolicySection>
 
             <PolicySection id="sharing" number="04" title="Who can access it">
               <p>
-                Form submissions are available to authenticated Foundation administrators so they can respond and manage requests. Service providers may process technical information to host, secure and deliver the site. Google Fonts is loaded from Google’s font service; Razorpay is contacted only when someone starts the online test checkout.
+                Form submissions are available to authenticated Foundation administrators so they can respond and manage requests. Service providers may process technical information to host, secure and deliver the site. Google Fonts is loaded from Google’s font service; Razorpay is contacted when someone starts checkout, and the configured email provider delivers verification codes and receipts.
               </p>
               <p>
                 We do not sell personal information or share it for advertising. We may disclose information if required by law or to protect the website, its users or the Foundation from misuse.
