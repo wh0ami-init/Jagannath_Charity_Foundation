@@ -175,7 +175,6 @@
     font: 600 clamp(40px, 5.6vw, 72px) / .98 var(--font-serif);
     text-wrap: balance;
     text-shadow: 0 2px 26px rgba(0, 0, 0, .25);
-    animation: pagehero-rise .5s .05s cubic-bezier(.2, .7, .2, 1) both;
 }
 
 .pagehero-lede {
@@ -184,7 +183,6 @@
     color: rgba(255, 255, 255, .88);
     font-size: 17px;
     line-height: 1.75;
-    animation: pagehero-rise .5s .1s cubic-bezier(.2, .7, .2, 1) both;
 }
 
 .pagehero-actions {
@@ -192,7 +190,6 @@
     flex-wrap: wrap;
     gap: 12px;
     margin-top: 30px;
-    animation: pagehero-rise .5s .15s cubic-bezier(.2, .7, .2, 1) both;
 }
 
 .pagehero-button {
@@ -259,18 +256,6 @@
     color: rgba(255, 255, 255, .82);
     font-size: 14px;
     line-height: 1.35;
-}
-
-@keyframes pagehero-rise {
-    from {
-        opacity: 0;
-        transform: translateY(14px);
-    }
-
-    to {
-        opacity: 1;
-        transform: none;
-    }
 }
 
 @media (max-width: 760px) {
@@ -344,13 +329,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-
-    .pagehero h1,
-    .pagehero-lede,
-    .pagehero-actions {
-        animation: none;
-    }
-
     .pagehero-art,
     .pagehero-art::before,
     .pagehero-art * {

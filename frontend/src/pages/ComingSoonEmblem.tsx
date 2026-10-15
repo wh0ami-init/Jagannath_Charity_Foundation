@@ -46,6 +46,10 @@ export default function ComingSoonEmblem({ section }: { section: ComingSoonSecti
       timeline.to(".emblem-person", { y: -3, duration: 0.35, stagger: 0.1, yoyo: true, repeat: 1, ease: "sine.inOut" });
     } else if (section.emblem === "beneficiary-apply") {
       timeline.to(".emblem-plus", { scale: 1.18, duration: 0.4, yoyo: true, repeat: 1, transformOrigin: "50% 50%", ease: "sine.inOut" });
+    } else if (section.emblem === "id-card") {
+      timeline.to(".emblem-person", { y: -3, duration: 0.35, yoyo: true, repeat: 1, ease: "sine.inOut" });
+    } else if (section.emblem === "appointment-letter") {
+      timeline.to(".emblem-check", { scale: 1.16, duration: 0.4, yoyo: true, repeat: 1, transformOrigin: "50% 50%", ease: "sine.inOut" });
     } else {
       timeline.to(".emblem-handle", { y: -4, duration: 0.4, yoyo: true, repeat: 1, ease: "sine.inOut" });
     }
@@ -105,6 +109,17 @@ export default function ComingSoonEmblem({ section }: { section: ComingSoonSecti
           <path className="emblem-line" d="M27 15h34l13 13v42H27V15Zm34 0v14h13M36 41h29M36 49h18" />
           <circle className="emblem-line" cx="59" cy="68" r="16" />
           <path className="emblem-accent emblem-plus" d="M59 59v18m-9-9h18" />
+        </g>}
+        {section.emblem === "id-card" && <g>
+          <rect className="emblem-line" x="13" y="22" width="74" height="56" rx="8" />
+          <path className="emblem-line" d="M13 36h74" />
+          <circle className="emblem-accent emblem-person" cx="34" cy="52" r="8" />
+          <path className="emblem-line" d="M22 70c1-8 5-12 12-12s11 4 12 12m9-18h19m-19 9h19m-19 9h13" />
+        </g>}
+        {section.emblem === "appointment-letter" && <g>
+          <path className="emblem-line" d="M25 14h38l13 13v41H25V14Zm38 0v14h13M35 42h30M35 50h22" />
+          <circle className="emblem-line" cx="65" cy="69" r="15" />
+          <path className="emblem-accent emblem-accent--line emblem-check" d="m57 69 6 6 11-13" />
         </g>}
       </svg>
     </div>

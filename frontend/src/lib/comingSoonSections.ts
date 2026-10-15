@@ -7,7 +7,10 @@ export type HeroMotif =
   | "certificate-check"
   | "careers"
   | "beneficiary-directory"
-  | "beneficiary-apply";
+  | "beneficiary-apply"
+  | "id-card"
+  | "certificate-service"
+  | "appointment-letter";
 
 export type ComingSoonSection = {
   id: string;
@@ -15,11 +18,42 @@ export type ComingSoonSection = {
   label: string;
   note: string;
   message: string;
-  emblem: "video" | "campaign" | "event" | "expenses" | "internship" | "certificate" | "career" | "beneficiary-directory" | "beneficiary-apply";
+  emblem: "video" | "campaign" | "event" | "expenses" | "internship" | "certificate" | "career" | "beneficiary-directory" | "beneficiary-apply" | "id-card" | "appointment-letter";
   motif: HeroMotif;
+  announcement?: boolean;
 };
 
 export const comingSoonSections: ComingSoonSection[] = [
+  {
+    id: "generate-id-card",
+    href: "/generate-id-card",
+    label: "Generate ID Card",
+    note: "Foundation ID cards",
+    message: "A secure way to create and access Foundation ID cards is being prepared.",
+    emblem: "id-card",
+    motif: "id-card",
+    announcement: true,
+  },
+  {
+    id: "generate-certificate",
+    href: "/generate-certificate",
+    label: "Generate Certificate",
+    note: "Create a Foundation certificate",
+    message: "Certificate creation tools are in progress and will be available here soon.",
+    emblem: "certificate",
+    motif: "certificate-service",
+    announcement: true,
+  },
+  {
+    id: "appointment-letter",
+    href: "/appointment-letter",
+    label: "Appointment Letter",
+    note: "Appointment letters",
+    message: "We’re preparing a simple way to access official appointment letters.",
+    emblem: "appointment-letter",
+    motif: "appointment-letter",
+    announcement: true,
+  },
   {
     id: "video-gallery",
     href: "/video-gallery",

@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { useReducedMotion } from "motion/react";
 import { Link } from "wouter";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import Layout from "../components/Layout";
+import GsapDialog from "../components/GsapDialog";
 import PageHero from "../components/PageHero";
 import Reveal from "../components/Reveal";
 import "./campaigns.css";
@@ -203,29 +204,14 @@ export default function Careers() {
           </div>
         </section>
 
-        <AnimatePresence>
-          {noticeOpen && (
-            <motion.div
-              className="campaign-coming-overlay"
-              role="presentation"
-              onMouseDown={(event) => {
-                if (event.target === event.currentTarget) setNoticeOpen(false);
-              }}
-              initial={reducedMotion ? false : { opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: reducedMotion ? 0 : .28 }}
-            >
-              <motion.section
-                className="campaign-coming-modal careers-coming-modal"
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="careers-coming-title"
-                initial={reducedMotion ? false : { opacity: 0, y: 24, scale: .96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 12, scale: .98 }}
-                transition={{ duration: reducedMotion ? 0 : .48, ease: [.22, .7, .2, 1] }}
-              >
+        <GsapDialog
+          open={noticeOpen}
+          className="campaign-coming-overlay"
+          dialogClassName="campaign-coming-modal careers-coming-modal"
+          labelledBy="careers-coming-title"
+          reducedMotion={Boolean(reducedMotion)}
+          onBackdrop={(event) => { if (event.target === event.currentTarget) setNoticeOpen(false); }}
+        >
                 <button ref={noticeCloseRef} className="campaign-modal-close" type="button" aria-label="Close careers announcement" onClick={() => setNoticeOpen(false)}>
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
                 </button>
@@ -256,10 +242,7 @@ export default function Careers() {
                     <button className="campaign-modal-dismiss" type="button" onClick={() => setNoticeOpen(false)}>Maybe later</button>
                   </div>
                 </div>
-              </motion.section>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        </GsapDialog>
       </div>
     </Layout>
   );

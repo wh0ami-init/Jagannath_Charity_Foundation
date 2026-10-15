@@ -1,5 +1,8 @@
+import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useReducedMotion } from "motion/react";
 import { Link } from "wouter";
 import Layout from "../components/Layout";
+import GsapDialog from "../components/GsapDialog";
 import PageHero from "../components/PageHero";
 import Reveal from "../components/Reveal";
 import { comingSoonSections, type ComingSoonSection } from "../lib/comingSoonSections";
@@ -7,6 +10,51 @@ import ComingSoonEmblem from "./ComingSoonEmblem";
 import "./coming-soon.css";
 
 export default function ComingSoon({ section }: { section: ComingSoonSection }) {
+  const [noticeOpen, setNoticeOpen] = useState(false);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const reducedMotion = useReducedMotion();
+  const showNotice = () => setNoticeOpen(true);
+
+  useEffect(() => {
+    if (!section.announcement) return;
+    const timeout = window.setTimeout(showNotice, 4000);
+    return () => window.clearTimeout(timeout);
+  }, [section.announcement]);
+
+  useEffect(() => {
+    if (!noticeOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    document.body.style.overflow = "hidden";
+    closeRef.current?.focus();
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setNoticeOpen(false);
+      if (event.key !== "Tab") return;
+      const dialog = document.querySelector<HTMLElement>(".utility-coming-modal");
+      const focusable = dialog?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])');
+      if (!focusable?.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+      previousFocus?.focus();
+    };
+  }, [noticeOpen]);
+
+  const handlePageAction = (event: MouseEvent<HTMLDivElement>) => {
+    if (!section.announcement || (event.target as HTMLElement).closest(".utility-coming-modal")) return;
+    const target = (event.target as HTMLElement).closest("a, button");
+    if (!target) return;
+    event.preventDefault();
+    showNotice();
+  };
+
   const groupPrefix = section.href.startsWith("/internships/")
     ? "/internships/"
     : section.href.startsWith("/beneficiaries/")
@@ -19,7 +67,7 @@ export default function ComingSoon({ section }: { section: ComingSoonSection }) 
 
   return (
     <Layout>
-      <div className="coming-soon-page">
+      <div className="coming-soon-page" onClickCapture={handlePageAction}>
         <PageHero
           theme="work"
           motif={section.motif}
@@ -63,6 +111,36 @@ export default function ComingSoon({ section }: { section: ComingSoonSection }) 
             </div>
           </Reveal>
         </section>
+        {section.announcement && (
+          <GsapDialog
+            open={noticeOpen}
+            className="utility-coming-overlay"
+            dialogClassName={`utility-coming-modal utility-coming-modal--${section.id}`}
+            labelledBy="utility-coming-title"
+            reducedMotion={Boolean(reducedMotion)}
+            onBackdrop={(event) => { if (event.target === event.currentTarget) setNoticeOpen(false); }}
+          >
+                <button ref={closeRef} className="utility-coming-close" type="button" aria-label="Close announcement" onClick={() => setNoticeOpen(false)}>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+                </button>
+                <div className="utility-coming-art" aria-hidden="true">
+                  <span className="utility-coming-orbit utility-coming-orbit--one" />
+                  <span className="utility-coming-orbit utility-coming-orbit--two" />
+                  <ComingSoonEmblem section={section} />
+                  <span className="utility-coming-spark utility-coming-spark--one" />
+                  <span className="utility-coming-spark utility-coming-spark--two" />
+                </div>
+                <div className="utility-coming-copy">
+                  <p className="utility-coming-eyebrow">Jagannath Foundation · In progress</p>
+                  <h2 id="utility-coming-title">{section.label} is coming soon.</h2>
+                  <p>{section.message}</p>
+                  <div className="utility-coming-actions">
+                    <Link href="/contact" className="utility-coming-contact" onClick={() => setNoticeOpen(false)}>Contact the Foundation <span aria-hidden="true">↗</span></Link>
+                    <button type="button" className="utility-coming-dismiss" onClick={() => setNoticeOpen(false)}>Maybe later</button>
+                  </div>
+                </div>
+          </GsapDialog>
+        )}
       </div>
     </Layout>
   );

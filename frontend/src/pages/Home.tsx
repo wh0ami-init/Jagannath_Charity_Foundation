@@ -10,6 +10,7 @@ import { DynamicImage } from "../lib/ImagesContext";
 import { useSiteContent } from "../lib/SiteContentContext";
 import Stagger from "../components/Stagger";
 import HomeGallerySlider from "../components/HomeGallerySlider";
+import HomeUtilityCards from "../components/HomeUtilityCards";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -389,6 +390,8 @@ export default function Home({
           <span>ISHWAR SEVA</span>
         </div>
       </section>
+
+      <HomeUtilityCards />
 
       <section className="home-facts" aria-label="About the Foundation">
         <div className="wrap facts-inner">
