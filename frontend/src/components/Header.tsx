@@ -8,6 +8,9 @@ import { useReducedMotion } from "motion/react";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
+type NavItem = { href: string; label: string; note: string };
+
+// Original links (unchanged)
 const primaryLinks = [
   { href: "/about", label: "Our story" },
   { href: "/programmes", label: "Programmes" },
@@ -15,7 +18,68 @@ const primaryLinks = [
   { href: "/impact", label: "Our impact" },
 ];
 
-const exploreLinks = [
+// New dropdown groups (added)
+const dropdownGroups: {
+  id: string;
+  label: string;
+  heading: string;
+  items: NavItem[];
+}[] = [
+  {
+    id: "beneficiaries",
+    label: "Beneficiaries",
+    heading: "Beneficiaries",
+    items: [
+      {
+        href: "/beneficiaries",
+        label: "Active beneficiaries",
+        note: "People we are supporting right now",
+      },
+      {
+        href: "/beneficiaries/apply",
+        label: "Apply for beneficiary",
+        note: "Request support from the Foundation",
+      },
+    ],
+  },
+  {
+    id: "internships",
+    label: "Internships",
+    heading: "Internships",
+    items: [
+      {
+        href: "/internships",
+        label: "Available internships",
+        note: "Open roles and how to apply",
+      },
+      {
+        href: "/certificate-verification",
+        label: "Certificate verification",
+        note: "Check the authenticity of a certificate",
+      },
+    ],
+  },
+  {
+    id: "autopay",
+    label: "Auto Pay Donation",
+    heading: "Auto Pay Donation",
+    items: [
+      {
+        href: "/auto-pay-donation",
+        label: "Auto-pay donation registration",
+        note: "Set up a recurring donation",
+      },
+      {
+        href: "/auto-pay-status",
+        label: "Auto-pay status",
+        note: "Check or manage your auto-pay",
+      },
+    ],
+  },
+];
+
+const exploreLinks: NavItem[] = [
+  // Original links (unchanged, same order)
   { href: "/team", label: "People", note: "Trustees, leadership and advisors" },
   {
     href: "/partners",
@@ -34,21 +98,51 @@ const exploreLinks = [
     note: "Membership, opportunities and requests",
   },
   { href: "/contact", label: "Contact", note: "Reach the Foundation team" },
+  // New links (added)
+  {
+    href: "/video-gallery",
+    label: "Video Gallery",
+    note: "Watch our work in action",
+  },
+  {
+    href: "/campaigns",
+    label: "Campaigns",
+    note: "Current and past fundraising drives",
+  },
+  {
+    href: "/project-expenses",
+    label: "Project Expenses",
+    note: "How every rupee is spent",
+  },
+  { href: "/careers", label: "Careers", note: "Join the Foundation team" },
 ];
+
+const navItemTw =
+  "!font-nav min-[1001px]:!whitespace-nowrap min-[1001px]:!text-[clamp(12.5px,0.9vw,14.5px)] min-[1001px]:!font-medium min-[1001px]:!leading-tight min-[1001px]:!py-2";
+
+const donateTw =
+  "!font-nav min-[1001px]:!inline-flex min-[1001px]:!items-center min-[1001px]:!gap-2 min-[1001px]:!whitespace-nowrap min-[1001px]:!shrink-0 min-[1001px]:!h-auto min-[1001px]:!min-h-0 min-[1001px]:!px-5 min-[1001px]:!py-[11px] min-[1001px]:!text-[clamp(12.5px,0.9vw,14.5px)] min-[1001px]:!leading-tight";
+
+const compactPanelTw = "min-[1001px]:!w-[300px] min-[1001px]:!min-w-0";
+const compactGridTw = "min-[1001px]:!grid-cols-1";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
-  const [exploreOpen, setExploreOpen] = useState(false);
+  const [openId, setOpenId] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [location] = useLocation();
   const [homeActive] = useRoute("/");
   const headerRef = useRef<HTMLElement>(null);
   const menuToggleRef = useRef<HTMLButtonElement>(null);
-  const exploreToggleRef = useRef<HTMLButtonElement>(null);
 
   const reducedMotion = useReducedMotion();
   const menuLocked = useRef(false);
-  menuLocked.current = open || exploreOpen;
+  menuLocked.current = open || openId !== null;
+
+  const closeAll = () => {
+    setOpen(false);
+    setOpenId(null);
+  };
 
   // 1) Header hides when you scroll down and comes back when you scroll up
   useGSAP(
@@ -57,6 +151,7 @@ export default function Header() {
       if (!header || reducedMotion) return;
 
       let hidden = false;
+
       const show = () => {
         if (!hidden) return;
         hidden = false;
@@ -69,6 +164,7 @@ export default function Header() {
           clearProps: "transform",
         });
       };
+
       const hide = () => {
         if (hidden) return;
         hidden = true;
@@ -91,6 +187,7 @@ export default function Header() {
             show();
             return;
           }
+
           if (self.direction === 1 && self.scroll() > 260) hide();
           else if (self.direction === -1) show();
         },
@@ -102,7 +199,7 @@ export default function Header() {
     { scope: headerRef, dependencies: [reducedMotion] },
   );
 
-  // 2) Menu items slide in one by one (phone menu + "Explore" panel)
+  // 2) Menu items slide in one by one (phone menu + dropdown panels)
   useGSAP(
     () => {
       const header = headerRef.current;
@@ -119,23 +216,27 @@ export default function Header() {
           clearProps: "opacity,transform",
         });
       }
-      if (exploreOpen) {
+
+      if (openId) {
         // opacity only: these links already have their own hover transform in CSS
-        gsap.from(header.querySelectorAll(".nav-explore-link"), {
-          opacity: 0,
-          duration: 0.4,
-          ease: "power1.out",
-          stagger: 0.045,
-          clearProps: "opacity",
-        });
+        gsap.from(
+          header.querySelectorAll(".nav-explore.is-open .nav-explore-link"),
+          {
+            opacity: 0,
+            duration: 0.4,
+            ease: "power1.out",
+            stagger: 0.045,
+            clearProps: "opacity",
+          },
+        );
       }
     },
-    { scope: headerRef, dependencies: [open, exploreOpen, reducedMotion] },
+    { scope: headerRef, dependencies: [open, openId, reducedMotion] },
   );
 
   useEffect(() => {
     setOpen(false);
-    setExploreOpen(false);
+    setOpenId(null);
   }, [location]);
 
   useEffect(() => {
@@ -148,30 +249,31 @@ export default function Header() {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setExploreOpen(false);
+        const group = (document.activeElement as HTMLElement | null)?.closest(
+          ".nav-explore",
+        );
+        const toggle =
+          group?.querySelector<HTMLElement>(".nav-explore-toggle");
+
+        setOpenId(null);
         setOpen(false);
-        if (
-          exploreToggleRef.current?.parentElement?.contains(
-            document.activeElement,
-          )
-        ) {
-          exploreToggleRef.current.focus();
-        } else {
-          menuToggleRef.current?.focus();
-        }
+        (toggle ?? menuToggleRef.current)?.focus();
       }
     };
+
     const onPointerDown = (event: PointerEvent) => {
       if (
         event.target instanceof Node &&
         !headerRef.current?.contains(event.target)
       ) {
         setOpen(false);
-        setExploreOpen(false);
+        setOpenId(null);
       }
     };
+
     document.addEventListener("keydown", onKeyDown);
     document.addEventListener("pointerdown", onPointerDown);
+
     return () => {
       document.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("pointerdown", onPointerDown);
@@ -184,14 +286,11 @@ export default function Header() {
         className={`site-header backdrop-blur-xl${homeActive ? " is-home" : ""}${homeActive && scrolled ? " is-scrolled" : ""}`}
         ref={headerRef}
       >
-        <div className="wrap header-main">
+        <div className="wrap header-main min-[1001px]:!flex-nowrap min-[1001px]:!items-center min-[1001px]:!gap-[clamp(12px,1.6vw,28px)]">
           <Link
             href="/"
-            className="brand"
-            onClick={() => {
-              setOpen(false);
-              setExploreOpen(false);
-            }}
+            className="brand shrink-0 min-[1001px]:!mr-[clamp(24px,3vw,56px)]"
+            onClick={closeAll}
           >
             <span className="brand-mark">
               <DynamicImage
@@ -200,11 +299,13 @@ export default function Header() {
                 className="brand-image"
               />
             </span>
+
             <span className="brand-name">
               <strong>Jagannath Foundation</strong>
               <small>Serving with dignity · Since 2026</small>
             </span>
           </Link>
+
           <button
             ref={menuToggleRef}
             className="menu-toggle"
@@ -219,96 +320,55 @@ export default function Header() {
               <span />
             </i>
           </button>
+
           <nav
             id="site-navigation"
-            className={`main-nav ${open ? "is-open" : ""}`}
+            className={`main-nav ${open ? "is-open" : ""} min-[1001px]:!flex min-[1001px]:!flex-nowrap min-[1001px]:!items-center min-[1001px]:!ml-auto min-[1001px]:!whitespace-nowrap min-[1001px]:!gap-[clamp(10px,1.1vw,22px)]`}
             aria-label="Main navigation"
           >
             <Link
               href="/"
-              onClick={() => {
-                setOpen(false);
-                setExploreOpen(false);
-              }}
-              className={`home-link${homeActive ? " active" : ""}`}
+              onClick={closeAll}
+              className={`home-link ${navItemTw}${homeActive ? " active" : ""}`}
               aria-current={homeActive ? "page" : undefined}
             >
               Home
             </Link>
+
             {primaryLinks.map((link) => (
-              <NavLink
-                key={link.href}
-                {...link}
-                onNavigate={() => {
-                  setOpen(false);
-                  setExploreOpen(false);
-                }}
+              <NavLink key={link.href} {...link} onNavigate={closeAll} />
+            ))}
+
+            {dropdownGroups.map((group) => (
+              <NavDropdown
+                key={group.id}
+                id={group.id}
+                label={group.label}
+                heading={group.heading}
+                items={group.items}
+                openId={openId}
+                setOpenId={setOpenId}
+                onNavigate={closeAll}
+                location={location}
+                compact
               />
             ))}
-            <div
-              className={`nav-explore${exploreOpen ? " is-open" : ""}`}
-              onPointerEnter={(event) => {
-                if (event.pointerType === "mouse") setExploreOpen(true);
-              }}
-              onPointerLeave={(event) => {
-                if (event.pointerType === "mouse") setExploreOpen(false);
-              }}
-            >
-              <button
-                ref={exploreToggleRef}
-                type="button"
-                className={`nav-explore-toggle${exploreLinks.some((link) => location === link.href || location.startsWith(`${link.href}/`)) ? " active" : ""}`}
-                aria-expanded={exploreOpen}
-                aria-controls="nav-explore-panel"
-                onClick={(event) => {
-                  if (
-                    event.nativeEvent.detail > 0 &&
-                    window.matchMedia("(hover: hover) and (pointer: fine)")
-                      .matches
-                  ) {
-                    setExploreOpen(true);
-                  } else {
-                    setExploreOpen((value) => !value);
-                  }
-                }}
-              >
-                Explore <span aria-hidden="true">⌄</span>
-              </button>
-              <div
-                id="nav-explore-panel"
-                className="nav-explore-panel"
-                aria-hidden={!exploreOpen}
-              >
-                <p className="nav-explore-heading">More from the Foundation</p>
-                <div className="nav-explore-grid">
-                  {exploreLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      tabIndex={exploreOpen ? 0 : -1}
-                      onClick={() => {
-                        setOpen(false);
-                        setExploreOpen(false);
-                      }}
-                      className="nav-explore-link"
-                    >
-                      <span>
-                        {link.label}
-                        <i aria-hidden="true">↗</i>
-                      </span>
-                      <small>{link.note}</small>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
+
+            <NavDropdown
+              id="explore"
+              label="Explore"
+              heading="More from the Foundation"
+              items={exploreLinks}
+              openId={openId}
+              setOpenId={setOpenId}
+              onNavigate={closeAll}
+              location={location}
+            />
+
             <Link
               href="/donate"
-              className="nav-donate"
-              onClick={() => {
-                setOpen(false);
-                setExploreOpen(false);
-              }}
+              className={`nav-donate ${donateTw}`}
+              onClick={closeAll}
             >
               Make a difference <span>↗</span>
             </Link>
@@ -316,6 +376,101 @@ export default function Header() {
         </div>
       </header>
     </>
+  );
+}
+
+function NavDropdown({
+  id,
+  label,
+  heading,
+  items,
+  openId,
+  setOpenId,
+  onNavigate,
+  location,
+  compact = false,
+}: {
+  id: string;
+  label: string;
+  heading: string;
+  items: NavItem[];
+  openId: string | null;
+  setOpenId: React.Dispatch<React.SetStateAction<string | null>>;
+  onNavigate: () => void;
+  location: string;
+  compact?: boolean;
+}) {
+  const isOpen = openId === id;
+
+  const isActive = items.some(
+    (link) => location === link.href || location.startsWith(`${link.href}/`),
+  );
+
+  return (
+    <div
+      className={`nav-explore${isOpen ? " is-open" : ""}`}
+      onPointerEnter={(event) => {
+        if (event.pointerType === "mouse") setOpenId(id);
+      }}
+      onPointerLeave={(event) => {
+        if (event.pointerType === "mouse") {
+          setOpenId((current) => (current === id ? null : current));
+        }
+      }}
+    >
+      <button
+        type="button"
+        className={`nav-explore-toggle ${navItemTw}${isActive ? " active" : ""}`}
+        aria-expanded={isOpen}
+        aria-controls={`nav-${id}-panel`}
+        onClick={(event) => {
+          if (
+            event.nativeEvent.detail > 0 &&
+            window.matchMedia("(hover: hover) and (pointer: fine)").matches
+          ) {
+            setOpenId(id);
+          } else {
+            setOpenId((current) => (current === id ? null : id));
+          }
+        }}
+      >
+        {label}
+        <span
+          aria-hidden="true"
+          className={`ml-2 inline-block h-0 w-0 border-x-[7px] border-t-[8px] border-x-transparent border-t-current align-middle transition-transform duration-200 ${
+            isOpen ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      <div
+        id={`nav-${id}-panel`}
+        className={`nav-explore-panel${compact ? ` ${compactPanelTw}` : ""}`}
+        aria-hidden={!isOpen}
+      >
+        <p className="nav-explore-heading">{heading}</p>
+
+        <div
+          className={`nav-explore-grid${compact ? ` ${compactGridTw}` : ""}`}
+        >
+          {items.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              tabIndex={isOpen ? 0 : -1}
+              onClick={onNavigate}
+              className="nav-explore-link"
+            >
+              <span>
+                {link.label}
+                <i aria-hidden="true">↗</i>
+              </span>
+              <small>{link.note}</small>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -329,8 +484,13 @@ function NavLink({
   onNavigate: () => void;
 }) {
   const [active] = useRoute(`${href}/*?`);
+
   return (
-    <Link href={href} onClick={onNavigate} className={active ? "active" : ""}>
+    <Link
+      href={href}
+      onClick={onNavigate}
+      className={`${navItemTw}${active ? " active" : ""}`}
+    >
       {label}
     </Link>
   );
