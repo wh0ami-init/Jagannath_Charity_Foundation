@@ -19,7 +19,8 @@ Before rollout:
    only donations and imports no SQLite data. ORM supplies timestamps/status/currency.
 6. Verify SHOW CREATE TABLE donations, unique keys, and existing website tables.
 7. Deploy reviewed backend with test keys, existing MySQL URL and a separate webhook
-   secret. Configure /api/payments/webhook for payment.captured and order.paid.
+   secret. Configure `/api/payments/webhook` for `payment.captured`, `order.paid`,
+   and `refund.processed` (optionally `payment.refunded`).
 8. Complete a test payment and verify pending -> paid once; test duplicate webhook.
    Track these test payment IDs separately from real donations. Live keys are
    accepted only after explicitly setting `RAZORPAY_MODE=live` and supplying an
@@ -29,6 +30,10 @@ Before rollout:
    donations table. The backend also applies these additive columns at startup;
    the email-code table is created by SQLAlchemy. Back up first and inspect the
    live schema before applying manually.
+10. Apply `003_donation_refund_tracking_mysql.sql` only if either refund column is
+    missing; this production schema has both already. The backend also adds these
+    columns at startup. Enable Razorpay `refund.processed` (and optionally
+    `payment.refunded`) so refunds are recorded after server verification.
 
 Recovery:
 - Stop accepting payment requests and disable webhook delivery while investigating.

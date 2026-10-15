@@ -49,14 +49,14 @@ export default function Donate() {
         motif="giving"
         eyebrow="Donate"
         title="Choose how you’d like to support the Foundation."
-        description="Make a one-time contribution or choose monthly support through AutoPay. All income is applied only to the objects of the trust."
+        description="Make a one-time contribution or record a pledge. Monthly AutoPay is not available yet. All income is applied only to the objects of the trust."
       />
 
       <section className="donation-choice-section wrap" aria-labelledby="donation-choice-title">
         <Reveal className="donation-choice-heading" delay={0.02}>
-          <p className="donation-section-eyebrow">Two ways to give</p>
-          <h2 id="donation-choice-title">Choose what works for you.</h2>
-          <p>Each option has its own clear payment flow.</p>
+          <p className="donation-section-eyebrow">Ways to support</p>
+          <h2 id="donation-choice-title">Choose how you’d like to contribute.</h2>
+          <p>Online checkout is in test mode. Monthly AutoPay is being prepared.</p>
         </Reveal>
         <Stagger className="donation-choice-grid" gap={0.12} distance={24}>
           <a className="donation-choice-card donation-choice-card--once" href="#one-time">
@@ -79,7 +79,7 @@ export default function Donate() {
             </span>
             <span className="donation-choice-label">Recurring contribution</span>
             <h3>Give monthly with AutoPay</h3>
-            <p>Set up monthly support through a separate UPI or card mandate flow.</p>
+            <p>Monthly AutoPay is not available yet. A one-time contribution will never enroll you in recurring payments.</p>
             <span className="donation-choice-link">Explore monthly giving <span aria-hidden="true">→</span></span>
           </a>
         </Stagger>
@@ -222,11 +222,9 @@ export default function Donate() {
             <div className="monthly-autopay-copy">
               <p className="donation-section-eyebrow">Monthly contribution</p>
               <h2 id="monthly-autopay-title">Support the work month after month.</h2>
-              <p>
-                AutoPay will let you authorize recurring support through a UPI or card mandate. You’ll review the amount and mandate details before approving.
-              </p>
+              <p>Monthly AutoPay is not available yet. When it launches, it will use a separate UPI or card mandate flow with its own confirmation.</p>
               <p className="monthly-autopay-note">
-                Monthly setup is being prepared by the Foundation team. A one-time contribution above does not enroll you in AutoPay.
+                No recurring payment can be started from this website yet. A one-time contribution above does not enroll you in AutoPay.
               </p>
             </div>
             <div className="monthly-autopay-status" role="status">

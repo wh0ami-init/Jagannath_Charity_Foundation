@@ -81,6 +81,20 @@ export interface FormSubmission {
   created_at: string;
 }
 
+export interface AdminDonation {
+  id: number; amount_paise: number; currency: string; status: string;
+  donor_name: string; donor_email: string; donor_phone: string; donor_address: string;
+  cause: string; order_id: string | null; payment_id: string | null;
+  created_at: string; paid_at: string | null; receipt_email_sent_at: string | null;
+  refund_amount_paise: number; refunded_at: string | null;
+}
+
+export async function fetchDonations(): Promise<AdminDonation[]> {
+  const res = await fetch(apiUrl("/api/payments/admin/donations"), { credentials: "include" });
+  if (!res.ok) throw new Error("Could not load donations");
+  return res.json();
+}
+
 export function submissionPayload(form: HTMLFormElement, kind: FormSubmission["kind"]) {
   const values = new FormData(form);
   const field = (name: string) => String(values.get(name) ?? "").trim();

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { apiUrl } from "../lib/api";
 import Reveal from "./Reveal";
 import Stagger from "./Stagger";
@@ -10,6 +10,9 @@ type CheckoutResponse = {
   razorpay_signature: string;
 };
 type DonorDetails = { name: string; email: string; phone: string; address: string; amount_rupees: number; cause: string };
+type DonorField = keyof DonorDetails;
+type DonorFieldErrors = Partial<Record<DonorField, string>>;
+const donationCauses = ["Education & literacy", "Health & family welfare", "Youth skills & sport", "Women's livelihoods", "Environment & land", "Solar housing & clean energy", "Where most needed"];
 type DonationReceipt = {
   status: string; order_id: string; payment_id: string; paid_at: string;
   donor_name: string; donor_email: string; donor_phone: string; donor_address: string;
@@ -95,6 +98,12 @@ export default function RazorpayTestButton() {
   const [code, setCode] = useState("");
   const [verificationToken, setVerificationToken] = useState("");
   const [emailSent, setEmailSent] = useState(false);
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [codeError, setCodeError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<DonorFieldErrors>({});
+  const [touchedFields, setTouchedFields] = useState<Partial<Record<DonorField, boolean>>>({});
+  const [donorFormAttempted, setDonorFormAttempted] = useState(false);
+  const otpInputRef = useRef<HTMLInputElement>(null);
   const [receipt, setReceipt] = useState<DonationReceipt | null>(null);
   const [paymentMode, setPaymentMode] = useState<"test" | "live">("test");
   const [paymentConfigured, setPaymentConfigured] = useState(false);
@@ -115,7 +124,75 @@ export default function RazorpayTestButton() {
 
   useEffect(() => () => {
     document.body.classList.remove("razorpay-checkout-active");
+    document.body.classList.remove("donation-email-modal-open");
   }, []);
+
+  useEffect(() => {
+    document.body.classList.toggle("donation-email-modal-open", emailModalOpen);
+    if (emailModalOpen) window.setTimeout(() => otpInputRef.current?.focus(), 80);
+    return () => document.body.classList.remove("donation-email-modal-open");
+  }, [emailModalOpen]);
+
+  useEffect(() => {
+    if (!emailModalOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !busy) setEmailModalOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [emailModalOpen, busy]);
+
+  function validateDonorField(field: DonorField, value: DonorDetails[DonorField]): string {
+    const text = String(value).trim();
+    if (field === "name") {
+      if (!text) return "Please enter your full name.";
+      if (text.length < 2) return "Please enter at least 2 characters.";
+      if (text.length > 150) return "Your name must be 150 characters or fewer.";
+    }
+    if (field === "email") {
+      if (!text) return "Please enter your email address.";
+      if (text.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)) return "Please enter a valid email address.";
+    }
+    if (field === "phone") {
+      if (!text) return "Please enter your mobile number.";
+      const digits = text.replace(/\D/g, "");
+      if (!/^[+\d][\d\s().-]*$/.test(text) || digits.length < 10 || digits.length > 15) return "Enter a valid mobile number with 10 to 15 digits.";
+    }
+    if (field === "address" && text.length > 500) return "Address must be 500 characters or fewer.";
+    if (field === "cause" && !donationCauses.includes(text)) return "Please select a donation cause.";
+    if (field === "amount_rupees") {
+      const amount = Number(value);
+      if (!Number.isInteger(amount) || amount < 1 || amount > 1000000) return "Enter an amount between ₹1 and ₹10,00,000.";
+      if (paymentMode === "test" && amount !== 100) return "Test Mode donations are fixed at ₹100.";
+    }
+    return "";
+  }
+
+  function validateDonorDetails(): boolean {
+    const errors: DonorFieldErrors = {};
+    (Object.keys(donor) as DonorField[]).forEach((field) => {
+      const errorMessage = validateDonorField(field, donor[field]);
+      if (errorMessage) errors[field] = errorMessage;
+    });
+    setFieldErrors(errors);
+    setDonorFormAttempted(true);
+    setTouchedFields({ name: true, email: true, phone: true, address: true, cause: true, amount_rupees: true });
+    return Object.keys(errors).length === 0;
+  }
+
+  function updateDonorField<K extends DonorField>(field: K, value: DonorDetails[K]) {
+    setDonor((current) => ({ ...current, [field]: value }));
+    if (touchedFields[field] || donorFormAttempted) {
+      const errorMessage = validateDonorField(field, value);
+      setFieldErrors((current) => ({ ...current, [field]: errorMessage || undefined }));
+    }
+  }
+
+  function markDonorFieldTouched(field: DonorField) {
+    setTouchedFields((current) => ({ ...current, [field]: true }));
+    const errorMessage = validateDonorField(field, donor[field]);
+    setFieldErrors((current) => ({ ...current, [field]: errorMessage || undefined }));
+  }
 
   const setCheckoutBackdrop = (active: boolean) => {
     document.body.classList.toggle("razorpay-checkout-active", active);
@@ -148,12 +225,15 @@ export default function RazorpayTestButton() {
   }
 
   async function sendEmailCode() {
+    if (!validateDonorDetails()) return;
     setError("");
+    setCodeError("");
     setBusy(true);
     try {
       await paymentRequest("/api/payments/email/send-code", donor);
       setEmailSent(true);
-      setMessage(`A verification code was sent to ${donor.email}.`);
+      setCode("");
+      setEmailModalOpen(true);
     } catch (problem) {
       setError(problem instanceof Error ? problem.message : "Could not send the verification code.");
     } finally {
@@ -162,20 +242,31 @@ export default function RazorpayTestButton() {
   }
 
   async function verifyEmail() {
-    setError("");
+    if (code.length !== 6) {
+      setCodeError("Enter the six-digit code from your email.");
+      return;
+    }
+    setCodeError("");
     setBusy(true);
     try {
-      const result = await paymentRequest("/api/payments/email/verify-code", { email: donor.email, code }) as { verification_token: string };
+      const result = await paymentRequest("/api/payments/email/verify-code", { email: donor.email.trim(), code }) as { verification_token: string };
+      if (!result?.verification_token) throw new Error("We could not confirm that code. Please request a new one.");
       setVerificationToken(result.verification_token);
-      setMessage("Email verified. Continue to secure checkout.");
+      setEmailModalOpen(false);
+      setMessage("Email verified. Opening secure checkout…");
+      await openPayment(result.verification_token);
     } catch (problem) {
-      setError(problem instanceof Error ? problem.message : "Could not verify that code.");
+      setCodeError(problem instanceof Error ? problem.message : "Could not verify that code.");
     } finally {
       setBusy(false);
     }
   }
 
-  async function openPayment() {
+  async function openPayment(token = verificationToken) {
+    if (!token) {
+      setError("Verify your email before continuing to checkout.");
+      return;
+    }
     if (inProgress.current) return;
     inProgress.current = true;
     setCheckoutBackdrop(true);
@@ -190,7 +281,7 @@ export default function RazorpayTestButton() {
     let responded = false;
     try {
       await loadCheckout();
-      const order = await paymentRequest("/api/payments/create-order", { verification_token: verificationToken });
+      const order = await paymentRequest("/api/payments/create-order", { verification_token: token });
       const expectedPrefix = order?.mode === "live" ? "rzp_live_" : "rzp_test_";
       if (typeof order?.key_id !== "string" || !order.key_id.startsWith(expectedPrefix) ||
           typeof order.order_id !== "string" || order.amount !== donor.amount_rupees * 100 || order.currency !== "INR") {
@@ -215,7 +306,10 @@ export default function RazorpayTestButton() {
         modal: {
           ondismiss: () => {
             if (!responded) {
-              setMessage("Checkout closed. No donation has been confirmed.");
+              setMessage("Checkout closed. No donation has been confirmed. Verify your email again if you want to retry.");
+              setVerificationToken("");
+              setEmailSent(false);
+              setCode("");
               finish();
             }
           },
@@ -228,8 +322,28 @@ export default function RazorpayTestButton() {
       checkout.open();
     } catch (problem) {
       setError(problem instanceof Error ? problem.message : "Could not open Razorpay Checkout.");
+      setVerificationToken("");
+      setEmailSent(false);
+      setCode("");
       finish();
     }
+  }
+
+  function closeEmailModal() {
+    if (busy) return;
+    setEmailModalOpen(false);
+    window.requestAnimationFrame(() => document.getElementById("donation-code-reopen")?.focus());
+  }
+
+  function changeDonorEmail() {
+    if (busy) return;
+    setEmailModalOpen(false);
+    setEmailSent(false);
+    setVerificationToken("");
+    setCode("");
+    setCodeError("");
+    setMessage("");
+    window.requestAnimationFrame(() => document.getElementById("donor-email")?.focus());
   }
 
   return (
@@ -277,15 +391,36 @@ export default function RazorpayTestButton() {
             {!paymentConfigured && <p className="donation-setup-status" role="status">{setupMessage}</p>}
           </div>
           {!completed && <div className="donation-details-form">
-            <label className="donation-checkout-label">Full name<input required maxLength={150} autoComplete="name" disabled={emailSent} value={donor.name} onChange={e => setDonor({...donor, name:e.target.value})} /></label>
-            <label className="donation-checkout-label">Email address<input required type="email" maxLength={254} autoComplete="email" disabled={emailSent} value={donor.email} onChange={e => { setDonor({...donor, email:e.target.value}); setVerificationToken(""); setEmailSent(false); }} /></label>
-            <label className="donation-checkout-label">Mobile number<input maxLength={40} autoComplete="tel" disabled={emailSent} value={donor.phone} onChange={e => setDonor({...donor, phone:e.target.value})} /></label>
-            <label className="donation-checkout-label">Address (optional)<input maxLength={500} autoComplete="street-address" disabled={emailSent} value={donor.address} onChange={e => setDonor({...donor, address:e.target.value})} /></label>
-            <label className="donation-checkout-label">Named cause<select disabled={emailSent} value={donor.cause} onChange={e => setDonor({...donor, cause:e.target.value})}>{["Education & literacy", "Health & family welfare", "Youth skills & sport", "Women's livelihoods", "Environment & land", "Solar housing & clean energy", "Where most needed"].map(cause => <option key={cause}>{cause}</option>)}</select></label>
-            <label className="donation-checkout-label">Amount in INR<input type="number" min={1} max={1000000} value={donor.amount_rupees} disabled={emailSent || paymentMode === "test"} onChange={e => setDonor({...donor, amount_rupees:Number(e.target.value)})} />{paymentMode === "test" && <small>₹100 while Razorpay is in Test Mode.</small>}</label>
-            {!emailSent && <button type="button" disabled={busy || !paymentConfigured || !donor.name.trim() || !donor.email.trim()} onClick={() => void sendEmailCode()} className="donation-checkout-button">Send email verification code</button>}
-            {emailSent && !verificationToken && <div className="donation-email-code"><label className="donation-checkout-label">6-digit email code<input inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={e => setCode(e.target.value.replace(/\D/g, ""))} /></label><button type="button" disabled={busy || code.length !== 6} onClick={() => void verifyEmail()} className="donation-checkout-button">Verify email</button></div>}
-            {verificationToken && <button type="button" disabled={busy || !!pendingResponse} onClick={openPayment} className="donation-checkout-button">{busy ? "Payment in progress…" : "Continue to Razorpay Checkout"}</button>}
+            <label className="donation-checkout-label" htmlFor="donor-name">Full name <span className="donation-required">Required</span>
+              <input id="donor-name" required maxLength={150} autoComplete="name" disabled={emailSent} value={donor.name} aria-invalid={Boolean(fieldErrors.name)} aria-describedby={fieldErrors.name ? "donor-name-error" : undefined} onBlur={() => markDonorFieldTouched("name")} onChange={e => updateDonorField("name", e.target.value)} />
+              {fieldErrors.name && <small id="donor-name-error" className="donation-field-error" role="alert">{fieldErrors.name}</small>}
+            </label>
+            <label className="donation-checkout-label" htmlFor="donor-email">Email address <span className="donation-required">Required</span>
+              <input id="donor-email" required type="email" maxLength={254} autoComplete="email" disabled={emailSent} value={donor.email} aria-invalid={Boolean(fieldErrors.email)} aria-describedby={fieldErrors.email ? "donor-email-error" : undefined} onBlur={() => markDonorFieldTouched("email")} onChange={e => updateDonorField("email", e.target.value)} />
+              {fieldErrors.email && <small id="donor-email-error" className="donation-field-error" role="alert">{fieldErrors.email}</small>}
+            </label>
+            <label className="donation-checkout-label" htmlFor="donor-phone">Mobile number <span className="donation-required">Required</span>
+              <input id="donor-phone" required type="tel" inputMode="tel" maxLength={40} autoComplete="tel" placeholder="e.g. +91 98765 43210" disabled={emailSent} value={donor.phone} aria-invalid={Boolean(fieldErrors.phone)} aria-describedby={fieldErrors.phone ? "donor-phone-error" : "donor-phone-hint"} onBlur={() => markDonorFieldTouched("phone")} onChange={e => updateDonorField("phone", e.target.value)} />
+              {fieldErrors.phone ? <small id="donor-phone-error" className="donation-field-error" role="alert">{fieldErrors.phone}</small> : <small id="donor-phone-hint" className="donation-field-hint">Use 10–15 digits, with country code if needed.</small>}
+            </label>
+            <label className="donation-checkout-label" htmlFor="donor-address">Address <span className="donation-optional">Optional</span>
+              <input id="donor-address" maxLength={500} autoComplete="street-address" disabled={emailSent} value={donor.address} aria-invalid={Boolean(fieldErrors.address)} aria-describedby={fieldErrors.address ? "donor-address-error" : undefined} onBlur={() => markDonorFieldTouched("address")} onChange={e => updateDonorField("address", e.target.value)} />
+              {fieldErrors.address && <small id="donor-address-error" className="donation-field-error" role="alert">{fieldErrors.address}</small>}
+            </label>
+            <label className="donation-checkout-label" htmlFor="donor-cause">Named cause <span className="donation-required">Required</span>
+              <select id="donor-cause" required disabled={emailSent} value={donor.cause} aria-invalid={Boolean(fieldErrors.cause)} aria-describedby={fieldErrors.cause ? "donor-cause-error" : undefined} onBlur={() => markDonorFieldTouched("cause")} onChange={e => updateDonorField("cause", e.target.value)}>{donationCauses.map(cause => <option key={cause}>{cause}</option>)}</select>
+              {fieldErrors.cause && <small id="donor-cause-error" className="donation-field-error" role="alert">{fieldErrors.cause}</small>}
+            </label>
+            <label className="donation-checkout-label" htmlFor="donor-amount">Amount in INR <span className="donation-required">Required</span>
+              <input id="donor-amount" type="number" min={1} max={1000000} step={1} required value={donor.amount_rupees} disabled={emailSent || paymentMode === "test"} aria-invalid={Boolean(fieldErrors.amount_rupees)} aria-describedby={fieldErrors.amount_rupees ? "donor-amount-error" : paymentMode === "test" ? "donor-amount-hint" : undefined} onBlur={() => markDonorFieldTouched("amount_rupees")} onChange={e => updateDonorField("amount_rupees", Number(e.target.value))} />
+              {fieldErrors.amount_rupees ? <small id="donor-amount-error" className="donation-field-error" role="alert">{fieldErrors.amount_rupees}</small> : paymentMode === "test" ? <small id="donor-amount-hint" className="donation-field-hint">Fixed at ₹100 while Razorpay is in Test Mode.</small> : null}
+            </label>
+            {!emailSent && <button type="button" disabled={busy || !paymentConfigured} onClick={() => void sendEmailCode()} className="donation-checkout-button">Send email verification code</button>}
+            {emailSent && !verificationToken && <div className="donation-code-sent-inline" role="status">
+              <span>A code was sent to <strong>{donor.email}</strong>.</span>
+              <button id="donation-code-reopen" type="button" disabled={busy} onClick={() => { setCodeError(""); setEmailModalOpen(true); }} className="donation-link-button">Enter verification code</button>
+            </div>}
+            {verificationToken && <button type="button" disabled={busy || !!pendingResponse} onClick={() => void openPayment(verificationToken)} className="donation-checkout-button">{busy ? "Payment in progress…" : "Continue to Razorpay Checkout"}</button>}
           </div>}
           {receipt && <div className="donation-receipt" id="donation-receipt">
             <p className="donation-checkout-label">Payment confirmed</p><h3>Donation receipt</h3>
@@ -310,6 +445,35 @@ export default function RazorpayTestButton() {
           </p>
         </Stagger>
       </Reveal>
+      {emailModalOpen && <div className="donation-email-modal-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) closeEmailModal(); }}>
+        <section className="donation-email-modal" role="dialog" aria-modal="true" aria-labelledby="donation-email-modal-title" aria-describedby="donation-email-modal-copy" onKeyDown={event => {
+          if (event.key !== "Tab") return;
+          const focusable = Array.from(event.currentTarget.querySelectorAll<HTMLElement>("button:not(:disabled), input:not(:disabled)"));
+          if (!focusable.length) return;
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+          if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+          else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+        }}>
+          <button type="button" className="donation-email-modal-close" aria-label="Close email verification" disabled={busy} onClick={closeEmailModal}>×</button>
+          <div className="donation-email-modal-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M3.5 6.5h17v12h-17z"/><path d="m4 7 8 6 8-6"/></svg>
+          </div>
+          <p className="donation-email-modal-eyebrow">Email sent</p>
+          <h2 id="donation-email-modal-title">Check your inbox</h2>
+          <p id="donation-email-modal-copy" className="donation-email-modal-copy">We sent a six-digit code to <strong>{donor.email}</strong>. Enter it here to verify your email and continue to secure payment.</p>
+          <form className="donation-otp-form" onSubmit={(event: FormEvent<HTMLFormElement>) => { event.preventDefault(); void verifyEmail(); }}>
+            <label htmlFor="donation-email-otp">Verification code</label>
+            <input ref={otpInputRef} id="donation-email-otp" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} placeholder="Enter 6 digits" value={code} aria-invalid={Boolean(codeError)} aria-describedby={codeError ? "donation-otp-error" : "donation-otp-help"} onChange={event => { setCode(event.target.value.replace(/\D/g, "").slice(0, 6)); setCodeError(""); }} />
+            {codeError ? <p id="donation-otp-error" className="donation-otp-error" role="alert">{codeError}</p> : <p id="donation-otp-help" className="donation-otp-help">The code expires in 10 minutes.</p>}
+            <button type="submit" className="donation-checkout-button" disabled={busy || code.length !== 6}>{busy ? "Verifying email…" : "Verify & continue to payment"}</button>
+          </form>
+          <div className="donation-email-modal-actions">
+            <button type="button" disabled={busy} onClick={() => void sendEmailCode()}>Resend code</button>
+            <button type="button" disabled={busy} onClick={changeDonorEmail}>Change email</button>
+          </div>
+        </section>
+      </div>}
     </section>
   );
 }

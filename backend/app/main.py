@@ -36,6 +36,8 @@ donation_additions = {
     "donor_address": "VARCHAR(500) NOT NULL DEFAULT ''",
     "cause": "VARCHAR(160) NOT NULL DEFAULT ''",
     "receipt_email_sent_at": "DATETIME NULL",
+    "refund_amount_paise": "INTEGER NOT NULL DEFAULT 0",
+    "refunded_at": "DATETIME NULL",
 }
 for column_name, column_definition in donation_additions.items():
     if column_name not in donation_columns:

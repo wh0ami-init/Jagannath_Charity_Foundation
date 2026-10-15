@@ -16,10 +16,12 @@ import {
   addGalleryImage,
   deleteGalleryImage,
   deleteSubmission,
+  fetchDonations,
   fetchContent,
   fetchSession,
   fetchSubmissions,
   FormSubmission,
+  AdminDonation,
   ImageSlot,
   logout as apiLogout,
   replaceImage,
@@ -36,7 +38,7 @@ gsap.registerPlugin(useGSAP);
 /* Small helpers                                                       */
 /* ------------------------------------------------------------------ */
 
-type Section = "home" | "photos" | "words" | "messages";
+type Section = "home" | "photos" | "words" | "messages" | "donations";
 type Toast = { id: number; tone: "ok" | "bad"; text: string } | null;
 type Kind = FormSubmission["kind"];
 type GalleryCategory = "national" | "public" | "regional" | "culture";
@@ -1130,6 +1132,21 @@ function MessagesView({
   );
 }
 
+function DonationsView({ items }: { items: AdminDonation[] }) {
+  return <div className="ac-view">
+    <p className="ac-kicker ac-reveal">Payments</p>
+    <h2 className="ac-h ac-reveal">Donations</h2>
+    <p className="ac-sub ac-reveal">Payment records confirmed by the server. Pending orders may include abandoned checkout attempts.</p>
+    {!items.length ? <div className="ac-empty"><Icon name="mail" size={48}/><strong>No payment records yet</strong><span>Confirmed and pending donations will appear here.</span></div> :
+      <div className="inbox-list">{items.map((d) => <article className="inbox-item ac-reveal" key={d.id}>
+        <div className="inbox-heading"><strong>{d.donor_name || "Donor"}</strong><span className="ac-chip">{d.status}</span><time>{new Date(d.paid_at || d.created_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })} IST</time></div>
+        <p><a href={`mailto:${d.donor_email}`}>{d.donor_email}</a>{d.donor_phone ? ` · ${d.donor_phone}` : ""}</p>
+        <p>₹{(d.amount_paise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}{d.refund_amount_paise ? ` · refunded ₹${(d.refund_amount_paise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}` : ""} · {d.cause || "Where most needed"}</p>
+        <small>Order: {d.order_id || "—"} · Payment: {d.payment_id || "—"} · Receipt email: {d.receipt_email_sent_at ? "sent" : d.status === "paid" ? "not sent" : "pending payment"}</small>
+      </article>)}</div>}
+  </div>;
+}
+
 /* ------------------------------------------------------------------ */
 /* The console                                                         */
 /* ------------------------------------------------------------------ */
@@ -1143,6 +1160,7 @@ export default function AdminDashboard() {
   const [content, setContent] = useState<SiteContent>({});
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [submissions, setSubmissions] = useState<FormSubmission[]>([]);
+  const [donations, setDonations] = useState<AdminDonation[]>([]);
   const [toast, setToast] = useState<Toast>(null);
   const [saving, setSaving] = useState<string | null>(null);
   const [savedKey, setSavedKey] = useState<string | null>(null);
@@ -1168,9 +1186,10 @@ export default function AdminDashboard() {
       return;
     }
     try {
-      const [text, inbox] = await Promise.all([
+      const [text, inbox, donationRows] = await Promise.all([
         fetchContent(),
         fetchSubmissions(),
+        fetchDonations(),
       ]);
       setContent(text);
       setSubmissions(
@@ -1178,6 +1197,7 @@ export default function AdminDashboard() {
           (a, b) => +new Date(b.created_at) - +new Date(a.created_at),
         ),
       );
+      setDonations(donationRows);
       setDrafts(
         Object.fromEntries(Object.entries(text).map(([k, f]) => [k, f.value])),
       );
@@ -1473,6 +1493,13 @@ export default function AdminDashboard() {
       ) : undefined,
     },
     {
+      key: "donations",
+      icon: "mail",
+      title: "Donations",
+      hint: "Payment records",
+      badge: donations.length ? <span className="ac-badge">{donations.length}</span> : undefined,
+    },
+    {
       key: "messages",
       icon: "mail",
       title: "Messages",
@@ -1582,6 +1609,7 @@ export default function AdminDashboard() {
               onExport={exportList}
             />
           )}
+          {section === "donations" && <DonationsView items={donations} />}
         </main>
       </div>
 

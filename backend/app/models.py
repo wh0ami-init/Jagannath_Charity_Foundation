@@ -96,6 +96,8 @@ class Donation(Base):
     donor_address = Column(String(500), nullable=False, default="")
     cause = Column(String(160), nullable=False, default="")
     receipt_email_sent_at = Column(DateTime, nullable=True)
+    refund_amount_paise = Column(Integer, nullable=False, default=0)
+    refunded_at = Column(DateTime, nullable=True)
 
     created_at = Column(DateTime, nullable=False, default=utcnow)
     paid_at = Column(DateTime, nullable=True)

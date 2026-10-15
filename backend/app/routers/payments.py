@@ -19,9 +19,17 @@ from app.models import Donation, DonationEmailCode, utcnow
 
 from app.config import settings
 from app.payment_status import confirm_captured_payment
-from app.ratelimit import limit_payment_orders, donation_email_ip_limiter, client_ip, too_many_requests
+from app.ratelimit import (limit_payment_orders, donation_email_ip_limiter,
+                           donation_email_address_limiter, client_ip, too_many_requests)
+from app.auth import get_current_admin
 from app.donation_mail import send_verification_code, send_donation_receipt
 from starlette.concurrency import run_in_threadpool
+
+DONATION_CAUSES = {
+    "Education & literacy", "Health & family welfare", "Youth skills & sport",
+    "Women's livelihoods", "Environment & land", "Solar housing & clean energy",
+    "Where most needed",
+}
 
 router  = APIRouter(
     prefix="/api/payments",
@@ -45,7 +53,7 @@ class CreateOrderRequest(BaseModel):
 class EmailCodeRequest(BaseModel):
     name: str = Field(min_length=1, max_length=150)
     email: str = Field(min_length=5, max_length=254)
-    phone: str = Field(default="", max_length=40)
+    phone: str = Field(min_length=1, max_length=40)
     address: str = Field(default="", max_length=500)
     amount_rupees: int = Field(strict=True, ge=1, le=1000000)
     cause: str = Field(default="Where most needed", max_length=160)
@@ -58,10 +66,48 @@ class EmailCodeRequest(BaseModel):
             raise ValueError("Enter a valid email address")
         return value
 
+    @field_validator("name")
+    @classmethod
+    def validate_name(cls, value: str) -> str:
+        value = value.strip()
+        if len(value) < 2:
+            raise ValueError("Enter your full name")
+        return value
+
+    @field_validator("phone")
+    @classmethod
+    def validate_phone(cls, value: str) -> str:
+        value = value.strip()
+        digits = re.sub(r"\D", "", value)
+        if not re.fullmatch(r"[+\d][\d\s().-]*", value) or not 10 <= len(digits) <= 15:
+            raise ValueError("Enter a valid mobile number with 10 to 15 digits")
+        return value
+
+    @field_validator("address")
+    @classmethod
+    def normalize_address(cls, value: str) -> str:
+        return value.strip()
+
+    @field_validator("cause")
+    @classmethod
+    def validate_cause(cls, value: str) -> str:
+        value = value.strip()
+        if value not in DONATION_CAUSES:
+            raise ValueError("Select a valid donation cause")
+        return value
+
 
 class VerifyEmailCodeRequest(BaseModel):
     email: str = Field(min_length=5, max_length=254)
     code: str = Field(pattern=r"^[0-9]{6}$")
+
+    @field_validator("email")
+    @classmethod
+    def normalize_verification_email(cls, value: str) -> str:
+        value = value.strip().lower()
+        if not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", value):
+            raise ValueError("Enter a valid email address")
+        return value
 
 
 @router.get("/mode")
@@ -83,7 +129,9 @@ def _token_hash(token: str) -> str:
 
 
 def _limit_email(request: Request, email: str) -> None:
-    wait = donation_email_ip_limiter.check_and_hit(f"{client_ip(request)}:{email}")
+    ip_wait = donation_email_ip_limiter.check_and_hit(client_ip(request))
+    email_wait = donation_email_address_limiter.check_and_hit(email)
+    wait = max(ip_wait, email_wait)
     if wait:
         raise too_many_requests(wait, "email verification requests")
 
@@ -283,6 +331,56 @@ def process_webhook(body: bytes, signature: str, db: Session):
         raise HTTPException(status_code=400, detail="Invalid webhook event")
     # Failed attempts can be retried for the same order. Never downgrade a paid
     # donation when an older failure/authorization event arrives out of order.
+    if event["event"] in {"payment.refunded", "refund.processed"}:
+        require_payment_credentials()
+        try:
+            client = get_razorpay_client()
+            if event["event"] == "refund.processed":
+                refund = event["payload"]["refund"]["entity"]
+                refund_id = refund["id"]
+                payment_id = refund["payment_id"]
+                if not isinstance(refund_id, str) or not isinstance(payment_id, str):
+                    raise ValueError()
+                verified_refund = client.refund.fetch(refund_id, timeout=10)
+                if (verified_refund.get("id") != refund_id or verified_refund.get("payment_id") != payment_id
+                        or verified_refund.get("status") != "processed"):
+                    raise ValueError()
+            else:
+                entity = event["payload"]["payment"]["entity"]
+                payment_id = entity["id"]
+                if not isinstance(payment_id, str):
+                    raise ValueError()
+            payment = client.payment.fetch(payment_id, timeout=10)
+            order_id = payment.get("order_id")
+            refunded = payment.get("amount_refunded")
+            if (payment.get("id") != payment_id or payment.get("order_id") != order_id
+                    or payment.get("status") not in {"captured", "refunded"}
+                    or payment.get("captured") is not True
+                    or type(refunded) is not int or refunded < 1):
+                raise ValueError()
+            donation = db.query(Donation).filter_by(razorpay_payment_id=payment_id).first()
+            if donation is None:
+                donation = db.query(Donation).filter_by(razorpay_order_id=order_id).first()
+            if donation is None:
+                return {"received": True, "ignored": True}
+            if (donation.razorpay_order_id != order_id or refunded > donation.amount_paise
+                    or payment.get("amount") != donation.amount_paise or payment.get("currency") != donation.currency):
+                raise ValueError()
+            if donation.razorpay_payment_id not in (None, payment_id):
+                raise ValueError()
+            donation.razorpay_payment_id = payment_id
+            donation.paid_at = donation.paid_at or utcnow()
+            donation.refund_amount_paise = max(donation.refund_amount_paise, refunded)
+            donation.status = "refunded" if donation.refund_amount_paise == donation.amount_paise else "partially_refunded"
+            donation.refunded_at = donation.refunded_at or utcnow()
+            db.commit()
+            return {"received": True, "status": donation.status}
+        except (KeyError, TypeError, ValueError, AttributeError):
+            db.rollback()
+            raise HTTPException(status_code=409, detail="Refund could not be matched to a confirmed donation") from None
+        except Exception:
+            db.rollback()
+            raise HTTPException(status_code=502, detail="Could not verify refund status with Razorpay") from None
     if event["event"] not in {"payment.captured", "order.paid"}:
         return {"received": True, "ignored": True}
     require_payment_credentials()
@@ -295,6 +393,8 @@ def process_webhook(body: bytes, signature: str, db: Session):
         raise HTTPException(status_code=400, detail="Webhook payment details are missing") from None
     # Signed events are still checked against Razorpay's current payment facts.
     # Idempotency is based on the stored order/payment pair, not an unsigned header.
+    if db.query(Donation.id).filter_by(razorpay_order_id=order_id).first() is None:
+        return {"received": True, "ignored": True}
     donation = confirm_captured_payment(db, order_id, payment_id, client=get_razorpay_client())
     if donation.receipt_email_sent_at is None:
         try:
@@ -314,3 +414,18 @@ async def payment_webhook(request: Request, db: Session = Depends(get_db)):
             raise HTTPException(status_code=413, detail="Webhook body too large")
     signature = request.headers.get("x-razorpay-signature", "")
     return await run_in_threadpool(process_webhook, bytes(body), signature, db)
+
+
+@router.get("/admin/donations")
+def admin_donations(limit: int = 500, db: Session = Depends(get_db), _admin=Depends(get_current_admin)):
+    if not 1 <= limit <= 1000:
+        raise HTTPException(status_code=422, detail="Limit must be between 1 and 1000")
+    rows = db.query(Donation).order_by(Donation.created_at.desc()).limit(limit).all()
+    return [{"id": row.id, "amount_paise": row.amount_paise, "currency": row.currency,
+             "status": row.status, "donor_name": row.donor_name, "donor_email": row.donor_email,
+             "donor_phone": row.donor_phone, "donor_address": row.donor_address,
+             "cause": row.cause, "order_id": row.razorpay_order_id,
+             "payment_id": row.razorpay_payment_id, "created_at": row.created_at,
+             "paid_at": row.paid_at, "receipt_email_sent_at": row.receipt_email_sent_at,
+             "refund_amount_paise": row.refund_amount_paise, "refunded_at": row.refunded_at}
+            for row in rows]
