@@ -487,7 +487,7 @@ export default function Home({
           </Reveal>
           <Reveal className="story-copy" direction="right" duration={1.1}>
             <p className="eyebrow">
-              <span /> {translateText("The Foundation")} </p>
+              <span /> {translateText("Our founder")} </p>
             <h2>{localizeText(storyTitle)}</h2>
             <p className="body-large">
               {localizeText(text(
@@ -499,7 +499,7 @@ export default function Home({
               <span>{translateText("“Manav seva is Ishwar seva”")}</span>
               <small>{translateText("Service to people is at the heart of our work.")}</small>
             </blockquote>
-            <Link href="/about" className="text-link"> {translateText("Read our story")} <span>↗</span>
+            <Link href="/team" className="text-link"> {translateText("Meet our leadership")} <span>↗</span>
             </Link>
           </Reveal>
         </div>

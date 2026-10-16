@@ -655,12 +655,40 @@ h3,
   -webkit-backdrop-filter: blur(24px) saturate(150%);
 }
 
-/* Let the dropdown sample and blur the page behind it. A filtered header
-   ancestor would otherwise limit the panel's backdrop to the header itself. */
-.site-header.is-explore-open,
-.site-header.is-home.is-explore-open {
+/* Keep the header's own frost on a sibling layer while a menu is open. This
+   leaves the dropdown free to blur the page behind it instead of being trapped
+   inside the header's backdrop-filter root. */
+.site-header.is-explore-open {
+  background: transparent;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
+}
+
+.site-header.is-home:not(.is-scrolled).is-explore-open,
+.site-header.is-home.is-scrolled.is-explore-open {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.site-header.is-explore-open::before {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background: var(--header-glass);
+  backdrop-filter: blur(22px) saturate(145%);
+  -webkit-backdrop-filter: blur(22px) saturate(145%);
+  content: "";
+  pointer-events: none;
+}
+
+.site-header.is-home:not(.is-scrolled).is-explore-open::before {
+  background: linear-gradient(180deg, rgba(10, 30, 26, .46), rgba(10, 30, 26, .2));
+}
+
+.site-header.is-explore-open .header-main {
+  position: relative;
+  z-index: 1;
 }
 
 .site-header.is-home.is-scrolled .header-main {
@@ -6853,6 +6881,38 @@ h3,
 }
 
 @media (max-width: 680px) {
+  .home-hero--leader .hero-copy.wrap {
+    width: auto;
+    max-width: min(540px, calc(100% - 36px));
+  }
+
+  .hero-leader-card {
+    top: 82px;
+    right: 18px;
+    width: min(176px, 48vw);
+    transform: none;
+  }
+
+  .hero-leader-image {
+    aspect-ratio: 1.55;
+  }
+
+  .hero-leader-card > span,
+  .hero-leader-card > small {
+    padding-inline: 9px;
+  }
+
+  .hero-leader-card > span {
+    padding-top: 8px;
+    font-size: 12px;
+  }
+
+  .hero-leader-card > small {
+    padding-top: 3px;
+    padding-bottom: 9px;
+    font-size: 8px;
+  }
+
   .site-shell {
     font-size: 16px;
     line-height: 1.65;

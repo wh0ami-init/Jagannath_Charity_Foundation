@@ -5,10 +5,28 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useReducedMotion } from "motion/react";
 import { useLocation } from "wouter";
+import { DynamicImage } from "../lib/ImagesContext";
 import "./WelcomeScreen.css";
 
 gsap.registerPlugin(useGSAP);
 const welcomeDuration = 8.2;
+const welcomePhotos = [
+  "gallery-extra-president-murmu-5",
+  "gallery-pm-modi",
+  "gallery-extra-president-kovind-5",
+  "gallery-extra-president-mukherjee-2",
+  "gallery-extra-dharmendra-pradhan-2",
+  "gallery-extra-embassy-thimphu",
+  "gallery-amit-shah",
+  "gallery-anna-hazare",
+  "gallery-baba-ramdev",
+  "gallery-cm-sikkim",
+  "gallery-extra-arjun-ram-meghwal",
+  "gallery-extra-hemant-soren-2",
+  "gallery-extra-international-guest",
+  "gallery-extra-jp-nadda-2",
+  "gallery-extra-rajnath-2",
+];
 
 // Real facts from the Impact page (no invented beneficiary numbers)
 const stats = [
@@ -51,10 +69,30 @@ export default function WelcomeScreen({
 
       const tl = gsap.timeline();
       tl.fromTo(
+        ".welcome-photo-tile",
+        { autoAlpha: 0, y: 70, scale: 0.76, rotate: (i) => (i % 2 ? 4 : -4) },
+        {
+          autoAlpha: 1,
+          y: 0,
+          scale: 1,
+          rotate: 0,
+          duration: 1.2,
+          stagger: { amount: 0.85, from: "random" },
+          ease: "power3.out",
+        },
+        0,
+      );
+      tl.fromTo(
+        ".welcome-gradient-wash",
+        { scaleY: 0 },
+        { scaleY: 1, duration: 1.35, ease: "power2.out" },
+        1.05,
+      );
+      tl.fromTo(
         ".welcome-top",
         { autoAlpha: 0, y: 20, filter: "blur(8px)" },
         { autoAlpha: 1, y: 0, filter: "blur(0px)", duration: 0.95, ease: "power3.out" },
-        0.1,
+        2.3,
       )
         .fromTo(
           ".welcome-heading-text",
@@ -66,13 +104,13 @@ export default function WelcomeScreen({
             stagger: 0.19,
             ease: "power3.out",
           },
-          0.38,
+          2.55,
         )
         .fromTo(
           ".welcome-intro-copy",
           { autoAlpha: 0, y: 18, filter: "blur(5px)" },
           { autoAlpha: 1, y: 0, filter: "blur(0px)", duration: 0.95, ease: "power3.out" },
-          1.05,
+          2.75,
         )
         .fromTo(
           ".welcome-actions > *",
@@ -85,25 +123,25 @@ export default function WelcomeScreen({
             stagger: 0.16,
             ease: "power3.out",
           },
-          1.45,
+          3.1,
         )
         .fromTo(
           ".welcome-stats",
           { autoAlpha: 0, y: 18 },
           { autoAlpha: 1, y: 0, duration: 0.85, ease: "power3.out" },
-          2.75,
+          4.2,
         )
         .fromTo(
           ".welcome-stat",
           { autoAlpha: 0, y: 12 },
           { autoAlpha: 1, y: 0, duration: 0.65, stagger: 0.13, ease: "power3.out" },
-          2.98,
+          4.42,
         )
         .fromTo(
           ".welcome-trust",
           { autoAlpha: 0, y: 6 },
           { autoAlpha: 1, y: 0, duration: 0.7, ease: "power2.out" },
-          4.25,
+          5.8,
         );
 
       // Draw the hands and hearts together, then let the artwork breathe softly.
@@ -194,7 +232,7 @@ export default function WelcomeScreen({
               el.textContent = format(c.n, s.decimals) + s.suffix;
             },
           },
-          2.95 + i * 0.13,
+          4.3 + i * 0.13,
         );
       });
 
@@ -209,17 +247,6 @@ export default function WelcomeScreen({
         },
       );
 
-      gsap.fromTo(
-        ".welcome-door",
-        { backgroundPosition: (i) => (i === 0 ? "0% 0%" : "100% 0%") },
-        {
-          backgroundPosition: (i) => (i === 0 ? "16% 0%" : "84% 0%"),
-          duration: 8,
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
-        },
-      );
     },
     { scope, dependencies: [reducedMotion], revertOnUpdate: true },
   );
@@ -268,22 +295,12 @@ export default function WelcomeScreen({
         onComplete();
         return;
       }
-      // Doors slide apart and the website appears between them
+      // Fade the collage away as the website is revealed.
       const exit = gsap.timeline({ onComplete });
       exit
         .to(
-          ".welcome-content, .welcome-atmosphere, .welcome-progress",
+          ".welcome-content, .welcome-photo-collage, .welcome-gradient-wash, .welcome-progress",
           { autoAlpha: 0, y: -12, filter: "blur(4px)", duration: 0.55, ease: "power2.in" },
-        )
-        .to(
-          ".welcome-door--left",
-          { xPercent: -100, duration: 1.2, ease: "power3.inOut" },
-          ">-0.1",
-        )
-        .to(
-          ".welcome-door--right",
-          { xPercent: 100, duration: 1.2, ease: "power3.inOut" },
-          "<",
         )
         .set(screen, { autoAlpha: 0 });
     },
@@ -326,6 +343,15 @@ export default function WelcomeScreen({
           <path className="giving-palm" d="M218 300 L198 260 C193 249 198 237 209 233 C220 229 229 235 234 245 L254 282 M254 282 L244 239 C241 227 248 217 260 216 C272 215 280 223 282 235 L291 280 M291 280 L291 251 C291 239 300 231 311 233 C322 235 328 244 326 256 L322 305" />
         </svg>
       </div>
+
+      <div className="welcome-photo-collage" aria-hidden="true">
+        {welcomePhotos.map((slot) => (
+          <div className="welcome-photo-tile" key={slot}>
+            <DynamicImage slotKey={slot} alt="" className="welcome-photo" preferLocal loading="eager" />
+          </div>
+        ))}
+      </div>
+      <div className="welcome-gradient-wash" aria-hidden="true" />
 
       <div className="welcome-layout">
         <div className="welcome-content">

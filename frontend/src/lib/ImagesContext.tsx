@@ -58,11 +58,13 @@ export function DynamicImage({
   alt,
   className,
   preferLocal = false,
+  loading,
 }: {
   slotKey: string;
   alt?: string;
   className?: string;
   preferLocal?: boolean;
+  loading?: "eager" | "lazy";
 }) {
   const { images } = useImages();
   const slot = images[slotKey];
@@ -132,13 +134,13 @@ export function DynamicImage({
       }
       alt={alt ?? slot?.alt_text ?? ""}
       className={className}
-      loading={
+      loading={loading ?? (
         slotKey.startsWith("home-hero-") ||
         slotKey === "site-logo" ||
         slotKey === "gallery-cover"
           ? "eager"
           : "lazy"
-      }
+      )}
       onError={(event) => {
         if (!fallbackSrc || event.currentTarget.src.endsWith(fallbackSrc))
           return;

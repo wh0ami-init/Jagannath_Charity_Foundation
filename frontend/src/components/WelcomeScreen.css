@@ -8,6 +8,7 @@
     overflow: hidden;
     isolation: isolate;
     padding: 32px 22px 42px;
+    background: #071a15;
     color: #fff;
 }
 /* Two doors that slide apart at the end */
@@ -31,6 +32,54 @@
     background-position: 100% 0;
 }
 
+.welcome-photo-collage {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    gap: clamp(6px, 1vw, 16px);
+    padding: clamp(8px, 1.1vw, 18px);
+    pointer-events: none;
+}
+
+.welcome-photo-tile {
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, .2);
+    border-radius: clamp(8px, 1.2vw, 18px);
+    opacity: .74;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, .24);
+    will-change: transform, opacity;
+}
+
+.welcome-photo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.035);
+}
+
+.welcome-gradient-wash {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    transform: scaleY(1);
+    transform-origin: center bottom;
+    background: linear-gradient(
+        0deg,
+        rgba(4, 17, 14, .82) 0%,
+        rgba(4, 17, 14, .6) 37%,
+        rgba(4, 17, 14, .14) 74%,
+        rgba(4, 17, 14, .02) 100%
+    );
+    pointer-events: none;
+    will-change: transform;
+}
+
 .welcome-portal {
     opacity: 1;
 }
@@ -46,10 +95,18 @@
 
 .welcome-atmosphere {
     position: absolute;
-    z-index: -1;
+    z-index: 1;
     inset: 0;
     overflow: hidden;
     pointer-events: none;
+}
+
+.welcome-atmosphere::before {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    background: linear-gradient(115deg, rgba(9, 30, 26, .4), rgba(28, 68, 53, .18) 48%, rgba(7, 25, 21, .4));
+    content: "";
 }
 
 .welcome-atmosphere::after {
@@ -149,6 +206,8 @@
 
 /* Keep the welcome message centered at every screen size. */
 .welcome-layout {
+    position: relative;
+    z-index: 2;
     display: grid;
     width: min(100%, 980px);
     place-items: center;
@@ -354,6 +413,7 @@
 
 .welcome-progress {
     position: absolute;
+    z-index: 2;
     right: 0;
     bottom: 0;
     left: 0;
@@ -413,8 +473,18 @@
         mask-image: radial-gradient(ellipse at center, #000 0%, transparent 72%);
     }
 
-    .welcome-grain {
-        opacity: .08;
+    .welcome-grain { opacity: .08; }
+
+    .welcome-photo-collage {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-rows: repeat(5, minmax(0, 1fr));
+        gap: 5px;
+        padding: 5px;
+    }
+
+    .welcome-photo-tile {
+        border-radius: 8px;
+        opacity: .62;
     }
 
     .welcome-content h1 {
@@ -493,12 +563,6 @@
 
     .welcome-progress-fill {
         transform: scaleX(1);
-    }
-
-    .giving-heart,
-    .giving-hand,
-    .giving-palm {
-        stroke-dashoffset: 0;
     }
 
     .welcome-portal.is-revealing {
