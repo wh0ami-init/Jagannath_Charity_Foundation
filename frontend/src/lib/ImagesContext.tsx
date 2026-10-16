@@ -10,18 +10,21 @@ import { fetchImages, ImageSlot, API_URL } from "./api";
 interface ImagesContextValue {
   images: Record<string, ImageSlot>;
   loading: boolean;
+  error: boolean;
   refresh: () => Promise<void>;
 }
 
 const ImagesContext = createContext<ImagesContextValue>({
   images: {},
   loading: true,
+  error: false,
   refresh: async () => {},
 });
 
 export function ImagesProvider({ children }: { children: ReactNode }) {
   const [images, setImages] = useState<Record<string, ImageSlot>>({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   async function refresh() {
     try {
@@ -29,8 +32,10 @@ export function ImagesProvider({ children }: { children: ReactNode }) {
       const map: Record<string, ImageSlot> = {};
       for (const s of slots) map[s.slot_key] = s;
       setImages(map);
+      setError(false);
     } catch (e) {
       console.error("Could not load images from API", e);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -41,7 +46,7 @@ export function ImagesProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <ImagesContext.Provider value={{ images, loading, refresh }}>
+    <ImagesContext.Provider value={{ images, loading, error, refresh }}>
       {children}
     </ImagesContext.Provider>
   );
