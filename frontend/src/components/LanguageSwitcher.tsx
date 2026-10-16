@@ -38,9 +38,10 @@ export default function LanguageSwitcher() {
                 lang="en"
                 aria-pressed={i18n.resolvedLanguage === "en"}
                 disabled={loading}
+                aria-label="English"
                 onClick={() => void selectLanguage("en")}
             >
-                English    
+                <span className="ls-full">English</span><span className="ls-short" aria-hidden="true">EN</span>
             </button>
 
             <span className="language-divider" aria-hidden="true">|</span>
@@ -49,10 +50,11 @@ export default function LanguageSwitcher() {
                 lang="hi"
                 aria-pressed={i18n.resolvedLanguage === "hi"}
                 disabled={loading}
+                aria-label="हिन्दी"
                 onClick={() => void selectLanguage("hi")}
-                >
-                   हिन्दी
-                </button>
+            >
+                <span className="ls-full">हिन्दी</span><span className="ls-short" aria-hidden="true">हिं</span>
+            </button>
             {error && <span className="language-switcher-error" role="alert">{i18n.t(error)}</span>}
         </div>
     );

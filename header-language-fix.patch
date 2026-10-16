@@ -1,0 +1,203 @@
+diff --git a/frontend/src/components/Header.tsx b/frontend/src/components/Header.tsx
+index a6ff2ed..23aaa0d 100644
+--- a/frontend/src/components/Header.tsx
++++ b/frontend/src/components/Header.tsx
+@@ -157,7 +157,6 @@ export default function Header() {
+     }, []);
+     return (<>
+       <header className={`site-header backdrop-blur-xl${homeActive ? " is-home" : ""}${homeActive && scrolled ? " is-scrolled" : ""}${exploreOpen ? " is-explore-open" : ""}`} ref={headerRef}>
+-        <div className="header-utility"><div className="wrap header-utility-inner"><span className="header-utility-name">{translateText("Jagannath Foundation")}</span><div className="header-utility-actions"><div className="header-utility-links"><Link href="/contact">{translateText("Contact")}</Link><Link href="/volunteer">{translateText("Volunteer")}</Link></div><LanguageSwitcher /></div></div></div>
+         <div className="wrap header-main">
+           <Link href="/" className="brand" onClick={() => {
+             setOpen(false);
+@@ -258,6 +257,7 @@ export default function Header() {
+                 </section>
+               </div>
+             </div>
++            <LanguageSwitcher />
+             <Link href="/donate" className="nav-donate" onClick={() => {
+             setOpen(false);
+             setExploreOpen(false);
+diff --git a/frontend/src/components/LanguageSwitcher.tsx b/frontend/src/components/LanguageSwitcher.tsx
+index 7f0c26a..01bead2 100644
+--- a/frontend/src/components/LanguageSwitcher.tsx
++++ b/frontend/src/components/LanguageSwitcher.tsx
+@@ -38,9 +38,10 @@ export default function LanguageSwitcher() {
+                 lang="en"
+                 aria-pressed={i18n.resolvedLanguage === "en"}
+                 disabled={loading}
++                aria-label="English"
+                 onClick={() => void selectLanguage("en")}
+             >
+-                English    
++                <span className="ls-full">English</span><span className="ls-short" aria-hidden="true">EN</span>
+             </button>
+ 
+             <span className="language-divider" aria-hidden="true">|</span>
+@@ -49,10 +50,11 @@ export default function LanguageSwitcher() {
+                 lang="hi"
+                 aria-pressed={i18n.resolvedLanguage === "hi"}
+                 disabled={loading}
++                aria-label="हिन्दी"
+                 onClick={() => void selectLanguage("hi")}
+-                >
+-                   हिन्दी
+-                </button>
++            >
++                <span className="ls-full">हिन्दी</span><span className="ls-short" aria-hidden="true">हिं</span>
++            </button>
+             {error && <span className="language-switcher-error" role="alert">{i18n.t(error)}</span>}
+         </div>
+     );
+diff --git a/frontend/src/index.css b/frontend/src/index.css
+index 89dd078..0d30013 100644
+--- a/frontend/src/index.css
++++ b/frontend/src/index.css
+@@ -8466,62 +8466,93 @@ h3,
+ html[lang="hi"] { --font-sans: "Noto Sans Devanagari", sans-serif; --font-serif: "Noto Sans Devanagari", sans-serif; }
+ html[lang="hi"] .home-hero h1 { line-height: 1.35; }
+ html[lang="hi"] h2, html[lang="hi"] h3 { line-height: 1.5; letter-spacing: normal; }
+-.language-switcher { display:flex; gap:4px; align-items:center; flex-shrink:0; }
+-.language-switcher button { padding:7px 9px; border:1px solid currentColor; border-radius:6px; font-size:12px; cursor:pointer; line-height:1.5; }
+-.language-switcher button[aria-pressed="true"] { background:#18372f; color:white; border-color:#18372f; }
+-.language-switcher button:focus-visible { outline:3px solid #c87932; outline-offset:3px; }
+-@media(max-width:600px) { .header-main { flex-wrap:wrap; gap:10px; } .language-switcher { margin-left:auto; } .brand-name strong { font-size:14px; } .brand-name small { font-size:9px; } }
+ 
+-.main-nav .language-switcher { margin: 0; padding: 6px 0; color: #18372f; }
+-@media(min-width:1241px) { .header-main { gap:14px; } .main-nav { gap:14px; } .language-switcher button { background:#f6f5ef; } .language-switcher button[aria-pressed="true"] { background:#18372f; } }
+-
+-.language-switcher { position: relative; }
++/* Language switch: a small pill inside the main menu, just before "Make a difference".
++   Colours come from variables so it matches the transparent home header (white text)
++   and the light header (dark text) without extra rules. */
++.language-switcher {
++  --ls-ink: #18372f;
++  --ls-line: rgba(24, 55, 47, .28);
++  --ls-on-bg: #18372f;
++  --ls-on-ink: #ffffff;
++  position: relative;
++  display: inline-flex;
++  align-items: center;
++  gap: 2px;
++  flex-shrink: 0;
++  margin: 0;
++  padding: 3px;
++  border: 1px solid var(--ls-line);
++  border-radius: 999px;
++  color: var(--ls-ink);
++  transition: color .3s ease, border-color .3s ease;
++}
++.site-header.is-home:not(.is-scrolled) .language-switcher {
++  --ls-ink: #ffffff;
++  --ls-line: rgba(255, 255, 255, .42);
++  --ls-on-bg: #f3c67d;
++  --ls-on-ink: #14382f;
++}
++/* The opened mobile menu always has a light background, so use dark colours there. */
++.site-header.is-home:not(.is-scrolled) .main-nav.is-open .language-switcher {
++  --ls-ink: #18372f;
++  --ls-line: rgba(24, 55, 47, .28);
++  --ls-on-bg: #18372f;
++  --ls-on-ink: #ffffff;
++}
++.language-globe { width: 15px; height: 15px; margin: 0 2px 0 8px; flex-shrink: 0; opacity: .85; }
++.language-divider { display: none; }
++.language-switcher button {
++  min-height: 30px;
++  padding: 4px 12px;
++  border: 0;
++  border-radius: 999px;
++  background: transparent;
++  color: inherit;
++  font: inherit;
++  font-size: 13px;
++  font-weight: 500;
++  line-height: 1.2;
++  white-space: nowrap;
++  cursor: pointer;
++  transition: background .2s ease, color .2s ease;
++}
++.language-switcher button:hover:not([aria-pressed="true"]) { background: rgba(127, 127, 127, .2); }
++.language-switcher button[aria-pressed="true"] { background: var(--ls-on-bg); color: var(--ls-on-ink); font-weight: 700; }
++.language-switcher button:focus-visible { outline: 2px solid #c87932; outline-offset: 2px; }
+ .language-switcher button:disabled { opacity: .65; cursor: wait; }
+-.language-switcher-error { position: absolute; top: 100%; right: 0; z-index: 60; width: min(280px, 80vw); padding: 12px; border: 1px solid #c87932; border-radius: 6px; background: #fff; color: #18372f; font-size: 13px; line-height: 1.5; }
+-
+-/* Public header: persistent language choice above the main navigation. */
+-.site-header,
+-.site-header.is-home,
+-.site-header.is-home.is-scrolled {
+-  background: #f8f7f1;
+-  margin-bottom: 0;
+-  border-bottom: 1px solid rgba(24, 55, 47, .12);
+-  box-shadow: 0 5px 22px rgba(24, 55, 47, .07);
+-}
+-.header-utility { background: #14382f; color: #fff; }
+-.header-utility-inner { display: flex; align-items: center; justify-content: space-between; min-height: 44px; gap: 16px; }
+-.header-utility-name { font-size: 12px; color: #d4dfd8; }
+-.header-utility-actions, .header-utility-links { display: flex; align-items: center; gap: 22px; }
+-.header-utility-links a { color: #e0e8e2; font-size: 12px; text-decoration: none; }
+-.header-utility-links a:hover { color: #f3c67d; }
+-.header-utility .language-switcher { gap: 6px; margin: 0; }
+-.language-globe { width: 17px; height: 17px; color: #e7bc75; margin-right: 3px; }
+-.language-divider { color: #a8b9b1; font-size: 12px; }
+-.header-utility .language-switcher button {
+-  position: relative; min-height: 44px; padding: 8px 7px;
+-  background: transparent; border: 0; border-radius: 0;
+-  color: #e0e8e2; font-size: 13px; font-weight: 400;
+-}
+-.header-utility .language-switcher button[aria-pressed="true"] { color: #fff; font-weight: 700; }
+-.header-utility .language-switcher button[aria-pressed="true"]::after {
+-  content: ""; position: absolute; bottom: 6px; left: 7px; right: 7px;
+-  height: 2px; background: #e7bc75;
+-}
+-.header-utility .language-switcher button:focus-visible,
+-.header-utility-links a:focus-visible { outline: 2px solid #f3c67d; outline-offset: 2px; border-radius: 2px; }
+-.site-header.is-home:not(.is-scrolled) .brand-name strong,
+-.site-header.is-home:not(.is-scrolled) .brand-name small,
+-.site-header.is-home:not(.is-scrolled) .main-nav,
+-.site-header.is-home:not(.is-scrolled) .main-nav>a:not(.nav-donate),
+-.site-header.is-home:not(.is-scrolled) .menu-toggle,
+-.site-header.is-home:not(.is-scrolled) .nav-explore-toggle { color: #18372f; }
+-.site-header.is-home:not(.is-scrolled) .main-nav>a.active,
+-.site-header.is-home:not(.is-scrolled) .main-nav>a:not(.nav-donate):hover,
+-.site-header.is-home:not(.is-scrolled) .nav-explore-toggle:hover { color: #9b6029; }
+-@media (max-width: 600px) {
+-  .header-utility-name, .header-utility-links { display: none; }
+-  .header-utility-inner { justify-content: flex-end; }
+-  .header-utility-actions { gap: 0; }
++.language-switcher-error { position: absolute; top: calc(100% + 8px); right: 0; z-index: 60; width: min(280px, 80vw); padding: 12px; border: 1px solid #c87932; border-radius: 6px; background: #fff; color: #18372f; font-size: 13px; line-height: 1.5; }
++.language-switcher .ls-short { display: none; }
++/* Desktop: short labels (EN | हिं) so the menu never wraps. */
++@media (min-width: 1001px) {
++  .language-globe { display: none; }
++  .language-switcher .ls-full { display: none; }
++  .language-switcher .ls-short { display: inline; }
++  .language-switcher { padding: 2px; }
++  .language-switcher button { min-width: 34px; padding: 4px 8px; font-size: 12px; }
++}
++/* Keep the whole menu on one line on desktop screens. */
++@media (min-width: 1241px) {
++  .header-main { gap: 14px; }
++  .site-header .main-nav { gap: 14px; }
++  .site-header .main-nav > a,
++  .site-header .nav-explore-toggle,
++  .site-header .nav-donate,
++  .site-header .brand-name strong { white-space: nowrap; }
++  .site-header .brand { min-width: 0; }
++  .site-header .brand-mark { flex-shrink: 0; }
++}
++/* Small laptops (1241-1360px): slightly smaller logo text and spacing so nothing overlaps. */
++@media (min-width: 1241px) and (max-width: 1360px) {
++  .site-header .brand { gap: 8px; }
++  .site-header .brand-name strong { font-size: 20px; }
++  .site-header .main-nav { gap: 10px; }
++  .site-header .main-nav > a:not(.nav-donate) { font-size: 14px; }
++  .site-header .nav-donate { padding-inline: 14px; }
++}
++/* Mobile menu: switcher sits at the top of the opened panel. */
++@media (max-width: 1000px) {
++  .site-header .main-nav .language-switcher { align-self: flex-start; margin: 14px 0 4px; order: -1; }
+ }
+ 
+ /* Allow long contact addresses to wrap inside narrow grid columns. */

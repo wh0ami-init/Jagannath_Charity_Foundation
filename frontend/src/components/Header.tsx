@@ -157,7 +157,6 @@ export default function Header() {
     }, []);
     return (<>
       <header className={`site-header backdrop-blur-xl${homeActive ? " is-home" : ""}${homeActive && scrolled ? " is-scrolled" : ""}${exploreOpen ? " is-explore-open" : ""}`} ref={headerRef}>
-        <div className="header-utility"><div className="wrap header-utility-inner"><span className="header-utility-name">{translateText("Jagannath Foundation")}</span><div className="header-utility-actions"><div className="header-utility-links"><Link href="/contact">{translateText("Contact")}</Link><Link href="/volunteer">{translateText("Volunteer")}</Link></div><LanguageSwitcher /></div></div></div>
         <div className="wrap header-main">
           <Link href="/" className="brand" onClick={() => {
             setOpen(false);
@@ -258,6 +257,7 @@ export default function Header() {
                 </section>
               </div>
             </div>
+            <LanguageSwitcher />
             <Link href="/donate" className="nav-donate" onClick={() => {
             setOpen(false);
             setExploreOpen(false);
