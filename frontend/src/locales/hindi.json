@@ -1,252 +1,6 @@
 {
-  "0": [
-    "Checking Razorpay setup…",
-    "Razorpay सेटअप जाँचा जा रहा है…"
-  ],
-  "1": [
-    "Checking donation setup…",
-    "दान सेटअप जाँचा जा रहा है…"
-  ],
-  "2": [
-    "Could not reach the donation service. Please try again later.",
-    "दान सेवा से संपर्क नहीं हो सका। कृपया बाद में फिर प्रयास करें।"
-  ],
-  "3": [
-    "Razorpay credentials are not configured yet.",
-    "Razorpay क्रेडेंशियल अभी कॉन्फ़िगर नहीं हैं।"
-  ],
-  "4": [
-    "Add the Razorpay webhook secret before enabling monthly mandates.",
-    "मासिक मैंडेट शुरू करने से पहले Razorpay webhook secret जोड़ें।"
-  ],
-  "5": [
-    "Razorpay is not configured for the selected mode on the backend.",
-    "बैकएंड में चुने गए मोड के लिए Razorpay कॉन्फ़िगर नहीं है।"
-  ],
-  "6": [
-    "Please confirm the monthly AutoPay authorization before continuing.",
-    "जारी रखने से पहले मासिक AutoPay की अनुमति की पुष्टि करें।"
-  ],
-  "7": [
-    "Razorpay returned an invalid monthly mandate.",
-    "Razorpay ने अमान्य मासिक मैंडेट लौटाया।"
-  ],
-  "8": [
-    "Razorpay Checkout is unavailable.",
-    "Razorpay Checkout उपलब्ध नहीं है।"
-  ],
-  "9": [
-    "Confirming your monthly mandate with Razorpay…",
-    "Razorpay में आपके मासिक मैंडेट की पुष्टि की जा रही है…"
-  ],
-  "10": [
-    "Razorpay returned an incomplete authorization response.",
-    "Razorpay से अनुमति का अधूरा जवाब मिला।"
-  ],
-  "11": [
-    "Your monthly mandate is authorized with Razorpay. Status: {{status}}. You can manage or cancel it through your payment provider or by contacting the Foundation.",
-    "आपका मासिक मैंडेट Razorpay में अधिकृत है। स्थिति: {{status}}। इसे अपने भुगतान प्रदाता से प्रबंधित या रद्द करें, या फ़ाउंडेशन से संपर्क करें।"
-  ],
-  "12": [
-    "Checkout closed. No monthly mandate was confirmed. You can try again when ready.",
-    "Checkout बंद हो गया। मासिक मैंडेट की पुष्टि नहीं हुई। तैयार होने पर फिर प्रयास करें।"
-  ],
-  "13": [
-    "Razorpay could not authorize this mandate. You can retry in Checkout or close it to start again.",
-    "Razorpay इस मैंडेट को अधिकृत नहीं कर सका। Checkout में फिर प्रयास करें या बंद करके दोबारा शुरू करें।"
-  ],
-  "14": [
-    "Could not start AutoPay.",
-    "AutoPay शुरू नहीं हो सका।"
-  ],
-  "15": [
-    "No payment is collected until you authorize the mandate. Test Mode creates no real recurring charge.",
-    "मैंडेट की अनुमति देने तक कोई भुगतान नहीं लिया जाता। टेस्ट मोड में कोई वास्तविक आवर्ती शुल्क नहीं लगता।"
-  ],
-  "16": [
-    "Checking your payment...",
-    "आपका भुगतान जाँचा जा रहा है…"
-  ],
-  "17": [
-    "Your ₹{{amount}} donation is confirmed. Thank you!",
-    "आपका ₹{{amount}} का दान पुष्ट हो गया है। धन्यवाद!"
-  ],
-  "18": [
-    "Your payment response was received, but confirmation is pending. Check again before making another payment.",
-    "भुगतान का जवाब मिल गया है, लेकिन पुष्टि लंबित है। दूसरा भुगतान करने से पहले दोबारा जाँचें।"
-  ],
-  "19": [
-    "The request timed out. Please retry.",
-    "अनुरोध का समय समाप्त हो गया। कृपया फिर प्रयास करें।"
-  ],
-  "20": [
-    "Payment confirmation is still pending.",
-    "भुगतान की पुष्टि अभी लंबित है।"
-  ],
-  "21": [
-    "The payment order did not match your donation details.",
-    "भुगतान ऑर्डर आपके दान के विवरण से मेल नहीं खाता।"
-  ],
-  "22": [
-    "Razorpay returned an incomplete payment response. Please contact the Foundation before retrying.",
-    "Razorpay से भुगतान का अधूरा जवाब मिला। फिर प्रयास करने से पहले फ़ाउंडेशन से संपर्क करें।"
-  ],
-  "23": [
-    "Checkout closed. No donation has been confirmed. You can retry when you’re ready.",
-    "Checkout बंद हो गया। दान की पुष्टि नहीं हुई। तैयार होने पर फिर प्रयास करें।"
-  ],
-  "24": [
-    "The payment failed. Retry in Checkout or close it to start again.",
-    "भुगतान विफल हुआ। Checkout में फिर प्रयास करें या बंद करके दोबारा शुरू करें।"
-  ],
-  "25": [
-    "Your pledge could not be saved.",
-    "आपका संकल्प सहेजा नहीं जा सका।"
-  ],
-  "26": [
-    "Enter your full name (at least 2 characters).",
-    "अपना पूरा नाम लिखें (कम से कम 2 अक्षर)।"
-  ],
-  "27": [
-    "Enter a valid name of 150 characters or fewer.",
-    "150 या उससे कम अक्षरों वाला वैध नाम लिखें।"
-  ],
-  "28": [
-    "Enter a valid email address.",
-    "वैध ईमेल पता लिखें।"
-  ],
-  "29": [
-    "Enter a valid phone number with 10 to 15 digits.",
-    "10 से 15 अंकों वाला वैध फ़ोन नंबर लिखें।"
-  ],
-  "30": [
-    "Enter a valid address of 500 characters or fewer.",
-    "500 या उससे कम अक्षरों वाला वैध पता लिखें।"
-  ],
-  "31": [
-    "Select a listed donation cause.",
-    "सूची में से दान का उद्देश्य चुनें।"
-  ],
-  "32": [
-    "Enter an amount between ₹1 and ₹10,00,000.",
-    "₹1 से ₹10,00,000 के बीच राशि लिखें।"
-  ],
-  "33": [
-    "Enter an amount between ₹100 and ₹10,00,000.",
-    "₹100 से ₹10,00,000 के बीच राशि लिखें।"
-  ],
-  "34": [
-    "Test Mode contributions are fixed at ₹100.",
-    "टेस्ट मोड में योगदान ₹100 निश्चित है।"
-  ],
-  "35": [
-    "Education & literacy",
-    "शिक्षा और साक्षरता"
-  ],
-  "36": [
-    "Health & family welfare",
-    "स्वास्थ्य और परिवार कल्याण"
-  ],
-  "37": [
-    "Youth skills & sport",
-    "युवा कौशल और खेल"
-  ],
-  "38": [
-    "Women's livelihoods",
-    "महिलाओं की आजीविका"
-  ],
-  "39": [
-    "Environment & land",
-    "पर्यावरण और भूमि"
-  ],
-  "40": [
-    "Solar housing & clean energy",
-    "सौर आवास और स्वच्छ ऊर्जा"
-  ],
-  "41": [
-    "Where most needed",
-    "जहाँ सबसे अधिक आवश्यकता हो"
-  ],
-  "42": [
-    "Monthly contribution",
-    "मासिक योगदान"
-  ],
-  "43": [
-    "Support the work month after month.",
-    "हर महीने हमारे काम में सहयोग करें।"
-  ],
-  "44": [
-    "Choose a monthly amount and approve a UPI or card mandate in Razorpay Checkout. The Foundation will not store your card or bank credentials.",
-    "मासिक राशि चुनें और Razorpay Checkout में UPI या कार्ड मैंडेट स्वीकृत करें। फ़ाउंडेशन आपके कार्ड या बैंक क्रेडेंशियल सहेजकर नहीं रखेगा।"
-  ],
-  "45": [
-    "Each recurring contribution is authorized by your payment provider. You can cancel the mandate through your provider or contact the Foundation for help.",
-    "हर आवर्ती योगदान आपके भुगतान प्रदाता द्वारा अधिकृत होता है। आप प्रदाता के ज़रिए मैंडेट रद्द कर सकते हैं या सहायता के लिए फ़ाउंडेशन से संपर्क कर सकते हैं।"
-  ],
-  "46": [
-    "Need help with monthly giving? Contact us",
-    "मासिक दान में सहायता चाहिए? हमसे संपर्क करें"
-  ],
-  "47": [
-    "Monthly AutoPay",
-    "मासिक AutoPay"
-  ],
-  "48": [
-    "Monthly mandate",
-    "मासिक मैंडेट"
-  ],
-  "49": [
-    "Full name",
-    "पूरा नाम"
-  ],
-  "50": [
-    "Required",
-    "अनिवार्य"
-  ],
-  "51": [
-    "Mobile number",
-    "मोबाइल नंबर"
-  ],
-  "52": [
-    "Monthly amount (INR)",
-    "मासिक राशि (INR)"
-  ],
-  "53": [
-    "Charged monthly after you authorize the mandate. Minimum ₹100.",
-    "मैंडेट की अनुमति के बाद हर महीने राशि ली जाएगी। न्यूनतम ₹100।"
-  ],
-  "54": [
-    "Named cause",
-    "दान का उद्देश्य"
-  ],
-  "55": [
-    "Open positions",
-    "खाली पद"
-  ],
-  "56": [
-    "Certificates issued",
-    "जारी किए गए प्रमाणपत्र"
-  ],
-  "57": [
-    "All Types",
-    "सभी प्रकार"
-  ],
-  "58": [
-    "Full Time",
-    "पूर्णकालिक"
-  ],
-  "59": [
-    "Work From Home",
-    "घर से काम"
-  ],
-  "60": [
-    "Community Development",
-    "सामुदायिक विकास"
-  ],
-  "61": [
-    "Environment",
-    "पर्यावरण"
-  ],
+  "Open positions": "खाली पद",
+  "Certificates issued": "जारी किए गए प्रमाणपत्र",
   "Learning that lasts": "जीवनभर काम आने वाली शिक्षा",
   "Education & literacy": "शिक्षा और साक्षरता",
   "Learning support that helps children stay in school and thrive.": "बच्चों को स्कूल में बने रहने और आगे बढ़ने में मदद करने वाला शैक्षिक सहयोग।",
@@ -1701,12 +1455,10 @@
   "{{group}} pages": "{{group}} पृष्ठ",
   "Active": "सक्रिय",
   "Your ₹{{amount}} donation is confirmed. Thank you!": "आपका ₹{{amount}} का दान पुष्ट हो गया है। धन्यवाद!",
-  "Foundation team": "?????? ?? ???",
-  "Authorized staff access": "?????? ??????????? ?? ??? ??????",
-  "Admin": "???????",
-  "Administrator sign in": "?????????? ?????",
-  "Loading page?": "????? ??? ?? ??? ???",
-  "Loading?": "??? ?? ??? ???",
+  "Foundation team": "फ़ाउंडेशन टीम",
+  "Authorized staff access": "अधिकृत स्टाफ़ प्रवेश",
+  "Admin": "व्यवस्थापक",
+  "Administrator sign in": "व्यवस्थापक साइन इन",
   "About": "हमारे बारे में",
   "Our work": "हमारा काम",
   "Media": "मीडिया",
@@ -1716,10 +1468,35 @@
   "Projects in progress": "चल रही परियोजनाएँ",
   "Numbers and stories of change": "बदलाव के आँकड़े और कहानियाँ",
   "Resources": "संसाधन",
-  "Meet our founder": "हमारे संस्थापक से मिलें",
   "Moments of public service.": "जनसेवा के कुछ खास पल।",
   "Dr Jagannath Patnaik · Founder, Settlor & Managing Trustee": "डॉ. जगन्नाथ पटनायक · संस्थापक, न्यासकर्ता एवं प्रबंध न्यासी",
   "Dr Jagannath Patnaik with President Smt. Droupadi Murmu": "डॉ. जगन्नाथ पटनायक राष्ट्रपति श्रीमती द्रौपदी मुर्मु के साथ",
   "Our founder": "हमारे संस्थापक",
-  "Meet our leadership": "हमारे नेतृत्व से मिलें"
+  "Meet our leadership": "हमारे नेतृत्व से मिलें",
+  "Welcome": "स्वागत",
+  "The need": "ज़रूरत",
+  "What we do": "हम क्या करते हैं",
+  "The belief": "विश्वास",
+  "Your gift's journey": "आपके दान की यात्रा",
+  "Your turn": "अब आपकी बारी",
+  "Here is a short story of what happens when people give.": "यह एक छोटी-सी कहानी है कि जब लोग दान देते हैं तो क्या होता है।",
+  "Odisha is home to more Particularly Vulnerable Tribal Groups than any other state.": "ओडिशा में किसी भी अन्य राज्य से अधिक विशेष रूप से कमज़ोर जनजातीय समूह (PVTG) रहते हैं।",
+  "Behind every number is a family. This is where we begin.": "हर संख्या के पीछे एक परिवार है। हमारी शुरुआत यहीं से होती है।",
+  "Four ways we turn a gift into a future.": "चार तरीके जिनसे हम एक दान को भविष्य में बदलते हैं।",
+  "Service to people is service to God.": "लोगों की सेवा ही ईश्वर की सेवा है।",
+  "From your hands to a village.": "आपके हाथों से एक गाँव तक।",
+  "You give": "आप दान देते हैं",
+  "Any amount, once or every month.": "कोई भी राशि, एक बार या हर महीने।",
+  "The trust invests": "न्यास निवेश करता है",
+  "In classrooms, health care, skills and clean energy.": "कक्षाओं, स्वास्थ्य सेवा, कौशल और स्वच्छ ऊर्जा में।",
+  "A life changes": "एक जीवन बदलता है",
+  "Dignity, opportunity and hope reach a family.": "गरिमा, अवसर और आशा एक परिवार तक पहुँचती है।",
+  "Give today, or take a look around first. Both are welcome.": "आज दान दें, या पहले वेबसाइट देख लें। दोनों का स्वागत है।",
+  "Or explore": "या देखें",
+  "Story chapters": "कहानी के अध्याय",
+  "Next": "आगे",
+  "Loading…": "लोड हो रहा है…",
+  "Our moments": "हमारे पल",
+  "Opening the website automatically…": "वेबसाइट अपने-आप खुल रही है…",
+  "Just a few highlights · explore our full photo gallery": "बस कुछ झलकियाँ · हमारी पूरी फ़ोटो गैलरी देखें"
 }

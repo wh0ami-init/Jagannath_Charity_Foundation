@@ -1,23 +1,38 @@
-import {
-  tr as translateText,
-  localize as localizeText,
-  trError as translateError,
-} from "../i18n";
+import { tr as translateText, localize as localizeText } from "../i18n";
 import { useTranslation as usePageTranslation } from "react-i18next";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { CSSProperties } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import { SplitText } from "gsap/SplitText";
 import { useReducedMotion } from "motion/react";
 import { useLocation } from "wouter";
 import { DynamicImage, useImages } from "../lib/ImagesContext";
 import "./WelcomeScreen.css";
 
-gsap.registerPlugin(useGSAP);
-const founderPreludeDuration = 9.2;
-const welcomeDuration = 37;
-const maxWelcomePhotos = 15;
-const offlineWelcomePhotos = [
+gsap.registerPlugin(useGSAP, SplitText);
+
+/* ------------------------------------------------------------------ */
+/*  Story map: one chapter = one scene on the master GSAP timeline.    */
+/*  `starts` are the second marks where each chapter begins.           */
+/* ------------------------------------------------------------------ */
+const chapterNames = [
+  "Welcome",
+  "The need",
+  "What we do",
+  "The belief",
+  "Our moments",
+  "Your gift's journey",
+  "Your turn",
+];
+const starts = [0, 4.4, 9.8, 16.2, 21.0, 27.2, 32.8];
+const lastChapter = chapterNames.length - 1;
+const crossfade = 0.55;
+// After the last chapter, the website opens by itself after this many seconds.
+const autoOpenSeconds = 9;
+
+// Photo wall for the "Our moments" chapter. Each slot can be changed from the admin
+// panel; if the API is offline the local /images/<slot>.webp file is used.
+const momentSlots = [
   "gallery-extra-president-murmu-5",
   "gallery-pm-modi",
   "gallery-extra-president-kovind-5",
@@ -34,35 +49,6 @@ const offlineWelcomePhotos = [
   "gallery-extra-jp-nadda-2",
   "gallery-extra-rajnath-2",
 ];
-const founderBackdropPhotos = [
-  {
-    slot: "president-murmu",
-    src: "/images/gallery-extra-president-murmu-5.webp",
-    caption: "With President Droupadi Murmu",
-  },
-  {
-    slot: "dharmendra-pradhan",
-    src: "/images/gallery-extra-dharmendra-pradhan-2.webp",
-    caption: "With Shri Dharmendra Pradhan",
-  },
-  {
-    slot: "international-guest",
-    src: "/images/gallery-extra-international-guest.webp",
-    caption: "With an international guest",
-  },
-  {
-    slot: "vice-president-dhankhar",
-    src: "/images/gallery-vp-dhankhar.webp",
-    caption: "With Shri Jagdeep Dhankhar",
-  },
-];
-const founderMontageStart = founderPreludeDuration;
-const founderPhotoFlightStep = 2.45;
-const founderMontageEnd =
-  founderMontageStart + (founderBackdropPhotos.length - 1) * founderPhotoFlightStep + 4;
-const founderBlackoutStart = founderMontageEnd - 0.1;
-const welcomeMomentStart = founderMontageEnd + 0.7;
-const welcomeContentStart = welcomeMomentStart + 3.4;
 
 // Real facts from the Impact page (no invented beneficiary numbers)
 const stats = [
@@ -80,6 +66,55 @@ const stats = [
   },
   { value: 13, decimals: 0, suffix: "", label: "PVTG groups, most in India" },
 ];
+
+// Same four work areas as the Home page, so the story matches the website.
+const pillars = [
+  {
+    photo: "/images/community/education.webp",
+    label: "Education & literacy",
+    title: "Learning that lasts",
+    body: "Learning support that helps children stay in school and thrive.",
+  },
+  {
+    photo: "/images/community/health.webp",
+    label: "Health & family welfare",
+    title: "Care within reach",
+    body: "Community health and family support, close to where people live.",
+  },
+  {
+    photo: "/images/community/womens-livelihoods.webp",
+    label: "Women's livelihoods",
+    title: "Skills into livelihoods",
+    body: "Skills, income and leadership opportunities for women and girls.",
+  },
+  {
+    photo: "/images/community/solar-energy.webp",
+    label: "Clean energy",
+    title: "Energy for everyday life",
+    body: "Cleaner, more reliable energy for everyday household life.",
+  },
+];
+
+const journey = [
+  { title: "You give", body: "Any amount, once or every month." },
+  {
+    title: "The trust invests",
+    body: "In classrooms, health care, skills and clean energy.",
+  },
+  {
+    title: "A life changes",
+    body: "Dignity, opportunity and hope reach a family.",
+  },
+];
+
+const exploreLinks = [
+  { label: "Our impact", to: "/impact" },
+  { label: "Volunteer", to: "/volunteer" },
+  { label: "Gallery", to: "/gallery" },
+];
+
+const fleckCount = 22;
+
 const format = (n: number, d: number) =>
   n.toLocaleString("en-IN", {
     minimumFractionDigits: d,
@@ -93,452 +128,619 @@ export default function WelcomeScreen({
   onExitStart: () => void;
   onComplete: () => void;
 }) {
-  usePageTranslation();
+  const { i18n } = usePageTranslation();
+  const t = translateText;
   const scope = useRef<HTMLElement | null>(null);
+  const master = useRef<gsap.core.Timeline | null>(null);
+  const curtain = useRef<HTMLDivElement | null>(null);
   const isClosing = useRef(false);
-  const [showFounderWithoutMotion, setShowFounderWithoutMotion] = useState(true);
+  const dismissRef = useRef<() => void>(() => {});
+  const isJumping = useRef(false);
+  const activeChapter = useRef(0);
   const reducedMotion = useReducedMotion();
-  const { images, loading: imagesLoading, error: imagesError } = useImages();
+  const { loading: imagesLoading, error: imagesError } = useImages();
   const [, setLocation] = useLocation();
-  const galleryPhotoKeys = useMemo(() => {
-    const galleryImages = Object.values(images)
-      .filter((image) => image.page === "Gallery" && image.slot_key !== "gallery-cover")
-      .sort((a, b) => {
-        const updatedDifference = Date.parse(b.updated_at) - Date.parse(a.updated_at);
-        return Number.isNaN(updatedDifference) || updatedDifference === 0
-          ? a.slot_key.localeCompare(b.slot_key)
-          : updatedDifference;
-      })
-      .slice(0, maxWelcomePhotos);
-    return imagesError
-      ? offlineWelcomePhotos.slice(0, maxWelcomePhotos)
-      : galleryImages.map((image) => image.slot_key);
-  }, [images, imagesError]);
-  const photoCount = galleryPhotoKeys.length;
-  const desktopColumns = photoCount ? Math.min(6, Math.ceil(Math.sqrt(photoCount * 1.5))) : 1;
-  const mobileColumns = photoCount ? Math.min(3, Math.ceil(Math.sqrt(photoCount * 0.58))) : 1;
-  const collageStyle = {
-    "--welcome-photo-columns": desktopColumns,
-    "--welcome-photo-rows": Math.ceil(photoCount / desktopColumns) || 1,
-    "--welcome-mobile-columns": mobileColumns,
-    "--welcome-mobile-rows": Math.ceil(photoCount / mobileColumns) || 1,
-  } as CSSProperties;
+  const [fontsReady, setFontsReady] = useState(false);
+  const [compact, setCompact] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(max-width: 860px)").matches,
+  );
 
+  // Wait for the web fonts, so the line-splitting measures the real text.
+  useEffect(() => {
+    let done = false;
+    const finish = () => {
+      if (!done) {
+        done = true;
+        setFontsReady(true);
+      }
+    };
+    document.fonts?.ready.then(finish, finish);
+    const timer = window.setTimeout(finish, 1500);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  // Phone vs desktop changes how the "journey" chapter lays out.
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 860px)");
+    const update = () => setCompact(query.matches);
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+
+  // Light up the right chapter dot (no React re-render needed).
+  const markActive = useCallback((index: number) => {
+    const screen = scope.current;
+    if (!screen || index === activeChapter.current) return;
+    activeChapter.current = index;
+    screen.querySelectorAll<HTMLElement>(".ws-dot").forEach((dot, i) => {
+      dot.classList.toggle("is-active", i === index);
+      dot.classList.toggle("is-done", i < index);
+      if (i === index) dot.setAttribute("aria-current", "step");
+      else dot.removeAttribute("aria-current");
+    });
+    screen
+      .querySelector(".ws-next")
+      ?.classList.toggle("is-hidden", index === lastChapter);
+  }, []);
+
+  const resetStats = useCallback(() => {
+    scope.current
+      ?.querySelectorAll<HTMLElement>("[data-stat]")
+      .forEach((el) => {
+        const s = stats[Number(el.dataset.stat)];
+        if (s) el.textContent = format(0, s.decimals) + s.suffix;
+      });
+  }, []);
+
+  /* ---------------------------- the story ---------------------------- */
   useGSAP(
     () => {
-      if (reducedMotion || imagesLoading) return;
+      if (reducedMotion || !fontsReady) return;
 
-      const tl = gsap.timeline();
-      gsap.to(".welcome-founder-ambient", {
-        xPercent: 8,
-        yPercent: -5,
-        scale: 1.12,
-        duration: 7,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
-      });
-      tl.fromTo(
-        ".welcome-founder-photo",
-        { scale: 1.08 },
-        { scale: 1.02, duration: founderPreludeDuration + 0.8, ease: "none" },
-        0,
-      );
-      tl.fromTo(
-        ".welcome-founder-photo-frame",
-        { autoAlpha: 0, x: -30, scale: 1.045, clipPath: "inset(0 0 100% 0 round 24px)" },
-        {
-          autoAlpha: 1,
-          x: 0,
-          scale: 1,
-          clipPath: "inset(0 0 0% 0 round 24px)",
-          duration: 1.1,
-          ease: "power3.out",
+      const q = gsap.utils.selector(scope);
+      const at = (i: number) => starts[i];
+
+      // Every chapter headline is split into masked lines.
+      const lines = (selector: string) => {
+        const out: Element[] = [];
+        q(selector).forEach((el) => {
+          const split = SplitText.create(el, {
+            type: "lines",
+            mask: "lines",
+            linesClass: "ws-line",
+          });
+          out.push(...split.lines);
+        });
+        return out;
+      };
+
+      const tl = gsap.timeline({
+        defaults: { ease: "power3.out" },
+        onUpdate: () => {
+          const time = tl.time();
+          let index = 0;
+          for (let i = 0; i < starts.length; i++)
+            if (time >= starts[i] - 0.01) index = i;
+          markActive(index);
+          gsap.set(q(".ws-progress-fill"), { scaleX: tl.progress() });
         },
-        0,
-      )
-        .fromTo(
-          ".welcome-founder-kicker",
-          { autoAlpha: 0, y: 12, letterSpacing: "0.32em" },
-          { autoAlpha: 1, y: 0, letterSpacing: "0.2em", duration: 0.75, ease: "power3.out" },
-          0.35,
-        )
-        .fromTo(
-          ".welcome-founder-name",
-          { autoAlpha: 0, y: 24, filter: "blur(8px)" },
-          { autoAlpha: 1, y: 0, filter: "blur(0px)", duration: 0.9, ease: "power3.out" },
-          0.55,
-        )
-        .fromTo(
-          ".welcome-founder-role, .welcome-founder-foundation, .welcome-founder-copy",
-          { autoAlpha: 0, y: 15 },
-          { autoAlpha: 1, y: 0, duration: 0.75, stagger: 0.14, ease: "power3.out" },
-          1.05,
-        )
-        .to(
-          ".welcome-founder-photo-frame, .welcome-founder-copy-block",
-          { autoAlpha: 0, y: -14, duration: 0.75, stagger: 0.04, ease: "power2.inOut" },
-          founderPreludeDuration - 0.85,
-        )
-        .to(
-          ".welcome-founder-scene",
-          { autoAlpha: 0, duration: 0.45, ease: "power2.out" },
-          founderPreludeDuration - 0.1,
-        );
+      });
+      master.current = tl;
 
-      const montageSlides = gsap.utils.toArray<HTMLElement>(
-        ".welcome-founder-montage-slide",
-      );
-      tl.fromTo(
-        ".welcome-founder-montage",
-        { autoAlpha: 0 },
-        { autoAlpha: 1, duration: 0.45, ease: "power1.out" },
-        founderMontageStart,
-      );
-      const montage = scope.current?.querySelector<HTMLElement>(
-        ".welcome-founder-montage",
-      );
-      const montageBounds = montage?.getBoundingClientRect();
-      const montageFlights = gsap.utils.toArray<HTMLElement>(
-        ".welcome-founder-montage-flight",
-      );
-      montageSlides.forEach((slide, index) => {
-        const flight = montageFlights[index];
-        const targetBounds = slide.getBoundingClientRect();
-        const start = founderMontageStart + index * founderPhotoFlightStep;
-        const target = {
-          left: targetBounds.left - (montageBounds?.left ?? 0),
-          top: targetBounds.top - (montageBounds?.top ?? 0),
-          width: targetBounds.width,
-          height: targetBounds.height,
-          borderRadius: getComputedStyle(slide).borderRadius,
-        };
-        const caption = flight?.querySelector<HTMLElement>(
-          ".welcome-founder-flight-caption",
-        );
-        if (!flight) return;
-
+      // A chapter fades in at its start and out just before the next one.
+      const chapter = (i: number, selector: string) => {
         tl.fromTo(
-          flight,
-          { autoAlpha: 0, left: 0, top: 0, width: "100%", height: "100%", scale: 1.015 },
-          { autoAlpha: 1, scale: 1, duration: 0.38, ease: "power2.out" },
-          start,
-        )
-          .to(
-            flight,
-            { scale: 1.035, duration: 0.95, ease: "none" },
-            start + 0.38,
-          )
-          .to(
-            flight,
-            { ...target, scale: 1, duration: 1, ease: "power3.inOut" },
-            start + 1.35,
-          )
-          .to(
-            slide,
-            { autoAlpha: 1, duration: 0.18, ease: "power1.out" },
-            start + 2.17,
-          )
-          .to(
-            flight,
-            { autoAlpha: 0, duration: 0.16, ease: "power1.out" },
-            start + 2.17,
-          );
-        if (caption) {
-          tl.fromTo(
-            caption,
-            { autoAlpha: 0, y: 16 },
-            { autoAlpha: 1, y: 0, duration: 0.45, ease: "power2.out" },
-            start + 0.2,
-          ).to(
-            caption,
-            { autoAlpha: 0, y: -10, duration: 0.22, ease: "power2.in" },
-            start + 1.18,
+          q(selector),
+          { autoAlpha: 0 },
+          { autoAlpha: 1, duration: 0.5, ease: "power1.out" },
+          at(i),
+        );
+        if (i < lastChapter) {
+          tl.to(
+            q(selector),
+            { autoAlpha: 0, duration: crossfade, ease: "power1.in" },
+            at(i + 1) - crossfade,
           );
         }
+      };
+
+      // Big faint chapter number drifting behind the content.
+      const bigNumber = (i: number, selector: string) => {
+        tl.fromTo(
+          q(selector),
+          { yPercent: 14, autoAlpha: 0 },
+          { yPercent: -6, autoAlpha: 1, duration: 5.4, ease: "none" },
+          at(i) + 0.1,
+        );
+      };
+
+      /* 0 · Welcome ---------------------------------------------------- */
+      const ring = q<SVGCircleElement>(".ws-ring-path");
+      const ringLength = ring[0]?.getTotalLength() ?? 400;
+      gsap.set(ring, {
+        strokeDasharray: ringLength,
+        strokeDashoffset: ringLength,
       });
+      chapter(0, ".ws-chapter--intro");
       tl.fromTo(
-        ".welcome-founder-montage-heading",
-        { autoAlpha: 0, y: 18, filter: "blur(6px)" },
-        { autoAlpha: 1, y: 0, filter: "blur(0px)", duration: 0.8, ease: "power3.out" },
-        founderMontageEnd - 1.05,
-      );
-      tl.to(
-        ".welcome-founder-montage",
-        { autoAlpha: 0, duration: 0.42, ease: "power1.in" },
-        founderMontageEnd,
-      );
-      tl.fromTo(
-        ".welcome-blackout",
-        { autoAlpha: 0 },
-        { autoAlpha: 1, duration: 0.25, ease: "none" },
-        founderBlackoutStart,
-      ).to(
-        ".welcome-blackout",
-        { autoAlpha: 0, duration: 0.35, ease: "power1.out" },
-        founderBlackoutStart + 0.37,
-      );
-      tl.fromTo(
-        ".welcome-moment",
-        { autoAlpha: 0, y: 18, filter: "blur(8px)" },
+        q(".ws-emblem"),
+        { scale: 0.55, autoAlpha: 0, rotate: -12 },
         {
+          scale: 1,
           autoAlpha: 1,
-          y: 0,
-          filter: "blur(0px)",
-          duration: 0.75,
-          ease: "power3.out",
+          rotate: 0,
+          duration: 1.3,
+          ease: "back.out(1.6)",
         },
-        welcomeMomentStart,
-      ).to(".welcome-moment", {
-        autoAlpha: 0,
-        y: -12,
-        filter: "blur(5px)",
-        duration: 0.65,
-        ease: "power2.in",
-      }, welcomeMomentStart + 2.65);
+        0.15,
+      )
+        .to(
+          ring,
+          { strokeDashoffset: 0, duration: 1.7, ease: "power2.inOut" },
+          0.2,
+        )
+        .fromTo(
+          q(".ws-intro-kicker"),
+          { autoAlpha: 0, y: 14, letterSpacing: "0.38em" },
+          { autoAlpha: 1, y: 0, letterSpacing: "0.22em", duration: 0.9 },
+          0.8,
+        )
+        .fromTo(
+          q(".ws-h1-text"),
+          { yPercent: 115, rotateX: -12 },
+          {
+            yPercent: 0,
+            rotateX: 0,
+            duration: 1.2,
+            stagger: 0.14,
+            ease: "expo.out",
+          },
+          1.0,
+        )
+        .fromTo(
+          q(".ws-intro-sub"),
+          { autoAlpha: 0, y: 16, filter: "blur(6px)" },
+          { autoAlpha: 1, y: 0, filter: "blur(0px)", duration: 0.9 },
+          2.0,
+        );
+
+      /* 1 · The need --------------------------------------------------- */
+      chapter(1, ".ws-chapter--need");
+      bigNumber(1, ".ws-chapter--need .ws-bignum");
       tl.fromTo(
-        ".welcome-photo-tile",
-        { autoAlpha: 0, y: 70, scale: 0.76, rotate: (i) => (i % 2 ? 4 : -4) },
+        q(".ws-need-photo"),
+        { clipPath: "inset(100% 0% 0% 0%)" },
+        { clipPath: "inset(0% 0% 0% 0%)", duration: 1.5, ease: "expo.inOut" },
+        at(1) + 0.05,
+      )
+        .fromTo(
+          q(".ws-need-photo img"),
+          { scale: 1.3 },
+          { scale: 1.06, duration: 6, ease: "none" },
+          at(1) + 0.05,
+        )
+        .fromTo(
+          q(".ws-need .ws-eyebrow"),
+          { autoAlpha: 0, x: -20 },
+          { autoAlpha: 1, x: 0, duration: 0.8 },
+          at(1) + 0.35,
+        )
+        .from(
+          lines(".ws-need .ws-split"),
+          { yPercent: 115, duration: 1.1, stagger: 0.12, ease: "expo.out" },
+          at(1) + 0.5,
+        )
+        .fromTo(
+          q(".ws-stat"),
+          { autoAlpha: 0, y: 34 },
+          { autoAlpha: 1, y: 0, duration: 0.9, stagger: 0.18 },
+          at(1) + 1.5,
+        )
+        .fromTo(
+          q(".ws-stat-line"),
+          { scaleX: 0 },
+          {
+            scaleX: 1,
+            duration: 1.1,
+            stagger: 0.18,
+            ease: "power2.inOut",
+            transformOrigin: "left center",
+          },
+          at(1) + 1.6,
+        )
+        .fromTo(
+          q(".ws-need-note"),
+          { autoAlpha: 0, y: 14 },
+          { autoAlpha: 1, y: 0, duration: 0.9 },
+          at(1) + 3.3,
+        );
+      stats.forEach((s, i) => {
+        const el = q<HTMLElement>(`[data-stat="${i}"]`)[0];
+        if (!el) return;
+        const counter = { n: 0 };
+        el.textContent = format(0, s.decimals) + s.suffix;
+        tl.fromTo(
+          counter,
+          { n: 0 },
+          {
+            n: s.value,
+            duration: 2.0,
+            ease: "power2.out",
+            onUpdate: () => {
+              el.textContent = format(counter.n, s.decimals) + s.suffix;
+            },
+          },
+          at(1) + 1.6 + i * 0.18,
+        );
+      });
+
+      /* 2 · What we do ------------------------------------------------- */
+      chapter(2, ".ws-chapter--work");
+      bigNumber(2, ".ws-chapter--work .ws-bignum");
+      tl.fromTo(
+        q(".ws-work .ws-eyebrow"),
+        { autoAlpha: 0, x: -20 },
+        { autoAlpha: 1, x: 0, duration: 0.8 },
+        at(2) + 0.2,
+      )
+        .from(
+          lines(".ws-work .ws-split"),
+          { yPercent: 115, duration: 1.1, stagger: 0.12, ease: "expo.out" },
+          at(2) + 0.35,
+        )
+        .fromTo(
+          q(".ws-card"),
+          { clipPath: "inset(100% 0% 0% 0% round 22px)", y: 40 },
+          {
+            clipPath: "inset(0% 0% 0% 0% round 22px)",
+            y: 0,
+            duration: 1.3,
+            stagger: 0.2,
+            ease: "expo.inOut",
+          },
+          at(2) + 1.0,
+        )
+        .fromTo(
+          q(".ws-card-img"),
+          { scale: 1.35 },
+          { scale: 1.05, duration: 5, stagger: 0.2, ease: "none" },
+          at(2) + 1.0,
+        )
+        .fromTo(
+          q(".ws-card-text > *"),
+          { autoAlpha: 0, y: 18 },
+          { autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.05 },
+          at(2) + 1.9,
+        );
+
+      /* 3 · The belief ------------------------------------------------- */
+      chapter(3, ".ws-chapter--belief");
+      bigNumber(3, ".ws-chapter--belief .ws-bignum");
+      tl.fromTo(
+        q(".ws-founder-frame"),
+        { clipPath: "inset(0% 0% 100% 0% round 26px)", scale: 1.06 },
+        {
+          clipPath: "inset(0% 0% 0% 0% round 26px)",
+          scale: 1,
+          duration: 1.4,
+          ease: "expo.inOut",
+        },
+        at(3) + 0.1,
+      )
+        .fromTo(
+          q(".ws-founder-frame img"),
+          { scale: 1.25 },
+          { scale: 1.02, duration: 4.5, ease: "none" },
+          at(3) + 0.1,
+        )
+        .fromTo(
+          q(".ws-belief .ws-eyebrow"),
+          { autoAlpha: 0, x: -20 },
+          { autoAlpha: 1, x: 0, duration: 0.8 },
+          at(3) + 0.5,
+        )
+        .from(
+          lines(".ws-belief .ws-split"),
+          { yPercent: 115, duration: 1.2, stagger: 0.14, ease: "expo.out" },
+          at(3) + 0.7,
+        )
+        .fromTo(
+          q(".ws-quote-line"),
+          { scaleX: 0 },
+          {
+            scaleX: 1,
+            duration: 1,
+            ease: "power2.inOut",
+            transformOrigin: "left center",
+          },
+          at(3) + 1.5,
+        )
+        .fromTo(
+          q(".ws-belief-meta > *"),
+          { autoAlpha: 0, y: 16 },
+          { autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.12 },
+          at(3) + 1.7,
+        );
+
+      /* 4 · Our moments (photo wall) --------------------------------- */
+      chapter(4, ".ws-chapter--moments");
+      tl.fromTo(
+        q(".ws-tile"),
+        {
+          autoAlpha: 0,
+          y: 70,
+          scale: 0.78,
+          rotate: (i: number) => (i % 2 ? 4 : -4),
+        },
         {
           autoAlpha: 1,
           y: 0,
           scale: 1,
           rotate: 0,
-          duration: 1.45,
-          stagger: { amount: 0.85, from: "random" },
+          duration: 1.3,
+          stagger: { amount: 1.4, from: "random" },
           ease: "power3.out",
         },
-        welcomeContentStart + 0.2,
-      );
-      tl.fromTo(
-        ".welcome-gradient-wash",
-        { scaleY: 0 },
-        { scaleY: 1, duration: 1.6, ease: "power2.out" },
-        welcomeContentStart + 1.1,
-      );
-      tl.fromTo(
-        ".welcome-top",
-        { autoAlpha: 0, y: 20, filter: "blur(8px)" },
-        {
-          autoAlpha: 1,
-          y: 0,
-          filter: "blur(0px)",
-          duration: 0.95,
-          ease: "power3.out",
-        },
-        welcomeContentStart + 1.5,
+        at(4) + 0.1,
       )
         .fromTo(
-          ".welcome-heading-text",
-          { yPercent: 110, rotateX: -9 },
-          {
-            yPercent: 0,
-            rotateX: 0,
-            duration: 1.3,
-            stagger: 0.16,
-            ease: "power3.out",
-          },
-          welcomeContentStart + 1.8,
+          q(".ws-tile img"),
+          { scale: 1.2 },
+          { scale: 1.02, duration: 6, ease: "none" },
+          at(4) + 0.1,
         )
         .fromTo(
-          ".welcome-intro-copy",
-          { autoAlpha: 0, y: 18, filter: "blur(5px)" },
+          q(".ws-moments-card"),
+          { autoAlpha: 0, y: 30, scale: 0.94, filter: "blur(10px)" },
+          { autoAlpha: 1, y: 0, scale: 1, filter: "blur(0px)", duration: 1.1 },
+          at(4) + 1.5,
+        )
+        .from(
+          lines(".ws-moments .ws-split"),
+          { yPercent: 115, duration: 1.1, stagger: 0.12, ease: "expo.out" },
+          at(4) + 1.75,
+        )
+        .fromTo(
+          q(".ws-moments-kicker, .ws-moments-note"),
+          { autoAlpha: 0, y: 12 },
+          { autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.2 },
+          at(4) + 1.7,
+        );
+
+      /* 5 · Your gift's journey --------------------------------------- */
+      chapter(5, ".ws-chapter--journey");
+      bigNumber(5, ".ws-chapter--journey .ws-bignum");
+      const axis = compact ? "scaleY" : "scaleX";
+      const origin = compact ? "center top" : "left center";
+      const travel = at(5) + 1.2;
+      const travelTime = 2.8;
+      tl.fromTo(
+        q(".ws-journey .ws-eyebrow"),
+        { autoAlpha: 0, x: -20 },
+        { autoAlpha: 1, x: 0, duration: 0.8 },
+        at(5) + 0.2,
+      )
+        .from(
+          lines(".ws-journey .ws-split"),
+          { yPercent: 115, duration: 1.1, stagger: 0.12, ease: "expo.out" },
+          at(5) + 0.35,
+        )
+        .fromTo(
+          q(".ws-track-fill"),
+          { [axis]: 0 },
+          {
+            [axis]: 1,
+            duration: travelTime,
+            ease: "none",
+            transformOrigin: origin,
+          },
+          travel,
+        )
+        .fromTo(
+          q(".ws-travel-seed"),
+          { autoAlpha: 0, [compact ? "top" : "left"]: "0%" },
           {
             autoAlpha: 1,
-            y: 0,
-            filter: "blur(0px)",
-            duration: 0.95,
-            ease: "power3.out",
+            [compact ? "top" : "left"]: "100%",
+            duration: travelTime,
+            ease: "none",
           },
-          welcomeContentStart + 2.2,
+          travel,
+        );
+      q(".ws-step").forEach((step, i) => {
+        const when = travel + (i * travelTime) / 2;
+        tl.fromTo(
+          step.querySelector(".ws-step-dot"),
+          { scale: 0.3, autoAlpha: 0.25 },
+          { scale: 1, autoAlpha: 1, duration: 0.8, ease: "back.out(2.4)" },
+          i === 0 ? at(5) + 0.9 : when - 0.15,
+        )
+          .fromTo(
+            step.querySelector(".ws-step-ripple"),
+            { scale: 0.6, autoAlpha: 0.8 },
+            { scale: 2.4, autoAlpha: 0, duration: 1.1, ease: "power2.out" },
+            i === 0 ? at(5) + 0.9 : when - 0.15,
+          )
+          .fromTo(
+            step.querySelectorAll(".ws-step-text > *"),
+            { autoAlpha: 0, y: 18 },
+            { autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.1 },
+            i === 0 ? at(5) + 1.1 : when,
+          );
+      });
+      tl.to(
+        q(".ws-travel-seed"),
+        { scale: 1.8, autoAlpha: 0, duration: 0.7, ease: "power2.out" },
+        travel + travelTime,
+      );
+
+      /* 6 · Your turn -------------------------------------------------- */
+      chapter(6, ".ws-chapter--final");
+      tl.fromTo(
+        q(".ws-burst"),
+        { scale: 0.2, autoAlpha: 0 },
+        { scale: 1, autoAlpha: 1, duration: 2.2, ease: "expo.out" },
+        at(6) + 0.1,
+      )
+        .fromTo(
+          q(".ws-final .ws-eyebrow"),
+          { autoAlpha: 0, y: 12 },
+          { autoAlpha: 1, y: 0, duration: 0.8 },
+          at(6) + 0.3,
+        )
+        .from(
+          lines(".ws-final .ws-split"),
+          { yPercent: 115, duration: 1.2, stagger: 0.14, ease: "expo.out" },
+          at(6) + 0.45,
         )
         .fromTo(
-          ".welcome-actions > *",
-          { autoAlpha: 0, y: 18, scale: 0.97 },
+          q(".ws-final-copy"),
+          { autoAlpha: 0, y: 18 },
+          { autoAlpha: 1, y: 0, duration: 0.9 },
+          at(6) + 1.3,
+        )
+        .fromTo(
+          q(".ws-actions > *"),
+          { autoAlpha: 0, y: 24, scale: 0.95 },
           {
             autoAlpha: 1,
             y: 0,
             scale: 1,
-            duration: 0.85,
-            stagger: 0.16,
-            ease: "power3.out",
+            duration: 0.9,
+            stagger: 0.14,
+            ease: "back.out(1.5)",
           },
-          welcomeContentStart + 2.55,
+          at(6) + 1.65,
         )
         .fromTo(
-          ".welcome-stats",
-          { autoAlpha: 0, y: 18 },
-          { autoAlpha: 1, y: 0, duration: 0.85, ease: "power3.out" },
-          welcomeContentStart + 3.35,
-        )
-        .fromTo(
-          ".welcome-stat",
+          q(".ws-explore"),
           { autoAlpha: 0, y: 12 },
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: 0.65,
-            stagger: 0.13,
-            ease: "power3.out",
-          },
-          welcomeContentStart + 3.58,
+          { autoAlpha: 1, y: 0, duration: 0.8 },
+          at(6) + 2.3,
         )
         .fromTo(
-          ".welcome-trust",
-          { autoAlpha: 0, y: 6 },
-          { autoAlpha: 1, y: 0, duration: 0.7, ease: "power2.out" },
-          welcomeContentStart + 4.9,
-        );
-
-      // Draw the hands and hearts together, then let the artwork breathe softly.
-      const hearts = gsap.utils.toArray<SVGPathElement>(".giving-heart");
-      const hands = gsap.utils.toArray<SVGPathElement>(".giving-hand");
-      const palms = gsap.utils.toArray<SVGPathElement>(".giving-palm");
-      [...hearts, ...hands, ...palms].forEach((path) => {
-        const length = path.getTotalLength();
-        gsap.set(path, { strokeDasharray: length, strokeDashoffset: length });
-      });
-
-      const artTl = gsap.timeline();
-      gsap.utils
-        .toArray<SVGSVGElement>(".welcome-giving-art")
-        .forEach((art, i) => {
-          const opacity = Number(window.getComputedStyle(art).opacity);
-          artTl.fromTo(
-            art,
-            { autoAlpha: 0, y: 8 },
-            { autoAlpha: opacity, y: 0, duration: 1.1, ease: "power2.out" },
-            0.2 + i * 0.14,
-          );
-        });
-      artTl
-        .to(
-          hearts,
-          {
-            strokeDashoffset: 0,
-            duration: 1.45,
-            stagger: 0.16,
-            ease: "power2.out",
-          },
-          0.45,
+          q(".ws-trust"),
+          { autoAlpha: 0 },
+          { autoAlpha: 1, duration: 0.8 },
+          at(6) + 2.6,
         )
-        .to(
-          hands,
-          {
-            strokeDashoffset: 0,
-            duration: 1.9,
-            stagger: 0.18,
-            ease: "power2.inOut",
-          },
-          0.85,
+        .fromTo(
+          q(".ws-auto"),
+          { autoAlpha: 0 },
+          { autoAlpha: 1, duration: 0.6 },
+          at(6) + 3.0,
         )
-        .to(
-          palms,
+        .fromTo(
+          q(".ws-auto-bar"),
+          { scaleX: 0 },
           {
-            strokeDashoffset: 0,
-            duration: 1.65,
-            stagger: 0.16,
-            ease: "power2.out",
+            scaleX: 1,
+            duration: autoOpenSeconds,
+            ease: "none",
+            transformOrigin: "left center",
           },
-          1.08,
-        );
+          at(6) + 3.0,
+        )
+        .call(() => dismissRef.current(), undefined, ">");
 
-      gsap.to(".welcome-giving-art", {
-        y: -7,
-        duration: 4.5,
-        stagger: 1.1,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
-      gsap.to(".giving-heart", {
-        scale: 1.035,
-        transformOrigin: "center center",
-        duration: 0.65,
-        delay: 3.1,
-        repeat: -1,
-        repeatDelay: 2.1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
-      gsap.to(".welcome-glow--one", {
-        x: 46,
-        y: -26,
-        scale: 1.12,
-        duration: 10,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
-      gsap.to(".welcome-glow--two", {
-        x: -42,
-        y: 24,
-        scale: 1.1,
-        duration: 12,
-        delay: 0.5,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
-      gsap.to(".welcome-glow--center", {
-        x: 18,
-        scale: 1.1,
-        duration: 14,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
-
-      // Count up the real numbers
-      stats.forEach((s, i) => {
-        const el = scope.current?.querySelector<HTMLElement>(
-          `[data-stat="${i}"]`,
-        );
-        if (!el) return;
-        const c = { n: 0 };
-        el.textContent = format(0, s.decimals) + s.suffix;
-        tl.to(
-          c,
-          {
-            n: s.value,
-            duration: 1.8,
-            ease: "power2.out",
-            onUpdate: () => {
-              el.textContent = format(c.n, s.decimals) + s.suffix;
-            },
-          },
-          welcomeContentStart + 3.7 + i * 0.13,
-        );
-      });
-
+      /* Always-on atmosphere ------------------------------------------ */
       gsap.fromTo(
-        ".welcome-progress-fill",
-        { scaleX: 0 },
-        {
-          scaleX: 1,
-          duration: welcomeDuration,
-          ease: "none",
-          transformOrigin: "left center",
-        },
+        q(".ws-hud"),
+        { autoAlpha: 0, y: 12 },
+        { autoAlpha: 1, y: 0, duration: 1, delay: 1.2, ease: "power2.out" },
       );
+      q(".ws-fleck").forEach((el) => {
+        gsap.set(el, {
+          x: gsap.utils.random(0, window.innerWidth),
+          y: gsap.utils.random(window.innerHeight * 0.25, window.innerHeight),
+          scale: gsap.utils.random(0.5, 1.5),
+          autoAlpha: 0,
+        });
+        gsap.to(el, {
+          y: `-=${gsap.utils.random(140, 360)}`,
+          autoAlpha: gsap.utils.random(0.25, 0.75),
+          duration: gsap.utils.random(5, 10),
+          delay: gsap.utils.random(0, 4),
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+        });
+      });
+      gsap.to(q(".ws-glow--one"), {
+        x: 60,
+        y: -30,
+        scale: 1.12,
+        duration: 11,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      });
+      gsap.to(q(".ws-glow--two"), {
+        x: -50,
+        y: 36,
+        scale: 1.1,
+        duration: 13,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      });
+      gsap.to(q(".ws-pulse"), {
+        scale: 1.55,
+        autoAlpha: 0,
+        duration: 1.8,
+        repeat: -1,
+        ease: "power2.out",
+      });
     },
     {
       scope,
-      dependencies: [reducedMotion, imagesLoading, galleryPhotoKeys.join("|")],
+      dependencies: [reducedMotion, fontsReady, compact, i18n.resolvedLanguage],
       revertOnUpdate: true,
     },
   );
 
+  /* ----------------------- pointer: spotlight + magnet ----------------------- */
   useEffect(() => {
-    if (!reducedMotion || imagesLoading) return;
-    const timer = window.setTimeout(
-      () => setShowFounderWithoutMotion(false),
-      founderPreludeDuration * 1000,
-    );
-    return () => window.clearTimeout(timer);
-  }, [imagesLoading, reducedMotion]);
+    const screen = scope.current;
+    if (!screen || reducedMotion) return;
+    const spot = screen.querySelector<HTMLElement>(".ws-spot");
+    if (!spot) return;
+    gsap.set(spot, {
+      xPercent: -50,
+      yPercent: -50,
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2,
+    });
+    const sx = gsap.quickTo(spot, "x", { duration: 0.9, ease: "power3.out" });
+    const sy = gsap.quickTo(spot, "y", { duration: 0.9, ease: "power3.out" });
 
-  // Stop the page behind from scrolling (removes the extra scrollbar)
+    const magnets = Array.from(
+      screen.querySelectorAll<HTMLElement>("[data-magnet]"),
+    ).map((el) => ({
+      el,
+      mx: gsap.quickTo(el, "x", { duration: 0.5, ease: "power3.out" }),
+      my: gsap.quickTo(el, "y", { duration: 0.5, ease: "power3.out" }),
+    }));
+
+    const move = (e: PointerEvent) => {
+      sx(e.clientX);
+      sy(e.clientY);
+      magnets.forEach(({ el, mx, my }) => {
+        const r = el.getBoundingClientRect();
+        const dx = e.clientX - (r.left + r.width / 2);
+        const dy = e.clientY - (r.top + r.height / 2);
+        const near = Math.hypot(dx, dy) < Math.max(r.width, 120);
+        mx(near ? dx * 0.22 : 0);
+        my(near ? dy * 0.3 : 0);
+      });
+    };
+    window.addEventListener("pointermove", move);
+    return () => window.removeEventListener("pointermove", move);
+  }, [reducedMotion]);
+
+  // Stop the page behind from scrolling.
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -547,34 +749,12 @@ export default function WelcomeScreen({
     };
   }, []);
 
-  // Apply subtle pointer movement to the background glow.
-  useEffect(() => {
-    const screen = scope.current;
-    if (!screen || reducedMotion) return;
-    const glow = screen.querySelector<HTMLElement>(".welcome-glow--one");
-    if (!glow) return;
-    const gx = gsap.quickTo(glow, "xPercent", {
-      duration: 1.4,
-      ease: "power3.out",
-    });
-    const gy = gsap.quickTo(glow, "yPercent", {
-      duration: 1.4,
-      ease: "power3.out",
-    });
-    const move = (e: MouseEvent) => {
-      const px = e.clientX / window.innerWidth - 0.5;
-      const py = e.clientY / window.innerHeight - 0.5;
-      gx(px * 30);
-      gy(py * 30);
-    };
-    window.addEventListener("mousemove", move);
-    return () => window.removeEventListener("mousemove", move);
-  }, [reducedMotion]);
-
+  /* ------------------------------ leaving ------------------------------ */
   const dismiss = useCallback(
     (to?: string) => {
       if (isClosing.current) return;
       isClosing.current = true;
+      master.current?.pause();
       onExitStart();
       if (to) setLocation(to);
       const screen = scope.current;
@@ -587,12 +767,12 @@ export default function WelcomeScreen({
       if (portal) {
         exit.fromTo(
           portal,
-          { autoAlpha: 0, scale: 1.035, filter: "blur(14px)" },
+          { autoAlpha: 0, scale: 1.04, filter: "blur(12px)" },
           {
             autoAlpha: 1,
             scale: 1,
             filter: "blur(0px)",
-            duration: 2.8,
+            duration: 1.7,
             ease: "power2.out",
           },
           0,
@@ -600,289 +780,397 @@ export default function WelcomeScreen({
       }
       exit
         .to(
-          ".welcome-content, .welcome-moment, .welcome-founder-scene",
-          {
-            autoAlpha: 0,
-            y: -22,
-            filter: "blur(5px)",
-            duration: 0.95,
-            stagger: 0.08,
-            ease: "power2.inOut",
-          },
-          1.15,
-        )
-        .to(
-          ".welcome-photo-collage",
-          {
-            autoAlpha: 0,
-            scale: 1.1,
-            filter: "blur(5px)",
-            duration: 2.0,
-            ease: "power2.inOut",
-          },
-          0.48,
-        )
-        .to(
-          ".welcome-gradient-wash, .welcome-atmosphere, .welcome-progress",
-          { autoAlpha: 0, duration: 1.75, ease: "power2.inOut" },
-          0.5,
+          screen.querySelectorAll(".ws-chapter, .ws-hud, .ws-skip"),
+          { autoAlpha: 0, y: -28, duration: 0.55, ease: "power2.in" },
+          0,
         )
         .to(
           screen,
           {
-            autoAlpha: 0,
-            scale: 1.012,
-            duration: 0.9,
-            ease: "power2.inOut",
+            clipPath: "inset(0% 0% 100% 0%)",
+            duration: 1.2,
+            ease: "expo.inOut",
           },
-          1.9,
+          0.4,
         );
     },
     [onComplete, onExitStart, reducedMotion, setLocation],
   );
 
   useEffect(() => {
-    if (imagesLoading) return;
+    dismissRef.current = () => dismiss();
+  }, [dismiss]);
+
+  // Without animation there is no timeline, so open the site after a pause.
+  useEffect(() => {
+    if (!reducedMotion) return;
     const timer = window.setTimeout(
-      () => dismiss(),
-      welcomeDuration * 1000,
+      () => dismissRef.current(),
+      (autoOpenSeconds + 3) * 1000,
     );
     return () => window.clearTimeout(timer);
-  }, [dismiss, reducedMotion, imagesLoading]);
+  }, [reducedMotion]);
 
+  /* --------------------------- story controls --------------------------- */
+  const goTo = useCallback(
+    (index: number) => {
+      const tl = master.current;
+      const veil = curtain.current;
+      if (!tl || !veil || isJumping.current || isClosing.current) return;
+      const target = Math.max(0, Math.min(lastChapter, index));
+      isJumping.current = true;
+      gsap
+        .timeline({ onComplete: () => void (isJumping.current = false) })
+        .to(veil, { autoAlpha: 1, duration: 0.22, ease: "power1.in" })
+        .add(() => {
+          resetStats();
+          tl.seek(starts[target] + 0.02, false);
+          markActive(target);
+          tl.play();
+        })
+        .to(veil, { autoAlpha: 0, duration: 0.4, ease: "power1.out" });
+    },
+    [markActive, resetStats],
+  );
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") goTo(activeChapter.current + 1);
+      else if (e.key === "ArrowLeft") goTo(activeChapter.current - 1);
+      else if (e.key === "Escape") dismiss();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [dismiss, goTo]);
+
+  useEffect(() => {
+    scope.current?.focus({ preventScroll: true });
+  }, []);
+
+  /* ------------------------------- markup ------------------------------- */
   return (
     <section
       ref={scope}
-      className={`welcome-screen${imagesLoading ? " is-loading" : ""}`}
+      className={`welcome-screen${reducedMotion ? " is-static" : ""}${!reducedMotion && !fontsReady ? " is-booting" : ""}`}
       role="dialog"
       aria-modal="true"
       aria-labelledby="welcome-heading"
+      tabIndex={-1}
     >
-      <span className="welcome-door welcome-door--left" aria-hidden="true" />
-      <span className="welcome-door welcome-door--right" aria-hidden="true" />
-
-      <div className="welcome-atmosphere" aria-hidden="true">
-        <span className="welcome-glow welcome-glow--one" />
-        <span className="welcome-glow welcome-glow--two" />
-        <span className="welcome-glow welcome-glow--center" />
-        <span className="welcome-grid" />
-        <span className="welcome-grain" />
-        <svg className="welcome-giving-art" viewBox="0 0 500 500">
-          <path
-            className="giving-heart"
-            d="M250 190 C222 167 193 147 193 120 C193 98 210 83 231 83 C243 83 253 90 260 101 C267 90 277 83 289 83 C310 83 327 98 327 120 C327 147 298 167 270 190 L260 198 Z"
-          />
-          <path
-            className="giving-hand"
-            d="M99 302 C128 282 151 272 172 281 L222 303 C235 309 246 321 241 332 C237 342 225 346 213 341 L181 328 C202 343 224 357 248 365 C279 376 308 366 328 344 L365 304 C376 292 393 292 402 303 C410 313 407 326 399 336 L360 382 C332 414 289 429 248 416 C213 405 183 384 157 366 L105 335 C92 328 88 311 99 302 Z"
-          />
-          <path
-            className="giving-palm"
-            d="M218 300 L198 260 C193 249 198 237 209 233 C220 229 229 235 234 245 L254 282 M254 282 L244 239 C241 227 248 217 260 216 C272 215 280 223 282 235 L291 280 M291 280 L291 251 C291 239 300 231 311 233 C322 235 328 244 326 256 L322 305"
-          />
-        </svg>
-        <svg
-          className="welcome-giving-art welcome-giving-art--left"
-          viewBox="0 0 500 500"
-        >
-          <path
-            className="giving-heart"
-            d="M250 190 C222 167 193 147 193 120 C193 98 210 83 231 83 C243 83 253 90 260 101 C267 90 277 83 289 83 C310 83 327 98 327 120 C327 147 298 167 270 190 L260 198 Z"
-          />
-          <path
-            className="giving-hand"
-            d="M99 302 C128 282 151 272 172 281 L222 303 C235 309 246 321 241 332 C237 342 225 346 213 341 L181 328 C202 343 224 357 248 365 C279 376 308 366 328 344 L365 304 C376 292 393 292 402 303 C410 313 407 326 399 336 L360 382 C332 414 289 429 248 416 C213 405 183 384 157 366 L105 335 C92 328 88 311 99 302 Z"
-          />
-          <path
-            className="giving-palm"
-            d="M218 300 L198 260 C193 249 198 237 209 233 C220 229 229 235 234 245 L254 282 M254 282 L244 239 C241 227 248 217 260 216 C272 215 280 223 282 235 L291 280 M291 280 L291 251 C291 239 300 231 311 233 C322 235 328 244 326 256 L322 305"
-          />
-        </svg>
-      </div>
-
-      <div className="welcome-photo-collage" style={collageStyle} aria-hidden="true">
-        {galleryPhotoKeys.map((slot) => (
-          <div className="welcome-photo-tile" key={slot}>
-            <DynamicImage
-              slotKey={slot}
-              alt={images[slot]?.alt_text ?? ""}
-              className="welcome-photo"
-              preferLocal={imagesError}
-              loading="eager"
-            />
-          </div>
+      <div className="ws-bg" aria-hidden="true">
+        <span className="ws-glow ws-glow--one" />
+        <span className="ws-glow ws-glow--two" />
+        <span className="ws-grid" />
+        <span className="ws-spot" />
+        {Array.from({ length: fleckCount }, (_, i) => (
+          <i className="ws-fleck" key={i} />
         ))}
+        <span className="ws-grain" />
       </div>
-      <div className="welcome-gradient-wash" aria-hidden="true" />
-      {(!reducedMotion || showFounderWithoutMotion) && (
-        <div className="welcome-founder-scene">
-          <div className="welcome-founder-ambient" aria-hidden="true" />
-          <div className="welcome-founder-photo-frame">
-            <DynamicImage
-              slotKey="home-founder-photo"
-              alt={translateText("Dr Jagannath Patnaik")}
-              className="welcome-founder-photo"
-              preferLocal={imagesError}
-              loading="eager"
-            />
-          </div>
-          <div className="welcome-founder-copy-block">
-            <p className="welcome-founder-kicker">
-              {translateText("Meet our founder")}
+
+      <div className="ws-stage">
+        {/* 0 · Welcome */}
+        <div className="ws-chapter ws-chapter--intro">
+          <div className="ws-center">
+            <div className="ws-emblem">
+              <svg className="ws-ring" viewBox="0 0 100 100" aria-hidden="true">
+                <circle className="ws-ring-path" cx="50" cy="50" r="48" />
+              </svg>
+              <img
+                src="/images/logo-mark.png"
+                alt={t("Jagannath Foundation logo")}
+              />
+            </div>
+            <p className="ws-intro-kicker">
+              {t("A charitable trust · Odisha, India")}
             </p>
-            <h2 className="welcome-founder-name">
-              {translateText("Dr Jagannath Patnaik")}
-            </h2>
-            <p className="welcome-founder-role">
-              {translateText("Vice Chancellor, The ICFAI University Sikkim")}
-            </p>
-            <p className="welcome-founder-foundation">
-              {translateText("Founder, Settlor & Managing Trustee")}
-              <span aria-hidden="true"> · </span>
-              {translateText("Jagannath Foundation")}
-            </p>
-            <p className="welcome-founder-copy">
-              {translateText("His guiding belief: Manav seva is Ishwar seva—service to people is service to God.")}
+            <h1 id="welcome-heading">
+              <span className="ws-h1-line">
+                <span className="ws-h1-text">{t("Welcome to")}</span>
+              </span>
+              <span className="ws-h1-line ws-gold">
+                <span className="ws-h1-text">{t("Jagannath Foundation")}</span>
+              </span>
+            </h1>
+            <p className="ws-intro-sub">
+              {t("Here is a short story of what happens when people give.")}
             </p>
           </div>
         </div>
-      )}
-      {!reducedMotion && (
-        <div className="welcome-founder-montage">
-          <p className="welcome-founder-gallery-note">
-            {translateText("Just a few highlights · explore our full photo gallery")}
-          </p>
-          <div className="welcome-founder-montage-content">
-            <header className="welcome-founder-montage-heading">
-              <p>{translateText("A record of service")}</p>
-              <h2>{translateText("Moments of leadership")}</h2>
-            </header>
-            <div className="welcome-founder-montage-grid">
-              {founderBackdropPhotos.map(({ slot, src, caption }) => (
-                <figure className="welcome-founder-montage-slide" key={slot}>
+
+        {/* 1 · The need */}
+        <div className="ws-chapter ws-chapter--need">
+          <div className="ws-need-photo" aria-hidden="true">
+            <img src="/images/community/village-hero.webp" alt="" />
+          </div>
+          <span className="ws-bignum" aria-hidden="true">
+            01
+          </span>
+          <div className="ws-wrap ws-need">
+            <p className="ws-eyebrow">
+              <b>01</b>
+              {t("The need")}
+            </p>
+            <h2 className="ws-split ws-headline">
+              {t(
+                "Odisha is home to more Particularly Vulnerable Tribal Groups than any other state.",
+              )}
+            </h2>
+            <div className="ws-stats">
+              {stats.map((s, i) => (
+                <div key={s.label} className="ws-stat">
+                  <strong data-stat={i}>
+                    {format(s.value, s.decimals) + s.suffix}
+                  </strong>
+                  <span>{localizeText(s.label)}</span>
+                  <i className="ws-stat-line" aria-hidden="true" />
+                </div>
+              ))}
+            </div>
+            <p className="ws-need-note">
+              {t("Behind every number is a family. This is where we begin.")}
+            </p>
+          </div>
+        </div>
+
+        {/* 2 · What we do */}
+        <div className="ws-chapter ws-chapter--work">
+          <span className="ws-bignum" aria-hidden="true">
+            02
+          </span>
+          <div className="ws-wrap ws-work">
+            <p className="ws-eyebrow">
+              <b>02</b>
+              {t("What we do")}
+            </p>
+            <h2 className="ws-split ws-headline">
+              {t("Four ways we turn a gift into a future.")}
+            </h2>
+            <div className="ws-cards">
+              {pillars.map((p, i) => (
+                <article className="ws-card" key={p.title}>
                   <img
-                    src={src}
+                    className="ws-card-img"
+                    src={p.photo}
                     alt=""
-                    className="welcome-founder-montage-image"
                     loading="eager"
                   />
-                  <figcaption className="welcome-founder-backdrop-caption">
-                    {translateText(caption)}
-                  </figcaption>
-                </figure>
+                  <div className="ws-card-shade" aria-hidden="true" />
+                  <span
+                    className="ws-card-num"
+                    aria-hidden="true"
+                  >{`0${i + 1}`}</span>
+                  <div className="ws-card-text">
+                    <p>{t(p.label)}</p>
+                    <h3>{t(p.title)}</h3>
+                    <span>{t(p.body)}</span>
+                  </div>
+                </article>
               ))}
             </div>
           </div>
-          <div className="welcome-founder-montage-flights" aria-hidden="true">
-            {founderBackdropPhotos.map(({ slot, src, caption }) => (
-              <figure className="welcome-founder-montage-flight" key={slot}>
-                <img src={src} alt="" className="welcome-founder-montage-image" loading="eager" />
-                <figcaption className="welcome-founder-flight-caption">
-                  {translateText(caption)}
-                </figcaption>
-              </figure>
-            ))}
-          </div>
         </div>
-      )}
-      {!reducedMotion && <div className="welcome-blackout" aria-hidden="true" />}
-      <button
-        className="welcome-skip"
-        type="button"
-        onClick={() => dismiss()}
-        autoFocus
-      >
-        {translateText("Skip intro")}
-        <span aria-hidden="true">↗</span>
-      </button>
-      {!reducedMotion && (
-        <p className="welcome-moment" aria-hidden="true">
-          {translateText("Moments that make a difference")}
-        </p>
-      )}
 
-      <div className="welcome-layout">
-        <div className="welcome-content">
-          <div className="welcome-top">
-            <div className="welcome-emblem">
-              <img
-                src="/images/logo-mark.png"
-                alt={translateText("Jagannath Foundation logo")}
+        {/* 3 · The belief */}
+        <div className="ws-chapter ws-chapter--belief">
+          <span className="ws-bignum" aria-hidden="true">
+            03
+          </span>
+          <div className="ws-wrap ws-belief">
+            <div className="ws-founder-frame">
+              <DynamicImage
+                slotKey="home-founder-photo"
+                alt={t("Dr Jagannath Patnaik")}
+                className="ws-founder-photo"
+                preferLocal={imagesLoading || imagesError}
+                loading="eager"
               />
             </div>
-            <p className="welcome-kicker">
-              {translateText("A charitable trust · Odisha, India")}
-            </p>
-          </div>
-          <h1 id="welcome-heading">
-            <span className="welcome-heading-line">
-              <span className="welcome-heading-text">
-                {translateText("Welcome to")}
-              </span>
-            </span>
-            <span className="welcome-heading-line welcome-foundation-name">
-              <span className="welcome-heading-text">
-                {translateText("Jagannath Foundation")}
-              </span>
-            </span>
-          </h1>
-          <p className="welcome-intro-copy">
-            {" "}
-            {translateText("Helping hands. Positive living.")} <br />{" "}
-            {translateText(
-              "Every gift, big or small, plants a seed of dignity.",
-            )}{" "}
-          </p>
-
-          <div className="welcome-actions">
-            <button
-              className="welcome-donate"
-              type="button"
-              onClick={() => dismiss("/donate")}
-            >
-              {" "}
-              {translateText("Donate Now")}{" "}
-            </button>
-            <button
-              className="welcome-enter"
-              type="button"
-              onClick={() => dismiss()}
-            >
-              {" "}
-              {translateText("Enter the website")}{" "}
-              <span aria-hidden="true">→</span>
-            </button>
-          </div>
-
-          <div className="welcome-stats">
-            <p className="welcome-stats-title">
-              {translateText("Why your gift matters")}
-            </p>
-            <div className="welcome-stats-row">
-              {localizeText(
-                stats.map((s, i) => (
-                  <div key={s.label} className="welcome-stat">
-                    <strong data-stat={i}>
-                      {localizeText(format(s.value, s.decimals) + s.suffix)}
-                    </strong>
-                    <span>{localizeText(s.label)}</span>
-                  </div>
-                )),
-              )}
+            <div className="ws-belief-copy">
+              <p className="ws-eyebrow">
+                <b>03</b>
+                {t("The belief")}
+              </p>
+              <h2 className="ws-split ws-quote">
+                {t("“Manav seva is Ishwar seva”")}
+              </h2>
+              <i className="ws-quote-line" aria-hidden="true" />
+              <div className="ws-belief-meta">
+                <p className="ws-belief-line">
+                  {t("Service to people is service to God.")}
+                </p>
+                <p className="ws-belief-name">{t("Dr Jagannath Patnaik")}</p>
+                <p className="ws-belief-role">
+                  {t("Vice Chancellor, The ICFAI University Sikkim")}
+                </p>
+                <p className="ws-belief-role">
+                  {t("Founder, Settlor & Managing Trustee")}
+                  <span aria-hidden="true"> · </span>
+                  {t("Jagannath Foundation")}
+                </p>
+              </div>
             </div>
           </div>
+        </div>
 
-          <p className="welcome-trust">
-            {" "}
-            {translateText(
-              "Provisional registration u/s 12A & 80G · Odisha, India",
-            )}{" "}
-          </p>
+        {/* 4 · Our moments (photo wall) */}
+        <div className="ws-chapter ws-chapter--moments">
+          <div className="ws-collage" aria-hidden="true">
+            {momentSlots.map((slot) => (
+              <div className="ws-tile" key={slot}>
+                <DynamicImage
+                  slotKey={slot}
+                  alt=""
+                  className="ws-tile-img"
+                  preferLocal={imagesLoading || imagesError}
+                  loading="eager"
+                />
+              </div>
+            ))}
+          </div>
+          <div className="ws-moments-shade" aria-hidden="true" />
+          <div className="ws-moments">
+            <div className="ws-moments-card">
+              <p className="ws-moments-kicker">
+                <b>04</b>
+                {t("Our moments")}
+              </p>
+              <h2 className="ws-split ws-moments-title">
+                {t("Moments that make a difference")}
+              </h2>
+              <p className="ws-moments-note">
+                {t("Just a few highlights · explore our full photo gallery")}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* 5 · Your gift's journey */}
+        <div className="ws-chapter ws-chapter--journey">
+          <span className="ws-bignum" aria-hidden="true">
+            05
+          </span>
+          <div className="ws-wrap ws-journey">
+            <p className="ws-eyebrow">
+              <b>05</b>
+              {t("Your gift's journey")}
+            </p>
+            <h2 className="ws-split ws-headline">
+              {t("From your hands to a village.")}
+            </h2>
+            <div className="ws-steps">
+              <div className="ws-track" aria-hidden="true">
+                <i className="ws-track-base" />
+                <i className="ws-track-fill" />
+                <i className="ws-travel-seed" />
+              </div>
+              {journey.map((step, i) => (
+                <div className="ws-step" key={step.title}>
+                  <div className="ws-step-dotwrap">
+                    <i className="ws-step-ripple" aria-hidden="true" />
+                    <span className="ws-step-dot">{i + 1}</span>
+                  </div>
+                  <div className="ws-step-text">
+                    <h3>{t(step.title)}</h3>
+                    <p>{t(step.body)}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* 5 · Your turn */}
+        <div className="ws-chapter ws-chapter--final">
+          <span className="ws-burst" aria-hidden="true" />
+          <div className="ws-center ws-final">
+            <p className="ws-eyebrow ws-eyebrow--center">{t("Your turn")}</p>
+            <h2 className="ws-split ws-headline ws-headline--big">
+              {t("Every gift, big or small, plants a seed of dignity.")}
+            </h2>
+            <p className="ws-final-copy">
+              {t("Give today, or take a look around first. Both are welcome.")}
+            </p>
+            <div className="ws-actions">
+              <button
+                className="ws-donate"
+                type="button"
+                data-magnet
+                onClick={() => dismiss("/donate")}
+              >
+                <i className="ws-pulse" aria-hidden="true" />
+                <span>{t("Donate Now")}</span>
+              </button>
+              <button
+                className="ws-enter"
+                type="button"
+                data-magnet
+                onClick={() => dismiss()}
+              >
+                <span>{t("Enter the website")}</span>
+                <span aria-hidden="true">→</span>
+              </button>
+            </div>
+            <div className="ws-explore">
+              <span>{t("Or explore")}</span>
+              {exploreLinks.map((link) => (
+                <button
+                  key={link.to}
+                  type="button"
+                  onClick={() => dismiss(link.to)}
+                >
+                  {t(link.label)}
+                </button>
+              ))}
+            </div>
+            <p className="ws-trust">
+              {t("Provisional registration u/s 12A & 80G · Odisha, India")}
+            </p>
+            <div className="ws-auto" aria-hidden="true">
+              <span>{t("Opening the website automatically…")}</span>
+              <i className="ws-auto-track">
+                <i className="ws-auto-bar" />
+              </i>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="welcome-progress" aria-hidden="true">
-        <span className="welcome-progress-fill" />
+      <div className="ws-curtain" ref={curtain} aria-hidden="true" />
+
+      <button className="ws-skip" type="button" onClick={() => dismiss()}>
+        {t("Skip intro")}
+        <span aria-hidden="true">↗</span>
+      </button>
+
+      <div className="ws-hud">
+        <nav className="ws-nav" aria-label={t("Story chapters")}>
+          {chapterNames.map((name, i) => (
+            <button
+              key={name}
+              type="button"
+              className={`ws-dot${i === 0 ? " is-active" : ""}`}
+              aria-label={t(name)}
+              aria-current={i === 0 ? "step" : undefined}
+              onClick={() => goTo(i)}
+            >
+              <span className="ws-dot-mark" />
+              <span className="ws-dot-label">{t(name)}</span>
+            </button>
+          ))}
+        </nav>
+        <button
+          className="ws-next"
+          type="button"
+          onClick={() => goTo(activeChapter.current + 1)}
+        >
+          {t("Next")}
+          <span aria-hidden="true">→</span>
+        </button>
+      </div>
+
+      <div className="ws-progress" aria-hidden="true">
+        <span className="ws-progress-fill" />
       </div>
     </section>
   );
