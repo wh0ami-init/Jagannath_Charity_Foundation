@@ -6,6 +6,7 @@ client; payment facts are fetched from Razorpay, never accepted from a browser.
 import re
 
 from fastapi import HTTPException
+from sqlalchemy import select, update
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
@@ -22,7 +23,7 @@ def confirm_captured_payment(db: Session, order_id: str, payment_id: str, *, cli
     if not re.fullmatch(r"order_[A-Za-z0-9]+", order_id or "") or not re.fullmatch(r"pay_[A-Za-z0-9]+", payment_id or ""):
         raise HTTPException(status_code=400, detail="Invalid payment or order ID")
     try:
-        donation = db.query(Donation).filter_by(razorpay_order_id=order_id).first()
+        donation = db.scalar(select(Donation).where(Donation.razorpay_order_id == order_id))
         if donation is None:
             raise HTTPException(status_code=404, detail="Donation order not found")
         if donation.status == "paid" and donation.razorpay_payment_id == payment_id:
@@ -50,19 +51,25 @@ def confirm_captured_payment(db: Session, order_id: str, payment_id: str, *, cli
 
         # Conditional update prevents competing callbacks from overwriting a
         # payment ID or changing the first-confirmed timestamp.
-        updated = db.query(Donation).filter(
-            Donation.id == donation.id,
-            Donation.status == "pending",
-            Donation.razorpay_payment_id.is_(None),
-        ).update({
-            Donation.razorpay_payment_id: payment_id,
-            Donation.status: "paid",
-            Donation.paid_at: utcnow(),
-        }, synchronize_session=False)
-        if updated != 1:
+        updated = db.execute(
+            update(Donation)
+            .where(
+                Donation.id == donation.id,
+                Donation.status == "pending",
+                Donation.razorpay_payment_id.is_(None),
+            )
+            .values({
+                Donation.razorpay_payment_id: payment_id,
+                Donation.status: "paid",
+                Donation.paid_at: utcnow(),
+            })
+        )
+        if updated.rowcount != 1:
             donation_id = donation.id
             db.rollback()
-            current = db.query(Donation).filter_by(id=donation_id).one()
+            current = db.scalar(select(Donation).where(Donation.id == donation_id))
+            if current is None:
+                raise HTTPException(status_code=404, detail="Donation order not found")
             if current.status == "paid" and current.razorpay_payment_id == payment_id:
                 return current
             raise HTTPException(status_code=409, detail="Donation changed; please check its payment status again")

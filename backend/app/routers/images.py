@@ -7,7 +7,7 @@ from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from PIL import Image, UnidentifiedImageError
 from pydantic import BaseModel, Field, field_validator
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, or_, select
 from sqlalchemy.orm import Session
 
 from app.auth import get_current_admin
@@ -43,7 +43,10 @@ def managed_images():
 
 
 def find_slot(db, slot_key):
-    slot = db.query(ImageSlot).filter(managed_images(), ImageSlot.deleted_at.is_(None), ImageSlot.slot_key == slot_key).first()
+    statement = select(ImageSlot).where(
+        managed_images(), ImageSlot.deleted_at.is_(None), ImageSlot.slot_key == slot_key
+    )
+    slot = db.scalar(statement)
     if not slot:
         raise HTTPException(status_code=404, detail="Unknown image slot")
     return slot
@@ -104,9 +107,9 @@ def save_file(db, slot, filename, contents):
         }
         shared_names = {
             stored_name
-            for (stored_name,) in db.query(ImageSlot.file_path)
-            .filter(ImageSlot.id != slot.id)
-            .all()
+            for stored_name in db.scalars(
+                select(ImageSlot.file_path).where(ImageSlot.id != slot.id)
+            ).all()
         }
         for candidate in candidates:
             if (
@@ -126,7 +129,12 @@ def save_file(db, slot, filename, contents):
 
 @router.get("", response_model=list[ImageSlotOut])
 def list_images(db: Session = Depends(get_db)):
-    return [slot_to_out(slot) for slot in db.query(ImageSlot).filter(managed_images(), ImageSlot.deleted_at.is_(None)).order_by(ImageSlot.page, ImageSlot.slot_key).all()]
+    statement = (
+        select(ImageSlot)
+        .where(managed_images(), ImageSlot.deleted_at.is_(None))
+        .order_by(ImageSlot.page, ImageSlot.slot_key)
+    )
+    return [slot_to_out(slot) for slot in db.scalars(statement).all()]
 
 
 @router.post("", response_model=ImageSlotOut, status_code=201)
@@ -184,7 +192,9 @@ def delete_image(slot_key: str, db: Session = Depends(get_db), _admin=Depends(ge
         raise HTTPException(status_code=400, detail="Invalid stored image path")
     # Include earlier replacements belonging to this same photo.
     candidates = {current, *UPLOAD_DIR.glob(f"{slot_key}-*"), *UPLOAD_DIR.glob(f"{slot_key}.*")}
-    shared_names = {name for (name,) in db.query(ImageSlot.file_path).filter(ImageSlot.id != slot.id).all()}
+    shared_names = set(db.scalars(
+        select(ImageSlot.file_path).where(ImageSlot.id != slot.id)
+    ).all())
     files = [path for path in candidates if path.resolve().parent == upload_root
              and path.name not in shared_names and path.is_file()]
     backups = {path: path.read_bytes() for path in files}

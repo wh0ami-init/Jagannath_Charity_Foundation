@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.auth import get_current_admin
@@ -42,7 +43,8 @@ def list_submissions(
     db: Session = Depends(get_db),
     _admin=Depends(get_current_admin),
 ):
-    return db.query(FormSubmission).order_by(FormSubmission.created_at.desc()).limit(limit).all()
+    statement = select(FormSubmission).order_by(FormSubmission.created_at.desc()).limit(limit)
+    return db.scalars(statement).all()
 
 
 @router.delete("/{submission_id}", status_code=204)
@@ -51,7 +53,7 @@ def delete_submission(
     db: Session = Depends(get_db),
     _admin=Depends(get_current_admin),
 ):
-    submission = db.query(FormSubmission).filter(FormSubmission.id == submission_id).first()
+    submission = db.scalar(select(FormSubmission).where(FormSubmission.id == submission_id))
     if not submission:
         raise HTTPException(status_code=404, detail="Submission not found")
     db.delete(submission)

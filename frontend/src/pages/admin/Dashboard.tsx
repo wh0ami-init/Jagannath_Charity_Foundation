@@ -542,8 +542,30 @@ function PhotosView({
   );
   const [page, setPage] = useState(pages[0] ?? "");
   const [over, setOver] = useState<string | null>(null);
+  const [photoSearch, setPhotoSearch] = useState("");
   const inputs = useRef<Record<string, HTMLInputElement | null>>({});
   const active = pages.includes(page) ? page : pages[0];
+  const duplicateSlots = useMemo(() => {
+    const owners = new Map<string, string[]>();
+    Object.values(images).forEach((slot) => {
+      const current = owners.get(slot.url) ?? [];
+      current.push(slot.slot_key);
+      owners.set(slot.url, current);
+    });
+    const duplicates = new Map<string, string[]>();
+    owners.forEach((slotKeys, url) => {
+      if (slotKeys.length > 1) duplicates.set(url, slotKeys);
+    });
+    return duplicates;
+  }, [images]);
+  const visiblePhotos = useMemo(() => {
+    const query = photoSearch.trim().toLocaleLowerCase();
+    return (groups[active] ?? []).filter((slot) =>
+      !query || `${slot.label} ${slot.alt_text} ${slot.slot_key}`
+        .toLocaleLowerCase()
+        .includes(query),
+    );
+  }, [groups, active, photoSearch]);
   const [newLabel, setNewLabel] = useState("");
   const [newAlt, setNewAlt] = useState("");
   const [newCategory, setNewCategory] = useState<GalleryCategory>("culture");
@@ -567,6 +589,23 @@ function PhotosView({
         Choose the page, then tap “Change this photo”. You can also drag a photo
         onto a picture.
       </p>
+
+      <div className="ac-photo-tools">
+        <label className="ac-search">
+          <Icon name="search" size={18} />
+          <input
+            type="search"
+            value={photoSearch}
+            onChange={(event) => setPhotoSearch(event.target.value)}
+            placeholder="Search photos by title or description"
+            aria-label="Search website photos"
+          />
+        </label>
+        <span aria-live="polite">
+          {visiblePhotos.length} {visiblePhotos.length === 1 ? "photo" : "photos"}
+          {active ? ` on ${pageName(active)}` : ""}
+        </span>
+      </div>
 
       {active === "Gallery" && (
         <form
@@ -657,8 +696,15 @@ function PhotosView({
           <span>Photos will appear here when the website has them.</span>
         </div>
       ) : (
+        visiblePhotos.length === 0 ? (
+          <div className="ac-empty ac-photo-empty">
+            <Icon name="photo" size={36} />
+            <strong>{photoSearch ? "No matching photos" : "No photos on this page"}</strong>
+            <span>{photoSearch ? "Try another title or description." : "Photos will appear here when the website has them."}</span>
+          </div>
+        ) : (
         <div className="ac-photos">
-          {groups[active].map((slot) => (
+          {visiblePhotos.map((slot) => (
             <article
               key={slot.slot_key}
               className={`ac-photo ac-reveal${over === slot.slot_key ? " is-over" : ""}${freshKey === slot.slot_key ? " is-fresh" : ""}`}
@@ -686,6 +732,11 @@ function PhotosView({
               </div>
               <div className="ac-photo-body">
                 <strong>{slot.label}</strong>
+                {duplicateSlots.has(slot.url) && (
+                  <span className="ac-photo-duplicate" title="These photo slots use the same uploaded file">
+                    Shared file · {duplicateSlots.get(slot.url)!.length} slots
+                  </span>
+                )}
                 <span>
                   {pageName(slot.page)} · changed{" "}
                   {timeAgo(slot.updated_at) || "earlier"}
@@ -721,6 +772,7 @@ function PhotosView({
             </article>
           ))}
         </div>
+        )
       )}
     </div>
   );

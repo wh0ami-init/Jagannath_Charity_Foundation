@@ -12,6 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from uuid import uuid4
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -267,9 +268,9 @@ class VerifySubscriptionRequest(BaseModel):
 @router.post("/subscriptions/verify")
 def verify_recurring_donation(payload: VerifySubscriptionRequest, db: Session = Depends(get_db)):
     require_payment_credentials()
-    recurring = db.query(RecurringDonation).filter_by(
-        razorpay_subscription_id=payload.razorpay_subscription_id,
-    ).first()
+    recurring = db.scalar(select(RecurringDonation).where(
+        RecurringDonation.razorpay_subscription_id == payload.razorpay_subscription_id,
+    ))
     if recurring is None:
         raise HTTPException(status_code=404, detail="AutoPay setup not found")
     signed = f"{payload.razorpay_payment_id}|{recurring.razorpay_subscription_id}".encode()
@@ -314,7 +315,7 @@ def donation_result(donation):
 @router.post("/verify")
 def verify_payment(payload: VerifyPaymentRequest, db: Session = Depends(get_db)):
     require_payment_credentials()
-    donation = db.query(Donation).filter_by(razorpay_order_id=payload.razorpay_order_id).first()
+    donation = db.scalar(select(Donation).where(Donation.razorpay_order_id == payload.razorpay_order_id))
     if donation is None:
         raise HTTPException(status_code=404, detail="Donation order not found")
     # Use the order ID saved on the server when constructing the signature.
@@ -368,9 +369,9 @@ def process_webhook(body: bytes, signature: str, db: Session):
                     or payment.get("captured") is not True
                     or type(refunded) is not int or refunded < 1):
                 raise ValueError()
-            donation = db.query(Donation).filter_by(razorpay_payment_id=payment_id).first()
+            donation = db.scalar(select(Donation).where(Donation.razorpay_payment_id == payment_id))
             if donation is None:
-                donation = db.query(Donation).filter_by(razorpay_order_id=order_id).first()
+                donation = db.scalar(select(Donation).where(Donation.razorpay_order_id == order_id))
             if donation is None:
                 return {"received": True, "ignored": True}
             if (donation.razorpay_order_id != order_id or refunded > donation.amount_paise
@@ -405,9 +406,9 @@ def process_webhook(body: bytes, signature: str, db: Session):
                 raise ValueError()
         except (KeyError, TypeError, ValueError):
             raise HTTPException(status_code=400, detail="Webhook subscription details are missing") from None
-        recurring = db.query(RecurringDonation).filter_by(
-            razorpay_subscription_id=subscription_id,
-        ).first()
+        recurring = db.scalar(select(RecurringDonation).where(
+            RecurringDonation.razorpay_subscription_id == subscription_id,
+        ))
         if recurring is None:
             return {"received": True, "ignored": True}
         try:
@@ -424,7 +425,7 @@ def process_webhook(body: bytes, signature: str, db: Session):
                 payment_id = payment_entity.get("id")
                 if not isinstance(payment_id, str):
                     raise ValueError()
-                existing = db.query(Donation.id).filter_by(razorpay_payment_id=payment_id).first()
+                existing = db.scalar(select(Donation.id).where(Donation.razorpay_payment_id == payment_id))
                 if existing is None:
                     payment = client.payment.fetch(payment_id, timeout=10)
                     if (payment.get("id") != payment_id or payment.get("status") != "captured"
@@ -466,7 +467,7 @@ def process_webhook(body: bytes, signature: str, db: Session):
         raise HTTPException(status_code=400, detail="Webhook payment details are missing") from None
     # Signed events are still checked against Razorpay's current payment facts.
     # Idempotency is based on the stored order/payment pair, not an unsigned header.
-    if db.query(Donation.id).filter_by(razorpay_order_id=order_id).first() is None:
+    if db.scalar(select(Donation.id).where(Donation.razorpay_order_id == order_id)) is None:
         return {"received": True, "ignored": True}
     donation = confirm_captured_payment(db, order_id, payment_id, client=get_razorpay_client())
     return {"received": True, "status": donation.status}
@@ -487,7 +488,7 @@ async def payment_webhook(request: Request, db: Session = Depends(get_db)):
 def admin_donations(limit: int = 500, db: Session = Depends(get_db), _admin=Depends(get_current_admin)):
     if not 1 <= limit <= 1000:
         raise HTTPException(status_code=422, detail="Limit must be between 1 and 1000")
-    rows = db.query(Donation).order_by(Donation.created_at.desc()).limit(limit).all()
+    rows = db.scalars(select(Donation).order_by(Donation.created_at.desc()).limit(limit)).all()
     return [{"id": row.id, "amount_paise": row.amount_paise, "currency": row.currency,
              "status": row.status, "donor_name": row.donor_name, "donor_email": row.donor_email,
              "donor_phone": row.donor_phone, "donor_address": row.donor_address,
@@ -503,7 +504,7 @@ def admin_donations(limit: int = 500, db: Session = Depends(get_db), _admin=Depe
 def admin_subscriptions(limit: int = 500, db: Session = Depends(get_db), _admin=Depends(get_current_admin)):
     if not 1 <= limit <= 1000:
         raise HTTPException(status_code=422, detail="Limit must be between 1 and 1000")
-    rows = db.query(RecurringDonation).order_by(RecurringDonation.created_at.desc()).limit(limit).all()
+    rows = db.scalars(select(RecurringDonation).order_by(RecurringDonation.created_at.desc()).limit(limit)).all()
     return [{"id": row.id, "subscription_id": row.razorpay_subscription_id,
              "plan_id": row.razorpay_plan_id, "amount_paise": row.amount_paise,
              "currency": row.currency, "status": row.status,

@@ -2,6 +2,19 @@
 
 Status: donations table created in production MySQL on 2026-10-09 (Asia/Kolkata). Columns and unique order/payment constraints verified; existing tables preserved. A consistent database backup was exported and checksummed before creation; a restore has not been tested. Payment backend deployment and end-to-end production Test Mode verification remain pending.
 
+## Alembic schema tracking
+
+The application now has an Alembic baseline at `migrations/alembic/versions/20261023_01_adopt_existing_schema.py`. It adopts existing tables, creates tables missing from a fresh database, and applies the legacy additive columns without dropping data. The baseline has a no-op downgrade by design.
+
+Run from `backend/` after reviewing a database backup:
+
+```bash
+alembic upgrade head
+alembic current
+```
+
+The URL and credentials come from the environment's `DATABASE_URL`; the committed `alembic.ini` URL is only a local placeholder. Run the command once per release before starting multiple API replicas. Do not use `alembic downgrade` to remove the adopted schema. Future schema changes should use a new revision and a reviewed backup/rollout plan. Existing startup compatibility checks remain in place during this adoption period.
+
 Keep local DATABASE_URL pointing to SQLite. Production uses the existing MySQL
 service with SQLAlchemy URL mysql+mysqlconnector://USER:PASSWORD@HOST:PORT/DATABASE.
 URL-encode special characters in credentials. Store secrets only in service

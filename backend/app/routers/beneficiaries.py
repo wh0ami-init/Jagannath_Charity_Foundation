@@ -2,6 +2,7 @@ import json
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -50,11 +51,12 @@ def create_beneficiary_application(payload: BeneficiaryApplicationCreate, db: Se
 @router.get("")
 def list_public_beneficiaries(db: Session = Depends(get_db)):
     submissions = (
-        db.query(FormSubmission)
-        .filter(FormSubmission.kind == "beneficiary")
-        .order_by(FormSubmission.created_at.desc())
-        .limit(500)
-        .all()
+        db.scalars(
+            select(FormSubmission)
+            .where(FormSubmission.kind == "beneficiary")
+            .order_by(FormSubmission.created_at.desc())
+            .limit(500)
+        ).all()
     )
     profiles = []
     for submission in submissions:

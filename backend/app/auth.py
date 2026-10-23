@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 from fastapi import Depends, HTTPException, Request, Response, status
 import jwt
 from passlib.context import CryptContext
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.config import settings
@@ -96,7 +97,7 @@ def get_current_admin(request: Request, db: Session = Depends(get_db)) -> AdminU
         if not hmac.compare_digest(sent.encode(), str(csrf).encode()):
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="CSRF token missing or invalid")
 
-    user = db.query(AdminUser).filter(AdminUser.username == username).first()
+    user = db.scalar(select(AdminUser).where(AdminUser.username == username))
     token_version = payload.get("auth_version")
     if (
         user is None

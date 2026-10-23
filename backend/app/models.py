@@ -1,124 +1,115 @@
 from datetime import datetime, timezone
+from decimal import Decimal
 
-from sqlalchemy import Column, Integer, String, DateTime, Text, Numeric, Boolean
+from sqlalchemy import Boolean, DateTime, Integer, Numeric, String, Text
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
 
 
-def utcnow():
+def utcnow() -> datetime:
     return datetime.now(timezone.utc)
 
 
 class ImageSlot(Base):
-    """
-    Every editable image on the public site is a "slot": a stable key
-    (e.g. 'home-hero-1', 'team-samarendra-patra') that the frontend asks
-    for by name. The admin panel lets the VC replace the file behind any
-    slot key without touching code or redeploying.
-    """
+    """A stable, administrator-editable image location on the public site."""
+
     __tablename__ = "image_slots"
 
-    id = Column(Integer, primary_key=True, index=True)
-    slot_key = Column(String(120), unique=True, index=True, nullable=False)
-    label = Column(String(200), nullable=False)       # human-readable name shown in admin
-    page = Column(String(60), nullable=False)          # which page it belongs to, for grouping in admin UI
-    alt_text = Column(String(300), default="")
-    category = Column(String(24), nullable=True)
-    deleted_at = Column(DateTime, nullable=True)
-    file_path = Column(String(400), nullable=False)    # relative path served from /uploads/...
-    updated_at = Column(DateTime, default=utcnow, onupdate=utcnow)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    slot_key: Mapped[str] = mapped_column(String(120), unique=True, index=True, nullable=False)
+    label: Mapped[str] = mapped_column(String(200), nullable=False)
+    page: Mapped[str] = mapped_column(String(60), nullable=False)
+    alt_text: Mapped[str | None] = mapped_column(String(300), default="")
+    category: Mapped[str | None] = mapped_column(String(24), nullable=True)
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    file_path: Mapped[str] = mapped_column(String(400), nullable=False)
+    updated_at: Mapped[datetime | None] = mapped_column(DateTime, default=utcnow, onupdate=utcnow)
 
 
 class AdminUser(Base):
     __tablename__ = "admin_users"
 
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String(80), unique=True, index=True, nullable=False)
-    password_hash = Column(String(200), nullable=False)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    username: Mapped[str] = mapped_column(String(80), unique=True, index=True, nullable=False)
+    password_hash: Mapped[str] = mapped_column(String(200), nullable=False)
 
 
 class SiteContent(Base):
     __tablename__ = "site_content"
 
-    id = Column(Integer, primary_key=True, index=True)
-    content_key = Column(String(120), unique=True, index=True, nullable=False)
-    label = Column(String(200), nullable=False)
-    page = Column(String(60), nullable=False)
-    value = Column(Text, nullable=False)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    content_key: Mapped[str] = mapped_column(String(120), unique=True, index=True, nullable=False)
+    label: Mapped[str] = mapped_column(String(200), nullable=False)
+    page: Mapped[str] = mapped_column(String(60), nullable=False)
+    value: Mapped[str] = mapped_column(Text, nullable=False)
 
 
 class FormSubmission(Base):
     __tablename__ = "form_submissions"
 
-    id = Column(Integer, primary_key=True, index=True)
-    kind = Column(String(24), nullable=False, index=True)
-    name = Column(String(150), nullable=False, default="")
-    email = Column(String(254), nullable=False, index=True)
-    phone = Column(String(40), nullable=False, default="")
-    subject = Column(String(200), nullable=False, default="")
-    message = Column(Text, nullable=False, default="")
-    district = Column(String(120), nullable=False, default="")
-    skill = Column(String(200), nullable=False, default="")
-    amount = Column(Numeric(12, 2), nullable=True)
-    cause = Column(String(160), nullable=False, default="")
-    consent_given = Column(Boolean, nullable=False, default=True)
-    created_at = Column(DateTime, default=utcnow, nullable=False, index=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    kind: Mapped[str] = mapped_column(String(24), nullable=False, index=True)
+    name: Mapped[str] = mapped_column(String(150), nullable=False, default="")
+    email: Mapped[str] = mapped_column(String(254), nullable=False, index=True)
+    phone: Mapped[str] = mapped_column(String(40), nullable=False, default="")
+    subject: Mapped[str] = mapped_column(String(200), nullable=False, default="")
+    message: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    district: Mapped[str] = mapped_column(String(120), nullable=False, default="")
+    skill: Mapped[str] = mapped_column(String(200), nullable=False, default="")
+    amount: Mapped[Decimal | None] = mapped_column(Numeric(12, 2), nullable=True)
+    cause: Mapped[str] = mapped_column(String(160), nullable=False, default="")
+    consent_given: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False, index=True)
 
 
 class DeletedGallerySeed(Base):
     """IDs of removed seed photos, preventing automatic re-creation."""
+
     __tablename__ = "deleted_gallery_seeds"
-    slot_key = Column(String(120), primary_key=True)
+
+    slot_key: Mapped[str] = mapped_column(String(120), primary_key=True)
 
 
 class Donation(Base):
     __tablename__ = "donations"
 
-    id = Column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
-    # Store money in paise: Rs100 = 10000 paise
-    amount_paise = Column(Integer, nullable=False)
-    currency = Column(String(3), nullable=False, default='INR')
-
-    razorpay_order_id = Column(
-        String(100), unique=True, nullable=True
-    )
-
-    razorpay_payment_id = Column(
-        String(100), unique=True, nullable=True
-    )
-    razorpay_subscription_id = Column(String(100), nullable=True, index=True)
-
-    status = Column(String(20), nullable=False, default="pending")
-
-    donor_name = Column(String(150), nullable=False, default="")
-    donor_email = Column(String(254), nullable=False, default="")
-    donor_phone = Column(String(40), nullable=False, default="")
-    donor_address = Column(String(500), nullable=False, default="")
-    cause = Column(String(160), nullable=False, default="")
-    receipt_email_sent_at = Column(DateTime, nullable=True)
-    refund_amount_paise = Column(Integer, nullable=False, default=0)
-    refunded_at = Column(DateTime, nullable=True)
-
-    created_at = Column(DateTime, nullable=False, default=utcnow)
-    paid_at = Column(DateTime, nullable=True)
+    # Store money in paise: Rs100 = 10000 paise.
+    amount_paise: Mapped[int] = mapped_column(Integer, nullable=False)
+    currency: Mapped[str] = mapped_column(String(3), nullable=False, default="INR")
+    razorpay_order_id: Mapped[str | None] = mapped_column(String(100), unique=True, nullable=True)
+    razorpay_payment_id: Mapped[str | None] = mapped_column(String(100), unique=True, nullable=True)
+    razorpay_subscription_id: Mapped[str | None] = mapped_column(String(100), nullable=True, index=True)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="pending")
+    donor_name: Mapped[str] = mapped_column(String(150), nullable=False, default="")
+    donor_email: Mapped[str] = mapped_column(String(254), nullable=False, default="")
+    donor_phone: Mapped[str] = mapped_column(String(40), nullable=False, default="")
+    donor_address: Mapped[str] = mapped_column(String(500), nullable=False, default="")
+    cause: Mapped[str] = mapped_column(String(160), nullable=False, default="")
+    receipt_email_sent_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    refund_amount_paise: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    refunded_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=utcnow)
+    paid_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
 
 class RecurringDonation(Base):
     __tablename__ = "recurring_donations"
 
-    id = Column(Integer, primary_key=True)
-    razorpay_subscription_id = Column(String(100), unique=True, nullable=False)
-    razorpay_plan_id = Column(String(100), nullable=False)
-    authorization_payment_id = Column(String(100), nullable=True)
-    amount_paise = Column(Integer, nullable=False)
-    currency = Column(String(3), nullable=False, default="INR")
-    status = Column(String(24), nullable=False, default="created", index=True)
-    donor_name = Column(String(150), nullable=False)
-    donor_email = Column(String(254), nullable=False)
-    donor_phone = Column(String(40), nullable=False)
-    donor_address = Column(String(500), nullable=False, default="")
-    cause = Column(String(160), nullable=False, default="Where most needed")
-    consented_at = Column(DateTime, nullable=False, default=utcnow)
-    created_at = Column(DateTime, nullable=False, default=utcnow, index=True)
-    updated_at = Column(DateTime, nullable=False, default=utcnow, onupdate=utcnow)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    razorpay_subscription_id: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
+    razorpay_plan_id: Mapped[str] = mapped_column(String(100), nullable=False)
+    authorization_payment_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    amount_paise: Mapped[int] = mapped_column(Integer, nullable=False)
+    currency: Mapped[str] = mapped_column(String(3), nullable=False, default="INR")
+    status: Mapped[str] = mapped_column(String(24), nullable=False, default="created", index=True)
+    donor_name: Mapped[str] = mapped_column(String(150), nullable=False)
+    donor_email: Mapped[str] = mapped_column(String(254), nullable=False)
+    donor_phone: Mapped[str] = mapped_column(String(40), nullable=False)
+    donor_address: Mapped[str] = mapped_column(String(500), nullable=False, default="")
+    cause: Mapped[str] = mapped_column(String(160), nullable=False, default="Where most needed")
+    consented_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=utcnow, index=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=utcnow, onupdate=utcnow)

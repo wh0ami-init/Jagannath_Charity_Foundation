@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.auth import (
@@ -28,7 +29,7 @@ def login(payload: LoginRequest, request: Request, response: Response, db: Sessi
     if wait:
         raise too_many_requests(wait, "failed login attempts for this account")
 
-    user = db.query(AdminUser).filter(AdminUser.username == payload.username).first()
+    user = db.scalar(select(AdminUser).where(AdminUser.username == payload.username))
     password_hash = user.password_hash if user else _DUMMY_PASSWORD_HASH
     password_matches = verify_password(
         payload.password if len(payload.password.encode("utf-8")) <= 72 else "invalid-password-length",

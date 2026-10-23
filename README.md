@@ -46,9 +46,10 @@ Edit `backend/.env`. Set a unique `JWT_SECRET` of at least 32 characters. Genera
 python -c 'import secrets; print(secrets.token_urlsafe(48))'
 ```
 
-For local use, the example uses SQLite. Create the database tables, create the initial administrator, and start the API:
+For local use, the example uses SQLite. Track the current database schema, create the initial administrator, and start the API:
 
 ```bash
+alembic upgrade head
 python -m app.manage_admin
 uvicorn app.main:app --reload --port 8010
 ```
@@ -95,8 +96,9 @@ Deploy the database and API before the frontend so you can configure the API URL
    uvicorn app.main:app --host 0.0.0.0 --port $PORT
    ```
 
-5. Deploy and confirm `https://<railway-api-domain>/api/health` responds with `{"status":"ok"}`.
-6. Open a Railway shell for the API service and provision the first administrator interactively:
+5. Before deploying a release that includes a new database revision, take a provider snapshot and run `alembic upgrade head` once from a Railway shell with the API service's environment. Do not run migrations concurrently from multiple API replicas. The current baseline is additive and preserves existing tables and rows.
+6. Deploy and confirm `https://<railway-api-domain>/api/health` responds with `{"status":"ok"}`.
+7. Open a Railway shell for the API service and provision the first administrator interactively:
 
    ```bash
    python -m app.manage_admin

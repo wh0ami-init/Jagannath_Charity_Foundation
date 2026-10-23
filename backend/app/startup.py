@@ -1,6 +1,7 @@
 import shutil
 from pathlib import Path
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models import ImageSlot, SiteContent, DeletedGallerySeed
@@ -16,7 +17,7 @@ def ensure_image_slots(db: Session):
     for slot_key, label, page, alt_text, seed_filename in IMAGE_SLOTS:
         if db.get(DeletedGallerySeed, slot_key) is not None:
             continue
-        existing = db.query(ImageSlot).filter(ImageSlot.slot_key == slot_key).first()
+        existing = db.scalar(select(ImageSlot).where(ImageSlot.slot_key == slot_key))
         seed_path = SEED_IMAGES_DIR / seed_filename
         if existing:
             if existing.deleted_at is not None:
@@ -65,7 +66,7 @@ def ensure_site_content(db: Session):
         ("notice_body", "Set in Gangtok, Sikkim, our university community brings together local perspective and a wider outlook."),
     }
     for content_key, label, page, value in SITE_CONTENT:
-        existing = db.query(SiteContent).filter(SiteContent.content_key == content_key).first()
+        existing = db.scalar(select(SiteContent).where(SiteContent.content_key == content_key))
         if existing:
             if (content_key, existing.value) in obsolete_defaults:
                 existing.value = value

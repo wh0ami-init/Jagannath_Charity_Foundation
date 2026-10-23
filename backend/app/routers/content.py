@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.auth import get_current_admin
@@ -19,7 +20,7 @@ class ContentUpdate(BaseModel):
 def list_content(db: Session = Depends(get_db)):
     return {
         row.content_key: {"label": row.label, "page": row.page, "value": row.value}
-        for row in db.query(SiteContent).filter(SiteContent.content_key.in_(CONTENT_KEYS)).order_by(SiteContent.page, SiteContent.id).all()
+        for row in db.scalars(select(SiteContent).where(SiteContent.content_key.in_(CONTENT_KEYS)).order_by(SiteContent.page, SiteContent.id)).all()
     }
 
 
@@ -32,7 +33,7 @@ def update_content(
 ):
     if content_key not in CONTENT_KEYS:
         raise HTTPException(status_code=404, detail="Unknown content field")
-    row = db.query(SiteContent).filter(SiteContent.content_key == content_key).first()
+    row = db.scalar(select(SiteContent).where(SiteContent.content_key == content_key))
     if not row:
         raise HTTPException(status_code=404, detail="Unknown content field")
     row.value = payload.value.strip()

@@ -2,6 +2,8 @@
 
 from getpass import getpass
 
+from sqlalchemy import select
+
 from app.auth import hash_password
 from app.database import Base, SessionLocal, engine
 from app.models import AdminUser
@@ -24,7 +26,7 @@ def main() -> None:
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     try:
-        admins = db.query(AdminUser).order_by(AdminUser.id).all()
+        admins = db.scalars(select(AdminUser).order_by(AdminUser.id)).all()
         matching_admin = next((admin for admin in admins if admin.username == username), None)
         if len(admins) > 1:
             if matching_admin is None:
