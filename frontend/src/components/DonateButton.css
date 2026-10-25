@@ -1,0 +1,206 @@
+/* One Donate button for the whole site. Pill shape (radius 999px) = same as the hero buttons. */
+.donate-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 46px;
+    padding: 0 22px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #e7ac5a, #d99a46 55%, #cf8a35);
+    color: #182d25;
+    font-weight: 800;
+    letter-spacing: .01em;
+    white-space: nowrap;
+    box-shadow: 0 8px 22px rgba(217, 154, 70, .38), inset 0 1px rgba(255, 255, 255, .45);
+    transition: box-shadow .25s ease, filter .25s ease;
+    will-change: transform;
+}
+
+.donate-btn:hover {
+    filter: brightness(1.05) saturate(1.05);
+    box-shadow: 0 12px 30px rgba(217, 154, 70, .5), inset 0 1px rgba(255, 255, 255, .5);
+}
+
+/* Soft ring that breathes outward (animated by GSAP) */
+.donate-btn-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 2px solid #e7ac5a;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Light sweep (animated by GSAP) */
+.donate-btn-shine {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 38%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .55), transparent);
+    transform: translateX(-140%) skewX(-18deg);
+    pointer-events: none;
+}
+
+.donate-btn {
+    overflow: visible;
+    isolation: isolate;
+}
+
+/* Clipping box so the shine never leaves the pill (ring and hearts stay free) */
+.donate-btn-shine-wrap {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+.donate-btn-heart {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+    fill: #b9573f;
+    filter: drop-shadow(0 1px 0 rgba(255, 255, 255, .35));
+}
+
+.donate-btn-label {
+    position: relative;
+    font-size: 15px;
+    line-height: 1;
+}
+
+.donate-btn-arrow {
+    position: relative;
+    font-size: 17px;
+    line-height: 1;
+}
+
+/* Hearts that fly out when pressed */
+.donate-btn-spark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 14px;
+    height: 14px;
+    margin: -7px 0 0 -7px;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.donate-btn-spark svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    fill: #e0614a;
+}
+
+/* ── Variants ── */
+.donate-btn-hero {
+    min-height: 58px;
+    padding: 0 30px;
+    gap: 12px;
+    font-size: 17px;
+}
+
+.donate-btn-hero .donate-btn-label {
+    font-size: 17px;
+}
+
+.donate-btn-hero .donate-btn-heart {
+    width: 22px;
+    height: 22px;
+}
+
+.donate-btn-compact {
+    min-height: 38px;
+    padding: 0 14px;
+    gap: 7px;
+}
+
+.donate-btn-compact .donate-btn-label {
+    font-size: 13px;
+}
+
+.donate-btn-compact .donate-btn-heart {
+    width: 15px;
+    height: 15px;
+}
+
+/* Header: beats the old .nav-donate rules without touching them */
+.main-nav .donate-btn.nav-donate {
+    gap: 9px;
+    padding: 0 20px;
+    min-height: 46px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #e7ac5a, #d99a46 55%, #cf8a35);
+    color: #182d25;
+}
+
+.main-nav .donate-btn.nav-donate:hover {
+    background: linear-gradient(135deg, #efbb6d, #e2a34f 55%, #d6933d);
+}
+
+/* old rule ".nav-donate span" paints spans gold; keep our text dark */
+.main-nav .donate-btn.nav-donate span {
+    color: #182d25;
+}
+
+/* Phone/tablet header: the always-visible small Donate sits left of "Menu" */
+.donate-btn-phone {
+    display: none;
+}
+
+@media (max-width: 1000px) {
+    .donate-btn-phone {
+        position: absolute;
+        z-index: 2;
+        top: 50%;
+        right: calc(max(18px, calc((100% - 1280px) / 2)) + 92px);
+        display: inline-flex;
+        translate: 0 -50%;
+    }
+}
+
+/* Small phones: logo name gets shorter and "Menu" shows only the icon, so Donate never covers the name */
+@media (max-width: 480px) {
+    .site-header .menu-toggle>span {
+        display: none;
+    }
+
+    .site-header .brand-name small {
+        display: none;
+    }
+
+    .site-header .brand-name strong {
+        font-size: 15px;
+    }
+
+    .donate-btn-phone {
+        right: calc(max(14px, calc((100% - 1280px) / 2)) + 58px);
+    }
+}
+
+@media (max-width: 380px) {
+    .donate-btn-phone .donate-btn-label {
+        font-size: 12px;
+    }
+
+    .donate-btn-phone {
+        padding: 0 11px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .donate-btn {
+        transition: none;
+    }
+
+    .donate-btn-ring,
+    .donate-btn-shine {
+        display: none;
+    }
+}

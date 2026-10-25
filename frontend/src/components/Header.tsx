@@ -1,3 +1,4 @@
+import DonateButton from "./DonateButton";
 import LanguageSwitcher from "./LanguageSwitcher";
 import {
   tr as translateText,
@@ -268,6 +269,11 @@ export default function Header() {
               </small>
             </span>
           </Link>
+          <DonateButton
+            variant="compact"
+            className="donate-btn-phone"
+            label="Donate"
+          />
           <button
             ref={menuToggleRef}
             className="menu-toggle"
@@ -379,7 +385,9 @@ export default function Header() {
                           }}
                           className={`nav-explore-item${isCurrentRoute(location, link.href) ? " active" : ""}`}
                           aria-current={
-                            isCurrentRoute(location, link.href) ? "page" : undefined
+                            isCurrentRoute(location, link.href)
+                              ? "page"
+                              : undefined
                           }
                         >
                           <span className="nav-explore-item-title">
@@ -395,17 +403,15 @@ export default function Header() {
               );
             })}
             <LanguageSwitcher />
-            <Link
-              href="/donate"
+            <DonateButton
+              variant="nav"
               className="nav-donate"
+              label="Donate"
               onClick={() => {
                 setOpen(false);
                 setExploreOpen(false);
               }}
-            >
-              {translateText("Make a difference")}
-              <span>↗</span>
-            </Link>
+            />
           </nav>
         </div>
       </header>

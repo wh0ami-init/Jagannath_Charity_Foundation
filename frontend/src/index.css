@@ -551,19 +551,37 @@ h3,
 .nav-donate {
   display: inline-flex;
   align-items: center;
-  gap: 18px;
-  padding: 13px 16px;
+  gap: 14px;
+  min-height: 46px;
+  padding: 0 18px;
+  border: 1px solid rgba(255, 255, 255, .24);
+  border-radius: 4px;
   background: var(--forest);
   color: white;
-  transition: background .2s ease;
+  font-weight: 700;
+  letter-spacing: .01em;
+  transition: background .2s ease, box-shadow .2s ease, transform .2s ease;
 }
 
 .nav-donate:hover {
   background: var(--clay);
+  box-shadow: 0 8px 18px rgba(16, 44, 37, .2), inset 0 1px rgba(255, 255, 255, .18);
+  transform: translateY(-1px);
+}
+
+.nav-donate:focus-visible {
+  outline: 2px solid var(--saffron);
+  outline-offset: 3px;
 }
 
 .nav-donate span {
   color: #efc06f;
+  font-size: 16px;
+  transition: transform .2s ease;
+}
+
+.nav-donate:hover span {
+  transform: translateX(2px);
 }
 
 .menu-toggle {

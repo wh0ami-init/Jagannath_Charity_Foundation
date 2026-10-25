@@ -1,4 +1,8 @@
-import { tr as translateText, localize as localizeText, trError as translateError } from "../i18n";
+import {
+  tr as translateText,
+  localize as localizeText,
+  trError as translateError,
+} from "../i18n";
 import { useTranslation as usePageTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
@@ -141,7 +145,11 @@ const principles = [
   },
 ];
 
-function WorkFeatureSlideshow({ photo, secondary, alt }: {
+function WorkFeatureSlideshow({
+  photo,
+  secondary,
+  alt,
+}: {
   photo: string;
   secondary: string;
   alt: string;
@@ -149,20 +157,22 @@ function WorkFeatureSlideshow({ photo, secondary, alt }: {
   usePageTranslation();
   return (
     <div className="work-photo-slideshow" aria-hidden="true">
-      {localizeText([photo, secondary].map((src, index) => (
-        <div
-          key={src}
-          className={`work-image-slide ${index === 0 ? "work-image-slide-primary" : "work-image-slide-secondary"}`}
-        >
-          <img
-            src={src}
-            alt={localizeText(index === 0 ? alt : "")}
-            className="work-image"
-            loading="lazy"
-            decoding="async"
-          />
-        </div>
-      )))}
+      {localizeText(
+        [photo, secondary].map((src, index) => (
+          <div
+            key={src}
+            className={`work-image-slide ${index === 0 ? "work-image-slide-primary" : "work-image-slide-secondary"}`}
+          >
+            <img
+              src={src}
+              alt={localizeText(index === 0 ? alt : "")}
+              className="work-image"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        )),
+      )}
     </div>
   );
 }
@@ -183,23 +193,50 @@ export default function Home({
     () => {
       const section = workSection.current;
       if (!section || reducedMotion) return;
-      const frames = gsap.utils.toArray<HTMLElement>(".work-photo-slideshow", section);
+      const frames = gsap.utils.toArray<HTMLElement>(
+        ".work-photo-slideshow",
+        section,
+      );
       if (!frames.length) return;
 
       const imageHold = 4.4;
       const slideshow = gsap.timeline({ paused: true });
       frames.forEach((frame, index) => {
-        const [primary, secondary] = frame.querySelectorAll<HTMLElement>(".work-image-slide");
+        const [primary, secondary] =
+          frame.querySelectorAll<HTMLElement>(".work-image-slide");
         if (!primary || !secondary) return;
         gsap.set(primary, { autoAlpha: 1, scale: 1 });
         gsap.set(secondary, { autoAlpha: 0, scale: 1.035 });
         const cardSlideshow = gsap.timeline({ repeat: -1 });
         cardSlideshow
-          .to(secondary, { autoAlpha: 1, scale: 1, duration: 1.25, ease: "power2.inOut" })
-          .to(primary, { autoAlpha: 0, scale: 1.02, duration: 1.25, ease: "power2.inOut" }, "<")
+          .to(secondary, {
+            autoAlpha: 1,
+            scale: 1,
+            duration: 1.25,
+            ease: "power2.inOut",
+          })
+          .to(
+            primary,
+            { autoAlpha: 0, scale: 1.02, duration: 1.25, ease: "power2.inOut" },
+            "<",
+          )
           .to({}, { duration: imageHold })
-          .to(primary, { autoAlpha: 1, scale: 1, duration: 1.25, ease: "power2.inOut" })
-          .to(secondary, { autoAlpha: 0, scale: 1.035, duration: 1.25, ease: "power2.inOut" }, "<")
+          .to(primary, {
+            autoAlpha: 1,
+            scale: 1,
+            duration: 1.25,
+            ease: "power2.inOut",
+          })
+          .to(
+            secondary,
+            {
+              autoAlpha: 0,
+              scale: 1.035,
+              duration: 1.25,
+              ease: "power2.inOut",
+            },
+            "<",
+          )
           .to({}, { duration: imageHold });
         slideshow.add(cardSlideshow, index * 0.9);
       });
@@ -225,7 +262,8 @@ export default function Home({
     if (
       isWelcomeVisible ||
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    ) return;
+    )
+      return;
     let cycleTimer = 0;
     let imageTimer = 0;
     let returnTimer = 0;
@@ -268,75 +306,87 @@ export default function Home({
     <Layout>
       <section className="home-hero">
         <div className="hero-scene" aria-hidden="true">
-          {localizeText(heroImages.map(([slot, alt], index) => (
-            <DynamicImage
-              key={slot}
-              slotKey={slot}
-              alt={localizeText(alt)}
-              className={`hero-scene-image ${index === slide ? "active" : ""}`}
-              preferLocal
-            />
-          )))}
+          {localizeText(
+            heroImages.map(([slot, alt], index) => (
+              <DynamicImage
+                key={slot}
+                slotKey={slot}
+                alt={localizeText(alt)}
+                className={`hero-scene-image ${index === slide ? "active" : ""}`}
+                preferLocal
+              />
+            )),
+          )}
           <div className="hero-shade" />
         </div>
         <div className="hero-copy wrap">
           <AnimatePresence mode="wait" initial={false}>
-            {localizeText(heroTextVisible && (
-              <motion.div
-                key={slide}
-                className="hero-copy-message"
-                initial={
-                  reducedMotion
-                    ? false
-                    : { opacity: 0, x: -30, filter: "blur(5px)" }
-                }
-                animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                exit={
-                  reducedMotion
-                    ? undefined
-                    : { opacity: 0, x: 30, filter: "blur(4px)" }
-                }
-                transition={{
-                  duration: reducedMotion ? 0 : 0.85,
-                  ease: [0.22, 0.7, 0.2, 1],
-                }}
-              >
-                <p className="eyebrow eyebrow-light">
-                  <span />
-                  {localizeText(text(
-                    "home_eyebrow",
-                    "A public charitable trust · Across India",
-                  ))}
-                </p>
-                <h1 aria-label={localizeText(heroTitle)}>
-                  {localizeText(translateText(heroTitle).split(/(\s+)/).map((part, index) => {
-                    if (!part.trim()) return part;
-                    const wordIndex = titleWord++;
-                    return (
-                      <motion.span
-                        className="hero-title-word"
-                        key={`${index}-${part}`}
-                        initial={{ opacity: 0, y: reducedMotion ? 0 : 7 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{
-                          duration: reducedMotion ? 0 : 0.55,
-                          delay: reducedMotion ? 0 : wordIndex * 0.09,
-                          ease: [0.22, 0.7, 0.2, 1],
-                        }}
-                      >
-                        {localizeText(part)}
-                      </motion.span>
-                    );
-                  }))}
-                </h1>
-                <p className="hero-lede">
-                  {localizeText(text(
-                    "home_intro",
-                    "We work alongside communities through education, healthcare, livelihoods and clean energy, supporting opportunities people can carry forward.",
-                  ))}
-                </p>
-              </motion.div>
-            ))}
+            {localizeText(
+              heroTextVisible && (
+                <motion.div
+                  key={slide}
+                  className="hero-copy-message"
+                  initial={
+                    reducedMotion
+                      ? false
+                      : { opacity: 0, x: -30, filter: "blur(5px)" }
+                  }
+                  animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                  exit={
+                    reducedMotion
+                      ? undefined
+                      : { opacity: 0, x: 30, filter: "blur(4px)" }
+                  }
+                  transition={{
+                    duration: reducedMotion ? 0 : 0.85,
+                    ease: [0.22, 0.7, 0.2, 1],
+                  }}
+                >
+                  <p className="eyebrow eyebrow-light">
+                    <span />
+                    {localizeText(
+                      text(
+                        "home_eyebrow",
+                        "A public charitable trust · Across India",
+                      ),
+                    )}
+                  </p>
+                  <h1 aria-label={localizeText(heroTitle)}>
+                    {localizeText(
+                      translateText(heroTitle)
+                        .split(/(\s+)/)
+                        .map((part, index) => {
+                          if (!part.trim()) return part;
+                          const wordIndex = titleWord++;
+                          return (
+                            <motion.span
+                              className="hero-title-word"
+                              key={`${index}-${part}`}
+                              initial={{ opacity: 0, y: reducedMotion ? 0 : 7 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{
+                                duration: reducedMotion ? 0 : 0.55,
+                                delay: reducedMotion ? 0 : wordIndex * 0.09,
+                                ease: [0.22, 0.7, 0.2, 1],
+                              }}
+                            >
+                              {localizeText(part)}
+                            </motion.span>
+                          );
+                        }),
+                    )}
+                  </h1>
+                  <p className="hero-lede">
+                    {localizeText(
+                      text(
+                        "home_intro",
+                        "We work alongside communities through education, healthcare, livelihoods and clean energy, supporting opportunities people can carry forward.",
+                      ),
+                    )}
+                  </p>
+                </motion.div>
+              ),
+            )}
           </AnimatePresence>
         </div>
         <div className="hero-actions">
@@ -349,7 +399,10 @@ export default function Home({
             <span className="hero-action-arrow" aria-hidden="true">
               →
             </span>
-            <span className="hero-action-tooltip" aria-hidden="true"> {translateText("Programmes")} </span>
+            <span className="hero-action-tooltip" aria-hidden="true">
+              {" "}
+              {translateText("Programmes")}{" "}
+            </span>
           </Link>
           <Link
             href="/about"
@@ -360,7 +413,10 @@ export default function Home({
             <span className="hero-action-arrow" aria-hidden="true">
               →
             </span>
-            <span className="hero-action-tooltip" aria-hidden="true"> {translateText("Our story")} </span>
+            <span className="hero-action-tooltip" aria-hidden="true">
+              {" "}
+              {translateText("Our story")}{" "}
+            </span>
           </Link>
         </div>
         <div className="hero-bottom">
@@ -372,16 +428,18 @@ export default function Home({
             role="group"
             aria-label={translateText("Choose a featured image")}
           >
-            {localizeText(heroImages.map(([slot, label], index) => (
-              <button
-                key={slot}
-                type="button"
-                className={`hero-dot ${index === slide ? "is-active" : ""}`}
-                aria-label={localizeText(`Show ${label}`)}
-                aria-pressed={index === slide}
-                onClick={() => setSlide(index)}
-              />
-            )))}
+            {localizeText(
+              heroImages.map(([slot, label], index) => (
+                <button
+                  key={slot}
+                  type="button"
+                  className={`hero-dot ${index === slide ? "is-active" : ""}`}
+                  aria-label={localizeText(`Show ${label}`)}
+                  aria-pressed={index === slide}
+                  onClick={() => setSlide(index)}
+                />
+              )),
+            )}
           </div>
         </div>
         <div className="hero-seal" aria-hidden="true">
@@ -392,20 +450,32 @@ export default function Home({
       </section>
 
       <HomeUtilityCards />
-      <section className="home-facts" aria-label={translateText("About the Foundation")}>
+      <section
+        className="home-facts"
+        aria-label={translateText("About the Foundation")}
+      >
         <div className="wrap facts-inner">
           <Reveal className="facts-heading" direction="left">
             <p className="eyebrow">
-              <span />{translateText("A clear beginning")} </p>
-            <p className="facts-note"> {translateText("A public trust working across six connected areas, with progress shared as programmes take shape.")} </p>
+              <span />
+              {translateText("A clear beginning")}{" "}
+            </p>
+            <p className="facts-note">
+              {" "}
+              {translateText(
+                "A public trust working across six connected areas, with progress shared as programmes take shape.",
+              )}{" "}
+            </p>
           </Reveal>
           <Stagger className="facts-list" gap={0.1} distance={24}>
-            {localizeText(foundationFacts.map((fact) => (
-              <article className="fact-item" key={fact.value}>
-                <strong>{localizeText(fact.value)}</strong>
-                <span>{localizeText(fact.label)}</span>
-              </article>
-            )))}
+            {localizeText(
+              foundationFacts.map((fact) => (
+                <article className="fact-item" key={fact.value}>
+                  <strong>{localizeText(fact.value)}</strong>
+                  <span>{localizeText(fact.label)}</span>
+                </article>
+              )),
+            )}
           </Stagger>
         </div>
       </section>
@@ -440,7 +510,9 @@ export default function Home({
               >
                 <DynamicImage
                   slotKey="home-founder-photo"
-                  alt={translateText("Dr Jagannath Patnaik, founder of Jagannath Foundation")}
+                  alt={translateText(
+                    "Dr Jagannath Patnaik, founder of Jagannath Foundation",
+                  )}
                   className="founder-image"
                   preferLocal
                 />
@@ -487,19 +559,28 @@ export default function Home({
           </Reveal>
           <Reveal className="story-copy" direction="right" duration={1.1}>
             <p className="eyebrow">
-              <span /> {translateText("Our founder")} </p>
+              <span /> {translateText("Our founder")}{" "}
+            </p>
             <h2>{localizeText(storyTitle)}</h2>
             <p className="body-large">
-              {localizeText(text(
-                "home_about_body",
-                "We support education, family wellbeing and livelihoods so communities can shape stronger futures for themselves.",
-              ))}
+              {localizeText(
+                text(
+                  "home_about_body",
+                  "We support education, family wellbeing and livelihoods so communities can shape stronger futures for themselves.",
+                ),
+              )}
             </p>
             <blockquote className="story-mantra">
               <span>{translateText("“Manav seva is Ishwar seva”")}</span>
-              <small>{translateText("Service to people is at the heart of our work.")}</small>
+              <small>
+                {translateText(
+                  "Service to people is at the heart of our work.",
+                )}
+              </small>
             </blockquote>
-            <Link href="/team" className="text-link"> {translateText("Meet our leadership")} <span>↗</span>
+            <Link href="/team" className="text-link">
+              {" "}
+              {translateText("Meet our leadership")} <span>↗</span>
             </Link>
           </Reveal>
         </div>
@@ -510,43 +591,61 @@ export default function Home({
           <Reveal className="section-topline" direction="down">
             <div>
               <p className="eyebrow">
-                <span /> {translateText("Six connected areas")} </p>
-              <h2> {translateText("Everyday needs.")} <br /> {translateText("Lasting possibility.")} </h2>
+                <span /> {translateText("Six connected areas")}{" "}
+              </p>
+              <h2>
+                {" "}
+                {translateText("Everyday needs.")} <br />{" "}
+                {translateText("Lasting possibility.")}{" "}
+              </h2>
             </div>
-            <p> {translateText("Six connected areas of work, shaped around the everyday needs of people and families.")} </p>
+            <p>
+              {" "}
+              {translateText(
+                "Six connected areas of work, shaped around the everyday needs of people and families.",
+              )}{" "}
+            </p>
           </Reveal>
           <Stagger className="work-grid" gap={0.12} distance={34}>
-            {localizeText(workAreas.map((area, index) => (
-              <div
-                key={area.title}
-                className={`work-feature-reveal work-feature-reveal-${index + 1}`}
-              >
-                <Link
-                  href="/programmes"
-                  className={`work-feature work-feature-${index + 1} work-${area.theme}`}
+            {localizeText(
+              workAreas.map((area, index) => (
+                <div
+                  key={area.title}
+                  className={`work-feature-reveal work-feature-reveal-${index + 1}`}
                 >
-                  <div className="work-photo">
-                    <WorkFeatureSlideshow
-                      photo={area.photo}
-                      secondary={area.secondary}
-                      alt={localizeText(area.label)}
-                    />
-                    <span className="work-index">0{localizeText(index + 1)}</span>
-                  </div>
-                  <div className="work-text">
-                    <span>{localizeText(area.label)}</span>
-                    <h3>{localizeText(area.title)}</h3>
-                    <p>{localizeText(area.body)}</p>
-                    <b aria-hidden="true">↗</b>
-                  </div>
-                </Link>
-              </div>
-            )))}
+                  <Link
+                    href="/programmes"
+                    className={`work-feature work-feature-${index + 1} work-${area.theme}`}
+                  >
+                    <div className="work-photo">
+                      <WorkFeatureSlideshow
+                        photo={area.photo}
+                        secondary={area.secondary}
+                        alt={localizeText(area.label)}
+                      />
+                      <span className="work-index">
+                        0{localizeText(index + 1)}
+                      </span>
+                    </div>
+                    <div className="work-text">
+                      <span>{localizeText(area.label)}</span>
+                      <h3>{localizeText(area.title)}</h3>
+                      <p>{localizeText(area.body)}</p>
+                      <b aria-hidden="true">↗</b>
+                    </div>
+                  </Link>
+                </div>
+              )),
+            )}
           </Stagger>
           <Reveal className="work-footer" direction="up">
             <span className="work-count">
-              <strong>4 / 6</strong> {translateText("programme areas featured")} </span>
-            <Link href="/programmes" className="text-link"> {translateText("Explore all our programmes")} <span>↗</span>
+              <strong>4 / 6</strong>{" "}
+              {translateText("programme areas featured")}{" "}
+            </span>
+            <Link href="/programmes" className="text-link">
+              {" "}
+              {translateText("Explore all our programmes")} <span>↗</span>
             </Link>
           </Reveal>
         </div>
@@ -556,11 +655,19 @@ export default function Home({
         <Reveal className="gallery-heading" delay={0.04} direction="down">
           <div>
             <p className="eyebrow">
-              <span /> {translateText("People and leadership")} </p>
+              <span /> {translateText("People and leadership")}{" "}
+            </p>
             <h2>{translateText("Meet the people behind the work.")}</h2>
-            <p> {translateText("Trustees, management and advisors bring experience and care to the Foundation’s public service.")} </p>
+            <p>
+              {" "}
+              {translateText(
+                "Trustees, management and advisors bring experience and care to the Foundation’s public service.",
+              )}{" "}
+            </p>
           </div>
-          <Link href="/team" className="text-link"> {translateText("Meet our people")} <span>↗</span>
+          <Link href="/team" className="text-link">
+            {" "}
+            {translateText("Meet our people")} <span>↗</span>
           </Link>
         </Reveal>
         <Reveal
@@ -582,23 +689,33 @@ export default function Home({
         <div className="wrap principles-layout">
           <Reveal className="principles-intro" direction="left">
             <p className="eyebrow eyebrow-light">
-              <span /> {translateText("How we work")} </p>
+              <span /> {translateText("How we work")}{" "}
+            </p>
             <h2>{translateText("Good intentions need good practice.")}</h2>
-            <p> {translateText("We listen first, work with local partners and focus on what can last.")} </p>
-            <Link href="/impact" className="text-link"> {translateText("Our approach to impact")} <span>↗</span>
+            <p>
+              {" "}
+              {translateText(
+                "We listen first, work with local partners and focus on what can last.",
+              )}{" "}
+            </p>
+            <Link href="/impact" className="text-link">
+              {" "}
+              {translateText("Our approach to impact")} <span>↗</span>
             </Link>
           </Reveal>
           <Stagger className="principles-list" gap={0.1} distance={26}>
-            {localizeText(principles.map((item) => (
-              <article key={item.number}>
-                <span>{localizeText(item.number)}</span>
-                <div>
-                  <h3>{localizeText(item.title)}</h3>
-                  <p>{localizeText(item.body)}</p>
-                </div>
-                <b aria-hidden="true">↗</b>
-              </article>
-            )))}
+            {localizeText(
+              principles.map((item) => (
+                <article key={item.number}>
+                  <span>{localizeText(item.number)}</span>
+                  <div>
+                    <h3>{localizeText(item.title)}</h3>
+                    <p>{localizeText(item.body)}</p>
+                  </div>
+                  <b aria-hidden="true">↗</b>
+                </article>
+              )),
+            )}
           </Stagger>
         </div>
       </section>
@@ -607,22 +724,32 @@ export default function Home({
         <Reveal className="gallery-heading" delay={0.04} direction="down">
           <div>
             <p className="eyebrow">
-              <span /> {translateText("People and partnerships")} </p>
+              <span /> {translateText("People and partnerships")}{" "}
+            </p>
             <h2>
-              {localizeText(text("home_gallery_title", "Partnerships built on respect."))}
+              {localizeText(
+                text("home_gallery_title", "Partnerships built on respect."),
+              )}
             </h2>
             <p>
-              {localizeText(text(
-                "home_gallery_body",
-                "A few moments with leaders and partners who share a commitment to public service.",
-              ))}
+              {localizeText(
+                text(
+                  "home_gallery_body",
+                  "A few moments with leaders and partners who share a commitment to public service.",
+                ),
+              )}
             </p>
           </div>
-          <Link href="/gallery" className="text-link"> {translateText("View the gallery")} <span>↗</span>
+          <Link href="/gallery" className="text-link">
+            {" "}
+            {translateText("View the gallery")} <span>↗</span>
           </Link>
         </Reveal>
         <Reveal className="gallery-slider-reveal" delay={0.12} direction="up">
-          <HomeGallerySlider photos={galleryHome} reducedMotion={Boolean(reducedMotion)} />
+          <HomeGallerySlider
+            photos={galleryHome}
+            reducedMotion={Boolean(reducedMotion)}
+          />
         </Reveal>
       </section>
 
@@ -631,13 +758,27 @@ export default function Home({
           ✳
         </div>
         <p className="eyebrow eyebrow-light">
-          <span /> {translateText("Stand alongside communities")} </p>
-        <h2> {translateText("There is room for")} <br /> {translateText("more good work.")} </h2>
-        <p> {translateText("Bring your time, your experience or your support. Together, we can help create the conditions for people to thrive.")} </p>
+          <span /> {translateText("Stand alongside communities")}{" "}
+        </p>
+        <h2>
+          {" "}
+          {translateText("There is room for")} <br />{" "}
+          {translateText("more good work.")}{" "}
+        </h2>
+        <p>
+          {" "}
+          {translateText(
+            "Bring your time, your experience or your support. Together, we can help create the conditions for people to thrive.",
+          )}{" "}
+        </p>
         <div>
-          <Link href="/volunteer" className="button button-paper"> {translateText("Join as a volunteer")} <span>↗</span>
+          <Link href="/volunteer" className="button button-paper">
+            {" "}
+            {translateText("Join as a volunteer")} <span>↗</span>
           </Link>
-          <Link href="/contact" className="button button-line"> {translateText("Talk with us")} <span>→</span>
+          <Link href="/contact" className="button button-line">
+            {" "}
+            {translateText("Talk with us")} <span>→</span>
           </Link>
         </div>
       </Reveal>
