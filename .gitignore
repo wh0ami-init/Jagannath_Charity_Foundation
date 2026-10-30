@@ -25,9 +25,11 @@ frontend/.env.*
 !frontend/.env.example
 backend/.env.*
 !backend/.env.example
-Jagannath-Foundation-Website.zipqw
-
-Team_Responsibilities.html
 
 # --- OS junk ---
 .DS_Store
+
+.idea/
+.vscode/
+*.zip
+backend/*.db
