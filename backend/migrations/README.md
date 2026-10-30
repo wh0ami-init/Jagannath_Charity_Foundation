@@ -1,3 +1,6 @@
+Note: the numbered .sql files (001-004) are historical records of earlier manual
+changes. Alembic is the single source of truth for schema changes from now on.
+
 # Payment database rollout and recovery
 
 Status: donations table created in production MySQL on 2026-10-09 (Asia/Kolkata). Columns and unique order/payment constraints verified; existing tables preserved. A consistent database backup was exported and checksummed before creation; a restore has not been tested. Payment backend deployment and end-to-end production Test Mode verification remain pending.
