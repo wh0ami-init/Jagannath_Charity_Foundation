@@ -1,4 +1,6 @@
 from pathlib import Path
+import logging
+from time import perf_counter
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,10 +11,10 @@ from app.database import SessionLocal
 from app.routers import auth, beneficiaries, images, content, submissions, payments
 from app.schema import ensure_database_schema
 from app.startup import ensure_image_slots, ensure_site_content
-
-ensure_database_schema()
+from app.public_compression import PublicCatalogueCompression
 
 app = FastAPI(title="Jagannath Foundation - Site API")
+app.add_middleware(PublicCatalogueCompression)
 
 app.add_middleware(
     CORSMiddleware,
@@ -52,12 +54,19 @@ app.include_router(payments.router)
 
 @app.on_event("startup")
 def on_startup():
+    started = perf_counter()
+    ensure_database_schema()
+    schema_ready = perf_counter()
     db = SessionLocal()
     try:
         ensure_image_slots(db)
         ensure_site_content(db)
     finally:
         db.close()
+    logging.getLogger("uvicorn.error").info(
+        "Startup ready: schema=%.3fs seed=%.3fs total=%.3fs",
+        schema_ready - started, perf_counter() - schema_ready, perf_counter() - started,
+    )
 
 
 @app.get("/api/health")

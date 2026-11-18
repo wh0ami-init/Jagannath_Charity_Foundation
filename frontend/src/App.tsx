@@ -48,7 +48,7 @@ export default function App() {
     <ImagesProvider>
       <LanguageDocument />
       <SiteContentProvider>
-        <div className={`welcome-portal${welcomeVisible && !portalRevealStarted ? " is-covered" : ""}${portalRevealStarted ? " is-revealing" : ""}`}>
+        <div className={`welcome-portal${welcomeVisible && !portalRevealStarted ? " is-covered" : ""}${welcomeVisible && portalRevealStarted ? " is-revealing" : ""}`}>
           <Suspense fallback={<div className="min-h-screen grid place-items-center text-navy-900/60">{tr("Loading page…")}</div>}>
             <Switch>
               <Route path="/">

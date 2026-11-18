@@ -1,3 +1,4 @@
+import filecmp
 import shutil
 from pathlib import Path
 
@@ -14,10 +15,17 @@ UPLOAD_DIR = BASE_DIR / "uploads"
 
 def ensure_image_slots(db: Session):
     UPLOAD_DIR.mkdir(exist_ok=True)
+    slot_keys = [slot[0] for slot in IMAGE_SLOTS]
+    deleted_keys = set(db.scalars(select(DeletedGallerySeed.slot_key).where(
+        DeletedGallerySeed.slot_key.in_(slot_keys)
+    )).all())
+    existing_slots = {slot.slot_key: slot for slot in db.scalars(
+        select(ImageSlot).where(ImageSlot.slot_key.in_(slot_keys))
+    ).all()}
     for slot_key, label, page, alt_text, seed_filename in IMAGE_SLOTS:
-        if db.get(DeletedGallerySeed, slot_key) is not None:
+        if slot_key in deleted_keys:
             continue
-        existing = db.scalar(select(ImageSlot).where(ImageSlot.slot_key == slot_key))
+        existing = existing_slots.get(slot_key)
         seed_path = SEED_IMAGES_DIR / seed_filename
         if existing:
             if existing.deleted_at is not None:
@@ -37,7 +45,9 @@ def ensure_image_slots(db: Session):
             # Restore a seed image for placeholders, seeded slots, and uploads
             # missing from a fresh deployment. Keep valid administrator uploads.
             if seed_path.is_file() and (is_seeded_slot or upload_is_missing):
-                shutil.copy(seed_path, UPLOAD_DIR / expected_filename)
+                destination = UPLOAD_DIR / expected_filename
+                if not destination.is_file() or not filecmp.cmp(seed_path, destination, shallow=False):
+                    shutil.copy(seed_path, destination)
                 existing.file_path = expected_filename
             continue
 
@@ -61,12 +71,15 @@ def ensure_image_slots(db: Session):
 
 
 def ensure_site_content(db: Session):
+    existing_content = {row.content_key: row for row in db.scalars(
+        select(SiteContent).where(SiteContent.content_key.in_([item[0] for item in SITE_CONTENT]))
+    ).all()}
     obsolete_defaults = {
         ("notice_title", "A campus shaped by its place"),
         ("notice_body", "Set in Gangtok, Sikkim, our university community brings together local perspective and a wider outlook."),
     }
     for content_key, label, page, value in SITE_CONTENT:
-        existing = db.scalar(select(SiteContent).where(SiteContent.content_key == content_key))
+        existing = existing_content.get(content_key)
         if existing:
             if (content_key, existing.value) in obsolete_defaults:
                 existing.value = value

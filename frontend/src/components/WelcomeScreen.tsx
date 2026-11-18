@@ -774,6 +774,8 @@ export default function WelcomeScreen({
             filter: "blur(0px)",
             duration: 1.7,
             ease: "power2.out",
+            // Even identity transforms/filters trap fixed overlays inside this wrapper.
+            clearProps: "transform,filter",
           },
           0,
         );
