@@ -64,12 +64,18 @@ export function DynamicImage({
   className,
   preferLocal = false,
   loading,
+  enabled = true,
+  fetchPriority,
+  onLoad,
 }: {
   slotKey: string;
   alt?: string;
   className?: string;
   preferLocal?: boolean;
   loading?: "eager" | "lazy";
+  enabled?: boolean;
+  fetchPriority?: "high" | "low" | "auto";
+  onLoad?: () => void;
 }) {
   const { images } = useImages();
   const slot = images[slotKey];
@@ -131,7 +137,7 @@ export function DynamicImage({
   return (
     <img
       src={
-        useFallback
+        !enabled ? undefined : useFallback
           ? fallbackSrc
           : slot
             ? `${API_URL}${slot.url}`
@@ -139,13 +145,10 @@ export function DynamicImage({
       }
       alt={alt ?? slot?.alt_text ?? ""}
       className={className}
-      loading={loading ?? (
-        slotKey.startsWith("home-hero-") ||
-        slotKey === "site-logo" ||
-        slotKey === "gallery-cover"
-          ? "eager"
-          : "lazy"
-      )}
+      loading={loading ?? "lazy"}
+      decoding="async"
+      fetchPriority={fetchPriority}
+      onLoad={onLoad}
       onError={(event) => {
         if (!fallbackSrc || event.currentTarget.src.endsWith(fallbackSrc))
           return;

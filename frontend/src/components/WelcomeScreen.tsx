@@ -137,6 +137,7 @@ export default function WelcomeScreen({
   const dismissRef = useRef<() => void>(() => {});
   const isJumping = useRef(false);
   const activeChapter = useRef(0);
+  const [imageChapter, setImageChapter] = useState(1);
   const reducedMotion = useReducedMotion();
   const { loading: imagesLoading, error: imagesError } = useImages();
   const [, setLocation] = useLocation();
@@ -174,6 +175,7 @@ export default function WelcomeScreen({
     const screen = scope.current;
     if (!screen || index === activeChapter.current) return;
     activeChapter.current = index;
+    setImageChapter((current) => Math.max(current, index + 1));
     screen.querySelectorAll<HTMLElement>(".ws-dot").forEach((dot, i) => {
       dot.classList.toggle("is-active", i === index);
       dot.classList.toggle("is-done", i < index);
@@ -953,7 +955,7 @@ export default function WelcomeScreen({
                 <article className="ws-card" key={p.title}>
                   <img
                     className="ws-card-img"
-                    src={p.photo}
+                    src={imageChapter >= 2 ? p.photo : undefined}
                     alt=""
                     loading="eager"
                   />
@@ -984,6 +986,7 @@ export default function WelcomeScreen({
                 slotKey="home-founder-photo"
                 alt={t("Dr Jagannath Patnaik")}
                 className="ws-founder-photo"
+                enabled={imageChapter >= 3}
                 preferLocal={imagesLoading || imagesError}
                 loading="eager"
               />
@@ -1024,6 +1027,7 @@ export default function WelcomeScreen({
                   slotKey={slot}
                   alt=""
                   className="ws-tile-img"
+                  enabled={imageChapter >= 4}
                   preferLocal={imagesLoading || imagesError}
                   loading="eager"
                 />

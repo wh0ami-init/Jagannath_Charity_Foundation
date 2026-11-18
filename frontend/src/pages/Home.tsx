@@ -185,6 +185,15 @@ export default function Home({
   usePageTranslation();
   const content = useSiteContent();
   const [slide, setSlide] = useState(0);
+  const [readySlides, setReadySlides] = useState<Set<number>>(() => new Set());
+  const [requestedSlides, setRequestedSlides] = useState<Set<number>>(() => new Set([0]));
+  useEffect(() => {
+    if (!readySlides.has(slide)) return;
+    const timer = window.setTimeout(() => {
+      setRequestedSlides((current) => new Set([...current, (slide + 1) % heroImages.length]));
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, [slide, readySlides]);
   const [heroTextVisible, setHeroTextVisible] = useState(true);
   const reducedMotion = useReducedMotion();
   const workSection = useRef<HTMLElement>(null);
@@ -314,6 +323,10 @@ export default function Home({
                 alt={localizeText(alt)}
                 className={`hero-scene-image ${index === slide ? "active" : ""}`}
                 preferLocal
+                enabled={index === slide || requestedSlides.has(index)}
+                loading="eager"
+                fetchPriority={index === slide ? "high" : "low"}
+                onLoad={() => setReadySlides((current) => current.has(index) ? current : new Set([...current, index]))}
               />
             )),
           )}

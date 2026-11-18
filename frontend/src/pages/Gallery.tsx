@@ -304,6 +304,7 @@ function GalleryLightbox({
             slotKey={item.slot_key}
             alt=""
             className="gallery-lightbox-backdrop-image"
+            loading="eager"
           />
           <span className="gallery-lightbox-backdrop-shade" />
         </div>
@@ -377,6 +378,7 @@ function GalleryLightbox({
               slotKey={item.slot_key}
               alt={localizeText(item.alt_text || item.label)}
               className="gallery-lightbox-photo"
+              loading="eager"
             />
             <motion.button
               type="button"
@@ -513,6 +515,8 @@ export default function Gallery() {
             slotKey="gallery-cover"
             alt=""
             className="gallery-hero-image"
+            loading="eager"
+            fetchPriority="high"
           />
         </motion.div>
         <div className="gallery-hero-shade" />

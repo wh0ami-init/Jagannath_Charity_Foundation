@@ -260,6 +260,7 @@ export default function Header() {
                 slotKey="site-logo"
                 alt=""
                 className="brand-image"
+                loading="eager"
               />
             </span>
             <span className="brand-name">
