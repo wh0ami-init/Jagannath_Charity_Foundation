@@ -362,7 +362,7 @@ export default function Team() {
               animate={{ x: 0 }}
               exit={reducedMotion ? undefined : { x: "100%" }}
               transition={{
-                duration: reducedMotion ? 0 : 0.78,
+                duration: reducedMotion ? 0 : 0.52,
                 ease: [0.22, 0.7, 0.2, 1],
               }}
             >
@@ -383,6 +383,7 @@ export default function Team() {
                     preferLocal={
                       selectedPerson.slot === "team-jagannath-patnaik"
                     }
+                    loading="eager"
                   />
                 ) : (
                   <div
@@ -400,8 +401,8 @@ export default function Team() {
                   }
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{
-                    duration: reducedMotion ? 0 : 0.62,
-                    delay: reducedMotion ? 0 : 0.88,
+                    duration: reducedMotion ? 0 : 0.38,
+                    delay: reducedMotion ? 0 : 0.1,
                     ease: [0.22, 0.7, 0.2, 1],
                   }}
                 >
