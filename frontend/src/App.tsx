@@ -1,3 +1,4 @@
+import PageSkeleton from "./components/PageSkeleton";
 import LanguageDocument from "./components/LanguageDocument";
 import { tr } from "./i18n";
 import { useTranslation } from "react-i18next";
@@ -49,7 +50,7 @@ export default function App() {
       <LanguageDocument />
       <SiteContentProvider>
         <div className={`welcome-portal${welcomeVisible && !portalRevealStarted ? " is-covered" : ""}${welcomeVisible && portalRevealStarted ? " is-revealing" : ""}`}>
-          <Suspense fallback={<div className="min-h-screen grid place-items-center text-navy-900/60">{tr("Loading page…")}</div>}>
+          <Suspense fallback={<PageSkeleton publicPage={!location.startsWith("/admin")} />}>
             <Switch>
               <Route path="/">
                 <Home isWelcomeVisible={welcomeVisible} />
