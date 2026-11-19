@@ -1,0 +1,778 @@
+/* ==========================================================
+   Developers page  (/developers)
+   Mobile first. Bigger screens are added with min-width.
+   ========================================================== */
+
+.dev-hero-surface {
+    background: #080f13;
+}
+
+.dev-hero-surface .pagehero {
+    border-radius: 0;
+}
+
+.dev-page {
+    position: relative;
+    isolation: isolate;
+    --dev-deep: #102c25;
+    --dev-forest: #18372f;
+    --dev-moss: #a1bcae;
+    --dev-gold: #e6a947;
+    --dev-gold-soft: #f5c479;
+    --dev-paper: #080f13;
+    --dev-surface: #111f25;
+    --dev-ink: #e8f1ed;
+    --dev-line: rgba(168, 207, 187, 0.18);
+    overflow-x: clip;
+    background: radial-gradient(ellipse at 85% 5%, #14282d 0%, transparent 42%), var(--dev-paper);
+    color: var(--dev-ink);
+}
+
+.dev-page > section {
+    position: relative;
+    z-index: 1;
+}
+
+.dev-tech-backdrop {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    color: #85b6a6;
+    opacity: .16;
+}
+
+.dev-tech-mesh {
+    position: absolute;
+    inset: -40px 0;
+    background-image: linear-gradient(currentColor 1px, transparent 1px),
+        linear-gradient(90deg, currentColor 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: linear-gradient(90deg, #000, transparent 35%, transparent 65%, #000);
+}
+
+.dev-tech-circuit {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.dev-tech-traces {
+    stroke: currentColor;
+    stroke-width: 1.5;
+}
+
+.dev-tech-nodes { fill: currentColor; }
+
+.dev-tech-scan {
+    position: absolute;
+    top: 35%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, currentColor, transparent);
+    opacity: .3;
+}
+
+.dev-leads-section > .dev-tech-backdrop {
+    color: #b6d6ac;
+    opacity: .24;
+}
+
+.dev-leads-inner { position: relative; z-index: 1; }
+
+@media (max-width: 600px) {
+    .dev-tech-backdrop { opacity: .1; }
+    .dev-tech-mesh { background-size: 44px 44px; }
+    .dev-leads-section > .dev-tech-backdrop { opacity: .16; }
+}
+
+.dev-page .wrap {
+    width: min(100% - 32px, 1180px);
+    margin-inline: auto;
+}
+
+/* ---------- Section headings ---------- */
+.dev-heading-wrap {
+    margin-bottom: clamp(28px, 5vw, 48px);
+}
+
+.dev-heading {
+    font-family: var(--font-serif, Georgia, serif);
+    font-weight: 600;
+    font-size: clamp(1.9rem, 5.2vw, 3rem);
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    margin: 0;
+    color: var(--dev-ink);
+}
+
+.dev-rule {
+    display: block;
+    width: 72px;
+    height: 3px;
+    margin-top: 16px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--dev-gold), var(--dev-gold-soft));
+}
+
+.dev-sub {
+    margin: 16px 0 0;
+    max-width: 560px;
+    font-size: 1.02rem;
+    line-height: 1.6;
+    color: #b2c5be;
+}
+
+.dev-heading-wrap--light .dev-heading {
+    color: #fff;
+}
+
+.dev-heading-wrap--light .dev-sub {
+    color: rgba(255, 255, 255, 0.72);
+}
+
+/* ---------- Intro ---------- */
+.dev-intro {
+    display: grid;
+    gap: 36px;
+    padding-block: clamp(48px, 8vw, 96px);
+    align-items: center;
+}
+
+.dev-intro-copy>p {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.75;
+    max-width: 560px;
+    color: #c0d0c9;
+}
+
+.dev-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 28px 0 0;
+    max-width: 520px;
+}
+
+.dev-stat {
+    padding: 16px 14px;
+    border: 1px solid var(--dev-line);
+    border-radius: 16px;
+    background: var(--dev-surface);
+}
+
+.dev-stat dt {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--dev-moss);
+}
+
+.dev-stat dd {
+    margin: 6px 0 0;
+    font-family: var(--font-serif, Georgia, serif);
+    font-size: clamp(2rem, 7vw, 2.6rem);
+    font-weight: 600;
+    line-height: 1;
+    color: var(--dev-ink);
+}
+
+/* ---------- Terminal ---------- */
+.dev-terminal {
+    border-radius: 18px;
+    overflow: hidden;
+    background: var(--dev-deep);
+    box-shadow: 0 30px 60px -28px rgba(16, 44, 37, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dev-terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.dev-terminal-bar i {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.22);
+}
+
+.dev-terminal-bar i:nth-child(1) {
+    background: #e0674f;
+}
+
+.dev-terminal-bar i:nth-child(2) {
+    background: var(--dev-gold);
+}
+
+.dev-terminal-bar i:nth-child(3) {
+    background: #6bbf8a;
+}
+
+.dev-terminal-bar span {
+    margin-left: 8px;
+    font: 0.72rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.dev-terminal-body {
+    padding: 20px 18px 24px;
+    min-height: 150px;
+    font: 0.86rem/1.9 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: #d9e8dc;
+    overflow-wrap: anywhere;
+}
+
+.dev-term-line {
+    margin: 0;
+    min-height: 1.9em;
+}
+
+.dev-term-line:first-child {
+    color: var(--dev-gold-soft);
+}
+
+.dev-caret {
+    display: inline-block;
+    width: 8px;
+    height: 1.05em;
+    margin-top: 4px;
+    vertical-align: -2px;
+    background: var(--dev-gold);
+    animation: dev-blink 1s steps(2, start) infinite;
+}
+
+@keyframes dev-blink {
+    to {
+        visibility: hidden;
+    }
+}
+
+/* ---------- Lead developers (dark section) ---------- */
+.dev-leads-section {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding-block: clamp(56px, 9vw, 110px);
+    background: radial-gradient(120% 90% at 20% 0%, #18342f 0%, #0b171b 62%);
+}
+
+.dev-grid-bg {
+    position: absolute;
+    inset: -20% 0;
+    z-index: -1;
+    opacity: 0.5;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 48px 48px;
+    -webkit-mask-image: radial-gradient(70% 70% at 50% 40%, #000, transparent);
+    mask-image: radial-gradient(70% 70% at 50% 40%, #000, transparent);
+}
+
+.dev-orb {
+    position: absolute;
+    z-index: -1;
+    border-radius: 50%;
+    filter: blur(70px);
+    pointer-events: none;
+}
+
+.dev-orb--one {
+    width: 340px;
+    height: 340px;
+    top: -80px;
+    right: -60px;
+    background: rgba(230, 169, 71, 0.28);
+}
+
+.dev-orb--two {
+    width: 300px;
+    height: 300px;
+    bottom: -90px;
+    left: -70px;
+    background: rgba(107, 191, 138, 0.24);
+}
+
+.dev-leads {
+    display: grid;
+    gap: 24px;
+}
+
+.dev-lead {
+    --mx: 50%;
+    --my: 0%;
+    position: relative;
+    padding: 20px 20px 26px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.06);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    color: #fff;
+    overflow: hidden;
+    will-change: transform;
+}
+
+.dev-lead::before {
+    /* glow that follows the mouse */
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    background: radial-gradient(380px circle at var(--mx) var(--my),
+            rgba(245, 196, 121, 0.2),
+            transparent 60%);
+}
+
+.dev-lead:hover::before {
+    opacity: 1;
+}
+
+.dev-lead::after {
+    /* thin gold line on top */
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--dev-gold), transparent);
+}
+
+.dev-lead>* {
+    position: relative;
+    z-index: 1;
+}
+
+.dev-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--dev-deep);
+    background: var(--dev-gold-soft);
+}
+
+.dev-badge i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--dev-deep);
+    animation: dev-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes dev-pulse {
+    50% {
+        transform: scale(1.7);
+        opacity: 0.45;
+    }
+}
+
+/* ---------- Portrait (photo or initials) ---------- */
+.dev-portrait {
+    position: relative;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #2e5a4b, #1a3d33);
+}
+
+.dev-lead .dev-portrait {
+    aspect-ratio: 4 / 4.2;
+    margin-bottom: 20px;
+}
+
+.dev-portrait img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+}
+
+.dev-initials {
+    font-family: var(--font-serif, Georgia, serif);
+    font-weight: 600;
+    font-size: clamp(3.2rem, 12vw, 5rem);
+    letter-spacing: 0.04em;
+    color: var(--dev-gold-soft);
+}
+
+/* ---------- Text inside cards ---------- */
+.dev-lead h3 {
+    margin: 0;
+    font-family: var(--font-serif, Georgia, serif);
+    font-size: clamp(1.7rem, 5vw, 2.2rem);
+    font-weight: 600;
+    line-height: 1.1;
+}
+
+.dev-role {
+    margin: 8px 0 0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--dev-moss);
+}
+
+.dev-lead .dev-role {
+    color: var(--dev-gold-soft);
+}
+
+.dev-bio {
+    margin: 14px 0 0;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: #b2c5be;
+}
+
+.dev-lead .dev-bio {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.dev-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 18px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.dev-skills li {
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    border: 1px solid var(--dev-line);
+    background: rgba(168, 207, 187, 0.07);
+    color: var(--dev-ink);
+}
+
+.dev-lead .dev-skills li {
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+.dev-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.dev-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 42px;
+    /* easy to tap on phones */
+    padding: 0 16px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--dev-ink);
+    border: 1px solid var(--dev-line);
+    background: var(--dev-surface);
+    transition:
+        transform 0.25s ease,
+        background 0.25s ease,
+        color 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.dev-links a svg {
+    width: 17px;
+    height: 17px;
+    fill: currentColor;
+}
+
+.dev-links a:hover,
+.dev-links a:focus-visible {
+    transform: translateY(-2px);
+    background: var(--dev-forest);
+    color: #fff;
+    border-color: var(--dev-ink);
+}
+
+.dev-lead .dev-links a {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.24);
+}
+
+.dev-lead .dev-links a:hover,
+.dev-lead .dev-links a:focus-visible {
+    background: var(--dev-gold-soft);
+    border-color: var(--dev-gold-soft);
+    color: var(--dev-deep);
+}
+
+/* ---------- Team members ---------- */
+.dev-members-section {
+    padding-block: clamp(56px, 9vw, 110px) clamp(40px, 6vw, 72px);
+}
+
+.dev-members {
+    display: grid;
+    gap: 20px;
+}
+
+.dev-member {
+    padding: 18px 18px 24px;
+    border-radius: 22px;
+    border: 1px solid var(--dev-line);
+    background: var(--dev-surface);
+    transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease,
+        border-color 0.35s ease;
+}
+
+.dev-member:hover {
+    transform: translateY(-6px);
+    border-color: rgba(230, 169, 71, 0.6);
+    box-shadow: 0 26px 44px -28px rgba(16, 44, 37, 0.5);
+}
+
+.dev-member .dev-portrait {
+    aspect-ratio: 1 / 0.82;
+    margin-bottom: 18px;
+}
+
+.dev-member .dev-initials {
+    font-size: clamp(2.6rem, 9vw, 3.4rem);
+}
+
+.dev-member h3 {
+    margin: 0;
+    font-family: var(--font-serif, Georgia, serif);
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.15;
+    color: var(--dev-ink);
+}
+
+/* ---------- Technology strip ---------- */
+.dev-stack {
+    padding: 28px 0 clamp(48px, 7vw, 80px);
+}
+
+.dev-stack-title {
+    margin: 0 0 18px;
+    text-align: center;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--dev-moss);
+}
+
+.dev-marquee {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+
+.dev-marquee-track {
+    display: flex;
+    width: max-content;
+}
+
+.dev-marquee-track ul {
+    display: flex;
+    gap: 12px;
+    margin: 0;
+    padding: 0 6px;
+    list-style: none;
+}
+
+.dev-marquee-track li {
+    white-space: nowrap;
+    padding: 10px 20px;
+    border-radius: 999px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--dev-ink);
+    border: 1px solid var(--dev-line);
+    background: var(--dev-surface);
+}
+
+/* ---------- Thank you ---------- */
+.dev-thanks {
+    padding-bottom: clamp(56px, 8vw, 96px);
+    text-align: center;
+}
+
+.dev-thanks p {
+    max-width: 640px;
+    margin: 0 auto;
+    font-family: var(--font-serif, Georgia, serif);
+    font-size: clamp(1.25rem, 3.4vw, 1.7rem);
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--dev-ink);
+}
+
+/* ---------- Banner shown at the bottom of the Team page ---------- */
+.team-dev-banner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 26px 24px;
+    border-radius: 22px;
+    overflow: hidden;
+    text-decoration: none;
+    color: #fff;
+    background: linear-gradient(120deg, #102c25, #1f4a3d);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease;
+}
+
+.team-dev-banner::after {
+    content: "";
+    position: absolute;
+    right: -60px;
+    top: -60px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: rgba(230, 169, 71, 0.22);
+    filter: blur(50px);
+    pointer-events: none;
+}
+
+.team-dev-banner:hover,
+.team-dev-banner:focus-visible {
+    transform: translateY(-4px);
+    box-shadow: 0 28px 48px -28px rgba(16, 44, 37, 0.7);
+}
+
+.team-dev-banner small {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #f5c479;
+}
+
+.team-dev-banner strong {
+    font-family: var(--font-serif, Georgia, serif);
+    font-size: clamp(1.5rem, 4.4vw, 2.1rem);
+    font-weight: 600;
+    line-height: 1.15;
+}
+
+.team-dev-banner span {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.team-dev-banner em {
+    font-style: normal;
+    font-weight: 700;
+    color: #f5c479;
+}
+
+/* ==========================================================
+   Bigger screens
+   ========================================================== */
+@media (min-width: 640px) {
+    .dev-members {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dev-lead {
+        padding: 24px 24px 30px;
+    }
+
+    .team-dev-banner {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 30px 36px;
+    }
+
+    .team-dev-banner>div {
+        display: grid;
+        gap: 8px;
+    }
+}
+
+@media (min-width: 900px) {
+    .dev-intro {
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 64px;
+    }
+
+    .dev-leads {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 32px;
+    }
+
+    .dev-members {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+    }
+}
+
+/* ==========================================================
+   People who asked their device for less motion
+   ========================================================== */
+@media (prefers-reduced-motion: reduce) {
+
+    .dev-caret,
+    .dev-badge i {
+        animation: none;
+    }
+
+    .dev-member,
+    .dev-links a,
+    .team-dev-banner {
+        transition: none;
+    }
+
+    .dev-marquee {
+        overflow-x: auto;
+        -webkit-mask-image: none;
+        mask-image: none;
+    }
+
+    .dev-marquee-track {
+        width: auto;
+    }
+
+    .dev-marquee-track ul {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .dev-marquee-dup {
+        display: none !important;
+    }
+}
