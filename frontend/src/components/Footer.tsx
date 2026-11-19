@@ -19,6 +19,7 @@ const foundationLinks = [
   ["Photo gallery", "/gallery"],
   ["Certificates & records", "/certificates"],
   ["Community portal", "/services"],
+  ["Knowledge, Partnerships & Opportunities", "/knowledge-partnerships-opportunities"],
 ] as const;
 
 const takePartLinks = [

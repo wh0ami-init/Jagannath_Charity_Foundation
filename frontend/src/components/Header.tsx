@@ -14,6 +14,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useReducedMotion } from "motion/react";
 import { comingSoonSections } from "../lib/comingSoonSections";
+import { knowledgePages } from "../lib/knowledgePages";
 import "../nav-menu.css";
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 const sectionLink = (href: string) => {
@@ -43,6 +44,7 @@ const navMenus = [
         note: "The organisations alongside us",
       },
       { href: "/contact", label: "Contact", note: "Reach the Foundation team" },
+      ...knowledgePages.filter((page) => ["think-tank-council", "university-partnership", "industry-partnership"].includes(page.slug)).map((page) => ({ href: page.href, label: page.title, note: page.note })),
     ],
   },
   {
@@ -59,6 +61,7 @@ const navMenus = [
       sectionLink("/project-expenses"),
       sectionLink("/campaigns"),
       sectionLink("/programs-and-events"),
+      ...knowledgePages.filter((page) => page.slug === "events-awards").map((page) => ({ href: page.href, label: page.title, note: page.note })),
     ],
   },
   {
@@ -72,6 +75,7 @@ const navMenus = [
       },
       sectionLink("/careers"),
       sectionLink("/internships/available"),
+      ...knowledgePages.filter((page) => page.slug === "fellowships-internships").map((page) => ({ href: page.href, label: page.title, note: page.note })),
       sectionLink("/beneficiaries/apply"),
       {
         href: "/services",
@@ -95,6 +99,8 @@ const navMenus = [
       sectionLink("/internships/certificate-verification"),
       { href: "/gallery", label: "Gallery", note: "Photographs from our work" },
       sectionLink("/video-gallery"),
+      { href: "/knowledge-partnerships-opportunities", label: "Knowledge, Partnerships & Opportunities", note: "Research, learning and institutional partnerships" },
+      ...knowledgePages.filter((page) => ["research-publication", "seminars-workshops", "ngo-education-certificates"].includes(page.slug)).map((page) => ({ href: page.href, label: page.title, note: page.note })),
     ],
   },
 ];

@@ -1,0 +1,24 @@
+.knowledge-body { padding-block: clamp(40px, 7vw, 88px); }
+.knowledge-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.knowledge-grid > div { display: flex; }
+.knowledge-card { position: relative; display: flex; flex-direction: column; width: 100%; padding: clamp(24px, 4vw, 42px); border: 1px solid #18372f24; border-radius: 20px; background: #fffdf7; color: var(--forest); text-decoration: none; transition: border-color .2s, box-shadow .2s; }
+.knowledge-card:hover { border-color: var(--saffron); box-shadow: 0 16px 40px #102c2512; }
+.knowledge-number { color: #9b573e; font-size: 12px; font-weight: 700; letter-spacing: .15em; }
+.knowledge-card h2 { margin: 28px 0 12px; font: 600 clamp(26px, 3vw, 36px)/1.12 var(--font-serif); }
+.knowledge-card p { margin: 0; padding-right: 24px; color: #52675c; line-height: 1.7; }
+.knowledge-arrow { position: absolute; right: 24px; top: 24px; font-size: 25px; color: #9b573e; }
+.knowledge-detail { display: grid; grid-template-columns: minmax(0, 1fr) 310px; gap: clamp(28px, 6vw, 80px); align-items: start; }
+.knowledge-copy { border-top: 3px solid var(--saffron); padding-top: 28px; }
+.knowledge-copy > p { font-size: 18px; line-height: 1.9; color: #334b40; margin: 28px 0; }
+.knowledge-copy a { color: #8a492e; text-underline-offset: 4px; overflow-wrap: anywhere; }
+.knowledge-back { display: inline-block; font-size: 14px; }
+.knowledge-nav { background: #edf1e9; border: 1px solid #18372f20; border-radius: 18px; overflow: hidden; }
+.knowledge-nav a { display: flex; justify-content: space-between; gap: 14px; padding: 18px 22px; color: var(--forest); text-decoration: none; border-bottom: 1px solid #18372f16; font-size: 14px; line-height: 1.5; }
+.knowledge-nav a:last-child { border-bottom: 0; }
+.knowledge-nav a:hover { background: #dfe7d9; }
+.knowledge-nav a[aria-current="page"] { background: var(--forest); color: white; }
+.knowledge-card:focus-visible, .knowledge-nav a:focus-visible { outline: 3px solid var(--saffron); outline-offset: -4px; }
+.knowledge-body .knowledge-registration { padding-top: 28px; margin-top: 40px; border-top: 1px solid #18372f24; font-size: 12px; line-height: 1.8; color: #52675c; }
+@media (max-width: 800px) { .knowledge-detail { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .knowledge-grid { grid-template-columns: 1fr; } .knowledge-copy > p { font-size: 16px; } }
+@media (prefers-reduced-motion: reduce) { .knowledge-card { transition: none; } }

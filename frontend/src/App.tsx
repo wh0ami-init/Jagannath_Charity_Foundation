@@ -7,8 +7,10 @@ import { ImagesProvider } from "./lib/ImagesContext";
 import { SiteContentProvider } from "./lib/SiteContentContext";
 import WelcomeScreen from "./components/WelcomeScreen";
 import { comingSoonSections } from "./lib/comingSoonSections";
+import { knowledgePages } from "./lib/knowledgePages";
 
 const Home = lazy(() => import("./pages/Home"));
+const Knowledge = lazy(() => import("./pages/Knowledge"));
 const About = lazy(() => import("./pages/About"));
 const Programmes = lazy(() => import("./pages/Programmes"));
 const Projects = lazy(() => import("./pages/Projects"));
@@ -67,6 +69,14 @@ export default function App() {
                 <Home isWelcomeVisible={welcomeVisible} />
               </Route>
               <Route path="/about" component={About} />
+              <Route path="/knowledge-partnerships-opportunities">
+                <Knowledge />
+              </Route>
+              {knowledgePages.map((page) => (
+                <Route key={page.slug} path={page.href}>
+                  <Knowledge slug={page.slug} />
+                </Route>
+              ))}
               <Route path="/programmes" component={Programmes} />
               <Route path="/work">
                 <Redirect
