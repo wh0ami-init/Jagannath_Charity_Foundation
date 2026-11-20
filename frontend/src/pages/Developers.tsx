@@ -41,7 +41,7 @@ const leadDevelopers: Developer[] = [
     role: "Back-End Developer",
     bio: "Built the server side that keeps the site, forms and donations working.",
     skills: ["Python", "FastAPI", "PostgreSQL", "APIs"],
-    // photo: "/images/developers/lakpa-tshering-sherpa.webp",
+    photo: "/images/developers/lakpa-tshering-sherpa.jpeg",
     // github: "https://github.com/their-username",
     // linkedin: "https://www.linkedin.com/in/their-name",
   },
