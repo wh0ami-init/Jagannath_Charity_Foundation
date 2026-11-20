@@ -1,4 +1,8 @@
-import { tr as translateText, localize as localizeText, trError as translateError } from "../i18n";
+import {
+  tr as translateText,
+  localize as localizeText,
+  trError as translateError,
+} from "../i18n";
 import { useTranslation as usePageTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
@@ -8,6 +12,8 @@ import Reveal from "../components/Reveal";
 import { DynamicImage } from "../lib/ImagesContext";
 import { useImages } from "../lib/ImagesContext";
 import Stagger from "../components/Stagger";
+import { Link } from "wouter";
+import "./developers.css";
 
 const trustBoard = [
   {
@@ -218,23 +224,25 @@ function PersonCard({
     : slot.startsWith("team-");
   return (
     <article className="team-card team-profile-card rounded-xl border border-navy-900/10 overflow-hidden">
-      {localizeText(showImage ? (
-        <div className="team-portrait-frame">
-          <DynamicImage
-            slotKey={slot}
-            alt={localizeText(name)}
-            className="team-portrait"
-            preferLocal={slot === "team-jagannath-patnaik"}
-          />
-        </div>
-      ) : (
-        <div
-          className="team-portrait-frame person-portrait-pending"
-          aria-label={localizeText(`Portrait for ${name} has not been added`)}
-        >
-          <span>{localizeText(initials(name))}</span>
-        </div>
-      ))}
+      {localizeText(
+        showImage ? (
+          <div className="team-portrait-frame">
+            <DynamicImage
+              slotKey={slot}
+              alt={localizeText(name)}
+              className="team-portrait"
+              preferLocal={slot === "team-jagannath-patnaik"}
+            />
+          </div>
+        ) : (
+          <div
+            className="team-portrait-frame person-portrait-pending"
+            aria-label={localizeText(`Portrait for ${name} has not been added`)}
+          >
+            <span>{localizeText(initials(name))}</span>
+          </div>
+        ),
+      )}
       <div className="team-profile-copy">
         <p className="team-profile-role">{localizeText(role)}</p>
         <h3>{localizeText(name)}</h3>
@@ -242,7 +250,9 @@ function PersonCard({
           type="button"
           className="team-view-more"
           onClick={() => onSelect(person)}
-        > {translateText("View more")} <span aria-hidden="true">→</span>
+        >
+          {" "}
+          {translateText("View more")} <span aria-hidden="true">→</span>
         </button>
       </div>
     </article>
@@ -288,11 +298,7 @@ export default function Team() {
 
   const renderPeople = (people: Person[]) =>
     people.map((person) => (
-      <PersonCard
-        key={person.name}
-        person={person}
-        onSelect={openPerson}
-      />
+      <PersonCard key={person.name} person={person} onSelect={openPerson} />
     ));
 
   return (
@@ -302,11 +308,15 @@ export default function Team() {
         motif="leadership"
         eyebrow={translateText("Key leadership")}
         title={translateText("Who holds the trust, and who tests the work.")}
-        description={translateText("The settlor and managing trustee, the founder trustees, the Board of Management and the Board of Advisors govern the Foundation with clear policy and strategic planning.")}
+        description={translateText(
+          "The settlor and managing trustee, the founder trustees, the Board of Management and the Board of Advisors govern the Foundation with clear policy and strategic planning.",
+        )}
       />
 
       <Reveal as="section" className="wrap py-16">
-        <h2 className="team-section-heading">{translateText("Board of Trustees")}</h2>
+        <h2 className="team-section-heading">
+          {translateText("Board of Trustees")}
+        </h2>
         <Stagger
           className="team-profile-grid team-profile-grid-trust"
           gap={0.1}
@@ -317,7 +327,9 @@ export default function Team() {
       </Reveal>
 
       <Reveal as="section" className="wrap pb-16">
-        <h2 className="team-section-heading">{translateText("Board of Management")}</h2>
+        <h2 className="team-section-heading">
+          {translateText("Board of Management")}
+        </h2>
         <Stagger
           className="team-profile-grid team-profile-grid-management"
           gap={0.1}
@@ -328,96 +340,132 @@ export default function Team() {
       </Reveal>
 
       <Reveal as="section" className="wrap pb-16">
-        <h2 className="team-section-heading">{translateText("Board of Advisors")}</h2>
+        <h2 className="team-section-heading">
+          {translateText("Board of Advisors")}
+        </h2>
         <Stagger
           className="team-profile-grid team-profile-grid-advisors"
           gap={0.1}
           distance={28}
         >
-          {localizeText(renderPeople(
-            advisors.map((advisor) => ({ ...advisor, body: advisor.note })),
-          ))}
+          {localizeText(
+            renderPeople(
+              advisors.map((advisor) => ({ ...advisor, body: advisor.note })),
+            ),
+          )}
         </Stagger>
       </Reveal>
 
+      <Reveal as="section" className="wrap pb-16">
+        <Link href="/developers" className="team-dev-banner">
+          <div>
+            <small>{translateText("Behind the screen")}</small>
+            <strong>
+              {translateText("Meet the developers who built this website")}
+            </strong>
+            <span>
+              {translateText(
+                "Students of ICFAI University, Sikkim, building for the Foundation.",
+              )}
+            </span>
+          </div>
+          <em>
+            {translateText("Meet the team")} <span aria-hidden="true">→</span>
+          </em>
+        </Link>
+      </Reveal>
+
       <AnimatePresence>
-        {localizeText(selectedPerson && (
-          <motion.div
-            className="team-profile-backdrop"
-            role="presentation"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: reducedMotion ? 0 : 0.42 }}
-            onMouseDown={(event) => {
-              if (event.target === event.currentTarget) setSelectedPerson(null);
-            }}
-          >
-            <motion.aside
-              className="team-profile-panel"
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="team-profile-name"
-              initial={reducedMotion ? false : { x: "100%" }}
-              animate={{ x: 0 }}
-              exit={reducedMotion ? undefined : { x: "100%" }}
-              transition={{
-                duration: reducedMotion ? 0 : 0.78,
-                ease: [0.22, 0.7, 0.2, 1],
+        {localizeText(
+          selectedPerson && (
+            <motion.div
+              className="team-profile-backdrop"
+              role="presentation"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: reducedMotion ? 0 : 0.42 }}
+              onMouseDown={(event) => {
+                if (event.target === event.currentTarget)
+                  setSelectedPerson(null);
               }}
             >
-              <button
-                ref={closeButtonRef}
-                type="button"
-                className="team-profile-close"
-                aria-label={translateText("Close profile")}
-                onClick={() => setSelectedPerson(null)}
+              <motion.aside
+                className="team-profile-panel"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="team-profile-name"
+                initial={reducedMotion ? false : { x: "100%" }}
+                animate={{ x: 0 }}
+                exit={reducedMotion ? undefined : { x: "100%" }}
+                transition={{
+                  duration: reducedMotion ? 0 : 0.78,
+                  ease: [0.22, 0.7, 0.2, 1],
+                }}
               >
-                ×
-              </button>
-              <div className="team-profile-background">
-                {localizeText(showSelectedPhoto ? (
-                  <DynamicImage
-                    slotKey={selectedPerson.slot}
-                    alt={localizeText(selectedPerson.name)}
-                    preferLocal={
-                      selectedPerson.slot === "team-jagannath-patnaik"
-                    }
-                    loading="eager"
-                  />
-                ) : (
-                  <div
-                    className="team-profile-placeholder"
-                    aria-label={localizeText(`Portrait for ${selectedPerson.name} has not been added`)}
-                  >
-                    <span>{localizeText(initials(selectedPerson.name))}</span>
-                  </div>
-                ))}
-                <div className="team-profile-image-shade" />
-                <motion.div
-                  className="team-profile-panel-copy"
-                  initial={
-                    reducedMotion ? false : { opacity: 0, y: 18, scale: 0.985 }
-                  }
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{
-                    duration: reducedMotion ? 0 : 0.62,
-                    delay: reducedMotion ? 0 : 0.88,
-                    ease: [0.22, 0.7, 0.2, 1],
-                  }}
+                <button
+                  ref={closeButtonRef}
+                  type="button"
+                  className="team-profile-close"
+                  aria-label={translateText("Close profile")}
+                  onClick={() => setSelectedPerson(null)}
                 >
-                  <p className="eyebrow">
-                    <span />
-                    {localizeText(selectedPerson.role)}
-                  </p>
-                  <h2 id="team-profile-name">{localizeText(selectedPerson.name)}</h2>
-                  <div className="team-profile-rule" />
-                  <p>{localizeText(selectedPerson.body)}</p>
-                </motion.div>
-              </div>
-            </motion.aside>
-          </motion.div>
-        ))}
+                  ×
+                </button>
+                <div className="team-profile-background">
+                  {localizeText(
+                    showSelectedPhoto ? (
+                      <DynamicImage
+                        slotKey={selectedPerson.slot}
+                        alt={localizeText(selectedPerson.name)}
+                        preferLocal={
+                          selectedPerson.slot === "team-jagannath-patnaik"
+                        }
+                        loading="eager"
+                      />
+                    ) : (
+                      <div
+                        className="team-profile-placeholder"
+                        aria-label={localizeText(
+                          `Portrait for ${selectedPerson.name} has not been added`,
+                        )}
+                      >
+                        <span>
+                          {localizeText(initials(selectedPerson.name))}
+                        </span>
+                      </div>
+                    ),
+                  )}
+                  <div className="team-profile-image-shade" />
+                  <motion.div
+                    className="team-profile-panel-copy"
+                    initial={
+                      reducedMotion
+                        ? false
+                        : { opacity: 0, y: 18, scale: 0.985 }
+                    }
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{
+                      duration: reducedMotion ? 0 : 0.62,
+                      delay: reducedMotion ? 0 : 0.88,
+                      ease: [0.22, 0.7, 0.2, 1],
+                    }}
+                  >
+                    <p className="eyebrow">
+                      <span />
+                      {localizeText(selectedPerson.role)}
+                    </p>
+                    <h2 id="team-profile-name">
+                      {localizeText(selectedPerson.name)}
+                    </h2>
+                    <div className="team-profile-rule" />
+                    <p>{localizeText(selectedPerson.body)}</p>
+                  </motion.div>
+                </div>
+              </motion.aside>
+            </motion.div>
+          ),
+        )}
       </AnimatePresence>
     </Layout>
   );
